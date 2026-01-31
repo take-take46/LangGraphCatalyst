@@ -84,3 +84,15 @@ Thumbs.db
 *.tmp
 *.temp
 .cache/
+data/usage_limits.json
+
+# Node.js / Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env.local
+frontend/.env.production.local
+frontend/.vite/
+frontend/.cache/
+frontend/coverage/
+frontend/playwright-report/
+frontend/test-results/

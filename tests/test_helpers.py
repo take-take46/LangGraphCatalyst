@@ -6,11 +6,19 @@ LangGraph Catalyst - Helpers Tests
 
 import pytest
 from datetime import datetime
+from langchain_core.documents import Document
 from src.utils.helpers import (
+    split_documents,
+    create_text_splitter,
     split_text_into_chunks,
     extract_code_blocks,
-    calculate_token_count,
+    format_sources,
     format_source_metadata,
+    truncate_text,
+    get_current_timestamp,
+    validate_url,
+    safe_get,
+    calculate_token_count,
     sanitize_filename,
     parse_mermaid_diagram,
 )
@@ -161,8 +169,9 @@ class TestHelpers:
 
         # Assert
         assert len(code_blocks) >= 2
-        assert any("generic code block" in block for block in code_blocks)
-        assert any("python code" in block for block in code_blocks)
+        # 辞書のリストが返されるので、codeフィールドにアクセス
+        assert any("generic code block" in block["code"] for block in code_blocks)
+        assert any("python code" in block["code"] for block in code_blocks)
 
     def test_extract_code_blocks_none_found(self):
         """

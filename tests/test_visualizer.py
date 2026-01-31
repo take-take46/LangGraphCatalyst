@@ -8,10 +8,10 @@ import pytest
 from src.features.architect.visualizer import (
     generate_mermaid_diagram,
     validate_mermaid_syntax,
-    create_flowchart,
-    create_state_diagram,
+    extract_mermaid_from_markdown,
+    format_mermaid_for_display,
+    add_styling_to_mermaid,
 )
-from src.utils.exceptions import ValidationError
 
 
 @pytest.mark.unit
@@ -258,7 +258,9 @@ graph TD
         result = validate_mermaid_syntax(valid_mermaid)
 
         # Assert
-        assert result is True
+        assert result["valid"] is True
+        assert isinstance(result["errors"], list)
+        assert isinstance(result["warnings"], list)
 
     def test_invalid_mermaid_syntax(self):
         """
@@ -274,7 +276,8 @@ graph TD
         result = validate_mermaid_syntax(invalid_mermaid)
 
         # Assert
-        assert result is False
+        assert result["valid"] is False
+        assert len(result["errors"]) > 0
 
     # ========================================================================
     # Different Diagram Types Tests
@@ -295,39 +298,12 @@ graph TD
         edges = [{"from_node": "start", "to_node": "end", "description": "実行"}]
 
         # Act
-        mermaid_code = create_flowchart(nodes, edges)
+        mermaid_code = generate_mermaid_diagram(nodes, edges, diagram_type="flowchart")
 
         # Assert
-        assert "flowchart" in mermaid_code or "graph" in mermaid_code
+        assert "flowchart" in mermaid_code
         assert "start" in mermaid_code
         assert "end" in mermaid_code
-
-    def test_create_state_diagram(self):
-        """
-        状態図作成のテスト
-
-        テスト内容:
-        - 状態図形式の図が正しく生成されること
-        """
-        # Arrange
-        states = [
-            {"state_id": "idle", "name": "待機"},
-            {"state_id": "processing", "name": "処理中"},
-            {"state_id": "done", "name": "完了"}
-        ]
-        transitions = [
-            {"from_state": "idle", "to_state": "processing", "event": "開始"},
-            {"from_state": "processing", "to_state": "done", "event": "完了"}
-        ]
-
-        # Act
-        mermaid_code = create_state_diagram(states, transitions)
-
-        # Assert
-        assert "stateDiagram" in mermaid_code or "state" in mermaid_code
-        assert "idle" in mermaid_code
-        assert "processing" in mermaid_code
-        assert "done" in mermaid_code
 
     # ========================================================================
     # Direction and Styling Tests

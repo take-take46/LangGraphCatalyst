@@ -12,6 +12,12 @@ from unittest.mock import Mock
 import pytest
 from langchain_core.documents import Document
 
+# テスト実行時に必要な環境変数を設定（import時のエラーを防ぐ）
+os.environ.setdefault("OPENAI_API_KEY", "sk-test-mock-key-for-testing")
+os.environ.setdefault("CHROMA_PERSIST_DIR", "./tests/data/chroma_test")
+os.environ.setdefault("LOG_LEVEL", "DEBUG")
+os.environ.setdefault("ENVIRONMENT", "test")
+
 
 # ============================================================================
 # Test Configuration

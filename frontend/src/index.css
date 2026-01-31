@@ -1,0 +1,253 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Crimson+Pro:wght@300;400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Core Colors - Refined Brutalist Palette */
+  --color-bg-primary: #0a0e14;
+  --color-bg-secondary: #151922;
+  --color-bg-tertiary: #1e2530;
+  --color-accent-primary: #0ea5e9;
+  --color-accent-secondary: #a855f7;
+  --color-accent-warm: #f59e0b;
+  --color-text-primary: #e4e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-border: #2d3748;
+
+  /* Geometric Accent */
+  --accent-line-width: 3px;
+  --accent-angle: 45deg;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Crimson Pro', serif;
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+code {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-accent-primary);
+}
+
+/* Selection */
+::selection {
+  background: var(--color-accent-primary);
+  color: var(--color-bg-primary);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse-border {
+  0%, 100% {
+    border-color: var(--color-accent-primary);
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.4);
+  }
+  50% {
+    border-color: var(--color-accent-secondary);
+    box-shadow: 0 0 0 8px rgba(14, 165, 233, 0);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.4s ease-out forwards;
+}
+
+/* Geometric Accent Lines */
+.accent-line {
+  position: relative;
+}
+
+.accent-line::before {
+  content: '';
+  position: absolute;
+  width: var(--accent-line-width);
+  height: 100%;
+  background: linear-gradient(180deg, var(--color-accent-primary), var(--color-accent-secondary));
+  left: 0;
+  top: 0;
+}
+
+.accent-line-top {
+  position: relative;
+}
+
+.accent-line-top::before {
+  content: '';
+  position: absolute;
+  height: var(--accent-line-width);
+  width: 60px;
+  background: linear-gradient(90deg, var(--color-accent-primary), transparent);
+  left: 0;
+  top: 0;
+}
+
+/* Card Styles */
+.card-brutalist {
+  background: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-brutalist:hover {
+  transform: translateY(-2px);
+  border-color: var(--color-accent-primary);
+}
+
+.card-brutalist::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, transparent 50%, var(--color-accent-primary) 50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.card-brutalist:hover::after {
+  opacity: 0.2;
+}
+
+/* Terminal-style code blocks */
+.code-terminal {
+  background: #000;
+  border: 1px solid var(--color-accent-primary);
+  border-radius: 4px;
+  padding: 1rem;
+  font-family: 'IBM Plex Mono', monospace;
+  position: relative;
+  overflow: hidden;
+}
+
+.code-terminal::before {
+  content: '$ ';
+  color: var(--color-accent-warm);
+  font-weight: bold;
+}
+
+/* Glassmorphism effect for overlays */
+.glass-effect {
+  background: rgba(21, 25, 34, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Button styles */
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  color: white;
+  font-family: 'IBM Plex Mono', monospace;
+  font-weight: 500;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  transition: left 0.5s ease;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(14, 165, 233, 0.3);
+}
+
+/* Loading states */
+.loading-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+  :root {
+    font-size: 14px;
+  }
+}

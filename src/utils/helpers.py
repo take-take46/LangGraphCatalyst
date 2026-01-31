@@ -6,6 +6,7 @@ LangGraph Catalyst - Helper Functions
 """
 
 import logging
+import os
 from datetime import datetime
 from typing import Any
 
@@ -115,35 +116,39 @@ def format_sources(documents: list[Document]) -> list[dict[str, Any]]:
     return sources
 
 
-def extract_code_blocks(text: str) -> list[dict[str, str]]:
+def extract_code_blocks(text: str, language: str | None = None) -> list[str] | list[dict[str, str]]:
     """
     テキストからコードブロックを抽出（言語情報付き）
 
     Args:
         text: 元のテキスト
+        language: フィルタリングする言語（Noneの場合は全て）
 
     Returns:
-        list[dict]: コードブロック情報のリスト
-            - language: プログラミング言語（python, typescript等）
-            - code: コードの内容
+        list[str] | list[dict]: コードブロックのリスト
+            - languageが指定された場合: list[str]（該当言語のコードのみ）
+            - languageが指定されていない場合: list[dict]（全コードブロック、language/code付き）
     """
-    code_blocks = []
+    code_blocks_all = []
     lines = text.split("\n")
     in_code_block = False
     current_block = []
-    current_language = "python"  # デフォルト
+    current_language = None  # デフォルトなし
 
     for line in lines:
         if line.strip().startswith("```"):
             if in_code_block:
                 # コードブロック終了
                 if current_block:
-                    code_blocks.append(
-                        {"language": current_language, "code": "\n".join(current_block)}
+                    code_blocks_all.append(
+                        {
+                            "language": current_language or "unknown",
+                            "code": "\n".join(current_block)
+                        }
                     )
                 current_block = []
                 in_code_block = False
-                current_language = "python"
+                current_language = None
             else:
                 # コードブロック開始
                 in_code_block = True
@@ -154,7 +159,17 @@ def extract_code_blocks(text: str) -> list[dict[str, str]]:
         elif in_code_block:
             current_block.append(line)
 
-    return code_blocks
+    # 言語でフィルタリング（指定された場合）
+    if language:
+        filtered_blocks = [
+            block["code"]
+            for block in code_blocks_all
+            if block["language"] == language.lower()
+        ]
+        return filtered_blocks
+    else:
+        # 辞書のリストを返す
+        return code_blocks_all
 
 
 def safe_get(dictionary: dict[str, Any], key: str, default: Any = None) -> Any:
@@ -219,3 +234,175 @@ def validate_url(url: str) -> bool:
     )
 
     return bool(url_pattern.match(url))
+
+
+def split_text_into_chunks(
+    text: str,
+    chunk_size: int = 1000,
+    chunk_overlap: int = 200,
+    separator: str = "\n\n",
+) -> list[str]:
+    """
+    テキストをチャンクに分割（文字列版）
+
+    Args:
+        text: 分割するテキスト
+        chunk_size: チャンクサイズ
+        chunk_overlap: オーバーラップサイズ
+        separator: セパレータ（使用されない、後方互換性のため）
+
+    Returns:
+        list[str]: 分割されたテキストのリスト
+
+    Raises:
+        ValueError: chunk_sizeが0以下の場合
+    """
+    if chunk_size <= 0:
+        raise ValueError(f"chunk_size must be positive, got {chunk_size}")
+
+    # chunk_overlapがchunk_sizeより大きい場合は調整
+    if chunk_overlap >= chunk_size:
+        chunk_overlap = max(0, chunk_size - 1)
+
+    text_splitter = create_text_splitter(chunk_size, chunk_overlap)
+    chunks = text_splitter.split_text(text)
+    return chunks
+
+
+def calculate_token_count(text: str, encoding_name: str = "cl100k_base") -> int:
+    """
+    テキストのトークン数を計算
+
+    Args:
+        text: トークン数を計算するテキスト
+        encoding_name: エンコーディング名
+
+    Returns:
+        int: トークン数
+    """
+    try:
+        import tiktoken
+
+        encoding = tiktoken.get_encoding(encoding_name)
+        tokens = encoding.encode(text)
+        return len(tokens)
+    except ImportError:
+        # tiktokenがインストールされていない場合は概算
+        # 平均的に1トークン ≈ 4文字
+        return len(text) // 4
+
+
+def format_source_metadata(metadata: dict[str, Any]) -> str:
+    """
+    ソースメタデータをフォーマット
+
+    Args:
+        metadata: メタデータ辞書
+
+    Returns:
+        str: フォーマットされたメタデータ
+    """
+    parts = []
+    if "title" in metadata:
+        parts.append(f"Title: {metadata['title']}")
+    if "source" in metadata:
+        parts.append(f"Source: {metadata['source']}")
+    if "doc_type" in metadata:
+        parts.append(f"Type: {metadata['doc_type']}")
+    if "updated_at" in metadata:
+        parts.append(f"Updated: {metadata['updated_at']}")
+
+    return " | ".join(parts) if parts else "No metadata"
+
+
+def sanitize_filename(filename: str, max_length: int = 255) -> str:
+    """
+    ファイル名をサニタイズ
+
+    Args:
+        filename: 元のファイル名
+        max_length: 最大長
+
+    Returns:
+        str: サニタイズされたファイル名
+    """
+    import re
+
+    # 危険な文字を除去
+    sanitized = re.sub(r'[<>:"/\\|?*\x00-\x1f]', "", filename)
+
+    # パストラバーサル攻撃を防ぐ
+    sanitized = sanitized.replace("..", "")
+    sanitized = sanitized.strip(". ")
+
+    # 最大長に切り詰め
+    if len(sanitized) > max_length:
+        name, ext = os.path.splitext(sanitized)
+        max_name_length = max_length - len(ext)
+        sanitized = name[:max_name_length] + ext
+
+    return sanitized or "untitled"
+
+
+def parse_mermaid_diagram(mermaid_code: str) -> dict[str, Any]:
+    """
+    Mermaid図をパースして構造化データに変換
+
+    Args:
+        mermaid_code: Mermaid記法のコード
+
+    Returns:
+        dict: パースされた構造
+    """
+    import re
+
+    result = {
+        "diagram_type": None,
+        "nodes": [],
+        "edges": [],
+        "valid": False,
+    }
+
+    if not mermaid_code or not mermaid_code.strip():
+        return result
+
+    lines = mermaid_code.strip().split("\n")
+
+    if not lines:
+        return result
+
+    # ダイアグラムタイプを抽出
+    first_line = lines[0].strip()
+    if "flowchart" in first_line or "graph" in first_line:
+        result["diagram_type"] = "flowchart"
+    elif "sequenceDiagram" in first_line:
+        result["diagram_type"] = "sequence"
+    else:
+        return result
+
+    # ノードとエッジを抽出（簡単なパーサー）
+    node_pattern = re.compile(r"^\s*([A-Za-z0-9_]+)[\[\(\{](.+?)[\]\)\}]")
+    edge_pattern = re.compile(r"^\s*([A-Za-z0-9_]+)\s*-->\s*([A-Za-z0-9_]+)")
+
+    for line in lines[1:]:
+        line = line.strip()
+        if not line:
+            continue
+
+        # ノードのマッチ
+        node_match = node_pattern.match(line)
+        if node_match:
+            result["nodes"].append(
+                {"id": node_match.group(1), "label": node_match.group(2)}
+            )
+
+        # エッジのマッチ
+        edge_match = edge_pattern.match(line)
+        if edge_match:
+            result["edges"].append(
+                {"from": edge_match.group(1), "to": edge_match.group(2)}
+            )
+
+    result["valid"] = len(result["nodes"]) > 0 or len(result["edges"]) > 0
+
+    return result

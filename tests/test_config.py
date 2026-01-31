@@ -78,8 +78,11 @@ class TestSettings:
 
     def test_settings_with_defaults(self, monkeypatch, mock_no_env_file):
         """デフォルト値が正しく設定されるテスト"""
-        # Arrange - 必須項目のみ設定
+        # Arrange - 必須項目のみ設定、他の環境変数をクリア
         monkeypatch.setenv("OPENAI_API_KEY", "sk-test-key")
+        monkeypatch.delenv("CHROMA_PERSIST_DIR", raising=False)
+        monkeypatch.delenv("LOG_LEVEL", raising=False)
+        monkeypatch.delenv("ENVIRONMENT", raising=False)
 
         # Act
         settings = Settings()

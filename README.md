@@ -6,7 +6,8 @@
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
 [![LangGraph](https://img.shields.io/badge/LangGraph-Latest-green.svg)](https://github.com/langchain-ai/langgraph)
-[![Streamlit](https://img.shields.io/badge/Streamlit-Latest-red.svg)](https://streamlit.io/)
+[![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://react.dev/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688.svg)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 [デモを見る](#) | [ドキュメント](./docs/) | [お問い合わせ](#お問い合わせ)
@@ -96,25 +97,51 @@ LangGraphの最新公式情報をベクトルDB（Chroma）に保存し、質問
 
 | カテゴリ | 技術 | バージョン | 用途 |
 |---------|------|-----------|------|
-| **言語** | Python | 3.11+ | メイン開発言語 |
+| **言語** | Python | 3.11+ | バックエンド開発言語 |
 | **コアフレームワーク** | LangGraph | Latest | エージェントワークフロー構築 |
 | **LLMフレームワーク** | LangChain | Latest | LLMアプリケーション基盤 |
 | **ベクトルDB** | Chroma | Latest | ドキュメント埋め込みと検索 |
 | **LLM** | OpenAI API | GPT-4 Turbo | 言語モデル |
-| **WebUI** | Streamlit | Latest | フロントエンド |
-| **デプロイ** | Render | - | ホスティング |
-| **テスト** | pytest | Latest | ユニット・統合テスト |
-| **リント・フォーマット** | Ruff | Latest | コード品質管理 |
+| **バックエンドAPI** | FastAPI | Latest | REST APIサーバー |
+| **フロントエンド** | React + TypeScript | 18+ / 5+ | モダンなUI構築 |
+| **ビルドツール** | Vite | Latest | 高速開発環境 |
+| **UI Library** | Tailwind CSS | Latest | スタイリング |
+| **状態管理** | Zustand | Latest | クライアント状態管理 |
+| **デプロイ** | Render | - | フロントエンド + バックエンド統一ホスティング |
+| **テスト** | pytest + Vitest + Playwright | Latest | ユニット・統合・E2Eテスト |
+| **リント・フォーマット** | Ruff + ESLint | Latest | コード品質管理 |
 
 ### アーキテクチャ図
 
 ```
 langgraph-catalyst/
-├── src/
-│   ├── app.py                      # Streamlit エントリーポイント
+├── backend/                        # FastAPI バックエンド
+│   ├── main.py                     # FastAPIエントリーポイント
+│   ├── api/v1/                     # APIエンドポイント
+│   │   ├── rag.py                  # RAG API
+│   │   ├── architect.py            # 構成案生成 API
+│   │   ├── learning_path.py        # 学習パス API
+│   │   └── templates.py            # テンプレート API
+│   ├── core/                       # 設定・セキュリティ
+│   │   ├── config.py
+│   │   └── security.py
+│   ├── schemas/                    # Pydanticスキーマ
+│   └── tests/                      # APIテスト
+├── frontend/                       # React フロントエンド
+│   ├── src/
+│   │   ├── App.tsx                 # ルートコンポーネント
+│   │   ├── pages/                  # ページコンポーネント
+│   │   ├── components/             # 共通UIコンポーネント
+│   │   ├── api/                    # API通信層
+│   │   ├── store/                  # Zustand状態管理
+│   │   ├── types/                  # TypeScript型定義
+│   │   └── utils/
+│   ├── package.json
+│   └── vite.config.ts
+├── src/                            # 共有Pythonビジネスロジック
 │   ├── config/
 │   │   └── settings.py             # 環境変数・設定管理
-│   ├── features/
+│   ├── features/                   # コア機能（FastAPIから使用）
 │   │   ├── rag/                    # RAG学習支援機能
 │   │   │   ├── crawler.py          # ドキュメントクローラー
 │   │   │   ├── vectorstore.py      # Chromaベクトルストア
@@ -125,29 +152,23 @@ langgraph-catalyst/
 │   │   │   └── visualizer.py       # Mermaid図生成
 │   │   ├── templates/              # テンプレート定義
 │   │   └── learning_path/          # 学習パス定義
-│   ├── components/                 # 再利用可能なUIコンポーネント
-│   │   └── sidebar.py
 │   └── utils/                      # ユーティリティ関数
-│       ├── helpers.py
-│       ├── styles.py               # カスタムCSS
-│       ├── exceptions.py           # カスタム例外
-│       └── caching.py              # キャッシング
 ├── data/chroma/                    # ベクトルDB永続化
-├── tests/                          # テストコード
-│   ├── test_rag/
-│   ├── test_architect/
-│   └── test_integration/
+├── tests/                          # バックエンドユニットテスト（115+ tests）
+│   ├── test_crawler.py
+│   ├── test_vectorstore.py
+│   ├── test_rag_chain.py
+│   └── test_architect_graph.py
+├── e2e/                            # E2Eテスト（Playwright）
 ├── docs/                           # ドキュメント
 │   ├── API_SPECIFICATION.md        # API仕様書
 │   ├── TEST_SPECIFICATION.md       # テスト仕様書
 │   └── TODO.md                     # 開発計画
 ├── scripts/                        # ユーティリティスクリプト
 │   └── init_vectorstore.py         # ベクトルストア初期化
-├── .streamlit/                     # Streamlit設定
-│   └── config.toml
-├── requirements.txt                # 依存パッケージ
+├── requirements.txt                # Python依存パッケージ
 ├── pyproject.toml                  # プロジェクト設定（Ruff等）
-└── render.yaml                     # Renderデプロイ設定
+└── render.yaml                     # Renderデプロイ設定（Frontend + Backend）
 ```
 
 ---
@@ -224,11 +245,25 @@ python scripts/init_vectorstore.py --verbose
 
 ### 6️⃣ アプリケーションの起動
 
+**バックエンド（FastAPI）の起動:**
+
 ```bash
-streamlit run src/app.py
+uvicorn backend.main:app --reload
 ```
 
-ブラウザで `http://localhost:8501` にアクセスしてください。
+バックエンドは `http://localhost:8000` で起動します。API仕様は `http://localhost:8000/docs` で確認できます。
+
+**フロントエンド（React）の起動:**
+
+別のターミナルで以下を実行:
+
+```bash
+cd frontend
+npm install  # 初回のみ
+npm run dev
+```
+
+ブラウザで `http://localhost:5173` にアクセスしてください。
 
 ---
 
@@ -314,26 +349,49 @@ pytest tests/ --cov=src --cov-report=html
 
 ### Renderへのデプロイ
 
+本プロジェクトはRenderで**フロントエンド（React Static Site）とバックエンド（FastAPI）を統一管理**します。
+
 1. GitHubリポジトリをRenderに接続
-2. Render管理画面で以下の環境変数を設定:
+2. Render管理画面で以下の環境変数を設定（バックエンド）:
    - `OPENAI_API_KEY`: OpenAI APIキー
+   - `CORS_ORIGINS`: フロントエンドのURL（例: `https://your-frontend.onrender.com`）
 3. `render.yaml` の設定に従って自動デプロイ
 
 **render.yaml 例:**
 
 ```yaml
 services:
+  # バックエンド（FastAPI）
   - type: web
-    name: langgraph-catalyst
-    env: python
-    buildCommand: |
-      pip install -r requirements.txt
-      python scripts/init_vectorstore.py --max-docs-pages 10
-    startCommand: streamlit run src/app.py --server.port $PORT --server.address 0.0.0.0
+    name: langgraph-catalyst-api
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: OPENAI_API_KEY
         sync: false
+      - key: CORS_ORIGINS
+        value: https://langgraph-catalyst-frontend.onrender.com
+
+  # フロントエンド（React）
+  - type: web
+    name: langgraph-catalyst-frontend
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://langgraph-catalyst-api.onrender.com/api/v1
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
 ```
+
+**公開URL:**
+- **フロントエンド**: `https://langgraph-catalyst-frontend.onrender.com`
+- **バックエンドAPI**: `https://langgraph-catalyst-api.onrender.com`
+- **API Docs**: `https://langgraph-catalyst-api.onrender.com/docs`
 
 ---
 
@@ -366,7 +424,7 @@ services:
 
 ### Phase 1-4: 基盤構築 ✅
 - [x] プロジェクト構造のセットアップ
-- [x] Streamlit基本UI
+- [x] React + FastAPI フルスタック基盤
 - [x] RAG学習支援機能
 - [x] 構成案生成機能
 
@@ -417,7 +475,8 @@ MIT License - 詳細は [LICENSE](LICENSE) をご覧ください。
 
 - [LangGraph](https://github.com/langchain-ai/langgraph) - LangChain公式のステートフルエージェントフレームワーク
 - [LangChain](https://github.com/langchain-ai/langchain) - LLMアプリケーション開発フレームワーク
-- [Streamlit](https://streamlit.io/) - データアプリケーションフレームワーク
+- [React](https://react.dev/) - モダンなWebアプリケーションフレームワーク
+- [FastAPI](https://fastapi.tiangolo.com/) - 高速で型安全なPython Webフレームワーク
 - [Chroma](https://www.trychroma.com/) - オープンソースベクトルデータベース
 - [OpenAI](https://openai.com/) - GPT-4 APIの提供
 
@@ -425,7 +484,7 @@ MIT License - 詳細は [LICENSE](LICENSE) をご覧ください。
 
 <div align="center">
 
-**Built with ❤️ using LangGraph, LangChain, and Streamlit**
+**Built with ❤️ using LangGraph, React, and FastAPI**
 
 ⭐ このプロジェクトが役に立ったら、スターをお願いします！
 

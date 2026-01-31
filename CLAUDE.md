@@ -44,8 +44,10 @@
 | Core Framework | LangGraph, LangChain | エージェントワークフロー構築の業界標準 |
 | Vector DB | Chroma | 軽量でローカル実行可能、学習コストが低い |
 | LLM | OpenAI API (GPT-4等) | ドキュメント・事例が豊富、信頼性が高い |
-| Web UI | Streamlit | 高速開発、Renderとの相性が良い |
-| Deployment | Render | 無料枠あり、簡単なデプロイ |
+| Backend API | FastAPI | 高速、型安全、自動ドキュメント生成 |
+| Frontend | React + TypeScript + Vite | モダンなUI、完全な自由度、高速開発 |
+| UI Library | Tailwind CSS + Zustand | モダンなデザインシステム、軽量な状態管理 |
+| Deployment | Render | 無料枠あり、Frontend + Backend統一管理 |
 
 ---
 
@@ -53,31 +55,47 @@
 
 ```
 langgraph-catalyst/
-├── src/
-│   ├── app.py                 # Streamlit エントリーポイント
+├── backend/                   # FastAPI バックエンド
+│   ├── main.py                # FastAPIエントリーポイント
+│   ├── api/v1/                # APIエンドポイント
+│   ├── core/                  # 設定・セキュリティ
+│   ├── schemas/               # Pydanticスキーマ
+│   └── tests/                 # APIテスト
+├── frontend/                  # React フロントエンド
+│   ├── src/
+│   │   ├── App.tsx            # ルートコンポーネント
+│   │   ├── pages/             # ページコンポーネント
+│   │   ├── components/        # 共通UIコンポーネント
+│   │   ├── api/               # API通信層
+│   │   ├── store/             # Zustand状態管理
+│   │   └── types/             # TypeScript型定義
+│   ├── package.json
+│   └── vite.config.ts
+├── src/                       # 共有Pythonビジネスロジック
 │   ├── config/
 │   │   └── settings.py        # 環境変数・設定管理
-│   ├── features/
+│   ├── features/              # コア機能（FastAPIから使用）
 │   │   ├── rag/               # RAG学習支援機能
 │   │   │   ├── crawler.py     # ドキュメント収集
 │   │   │   ├── vectorstore.py # Chroma操作
 │   │   │   └── chain.py       # RAGチェーン
-│   │   └── architect/         # 構成案生成機能
-│   │       ├── graph.py       # LangGraphワークフロー
-│   │       ├── prompts.py     # プロンプトテンプレート
-│   │       └── visualizer.py  # Mermaid図生成
-│   ├── components/            # 再利用可能なUIコンポーネント
-│   │   └── sidebar.py
+│   │   ├── architect/         # 構成案生成機能
+│   │   │   ├── graph.py       # LangGraphワークフロー
+│   │   │   ├── prompts.py     # プロンプトテンプレート
+│   │   │   └── visualizer.py  # Mermaid図生成
+│   │   ├── templates/         # テンプレート定義
+│   │   └── learning_path/     # 学習パス定義
 │   └── utils/
 │       └── helpers.py
 ├── data/
 │   └── chroma/                # ベクトルDB永続化
-├── tests/
-│   └── test_core.py           # 主要機能のテスト
-├── .streamlit/
-│   └── config.toml            # Streamlitテーマ設定
+├── tests/                     # バックエンドユニットテスト（115+ tests）
+│   ├── test_crawler.py
+│   ├── test_vectorstore.py
+│   └── test_rag_chain.py
+├── e2e/                       # E2Eテスト（Playwright）
 ├── requirements.txt
-├── render.yaml                # Renderデプロイ設定
+├── render.yaml                # Renderデプロイ設定（Frontend + Backend）
 └── README.md
 ```
 
@@ -119,8 +137,9 @@ python -m src.features.rag.crawler --update
 | ビジネス担当者 | わかりやすい説明、導入イメージ | 図解 + 平易な言葉での解説 |
 
 ### Styling
-- カスタムCSS（`.streamlit/config.toml` + `st.markdown`）
-- 統一感のある配色・フォント
+- Tailwind CSS によるユーティリティファーストのスタイリング
+- Refined Brutalist デザインシステム（カスタムCSS変数）
+- 統一感のある配色・フォント（IBM Plex Mono, Crimson Pro）
 - カード風レイアウトで視認性向上
 
 ---
@@ -177,15 +196,37 @@ LOG_LEVEL=INFO
 ```yaml
 # render.yaml
 services:
+  # バックエンド（FastAPI）
   - type: web
-    name: langgraph-catalyst
-    env: python
+    name: langgraph-catalyst-api
+    runtime: python
     buildCommand: pip install -r requirements.txt
-    startCommand: streamlit run src/app.py --server.port $PORT --server.address 0.0.0.0
+    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: CORS_ORIGINS
+        value: https://langgraph-catalyst-frontend.onrender.com
+
+  # フロントエンド（React）
+  - type: web
+    name: langgraph-catalyst-frontend
+    runtime: static
+    buildCommand: cd frontend && npm ci && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://langgraph-catalyst-api.onrender.com/api/v1
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
 ```
 
 ### 公開URL
-ポートフォリオサイトからRenderのURLにリンクして公開
+- **フロントエンド**: `https://langgraph-catalyst-frontend.onrender.com`
+- **バックエンドAPI**: `https://langgraph-catalyst-api.onrender.com`
+- **API Docs**: `https://langgraph-catalyst-api.onrender.com/docs`
 
 ---
 
@@ -211,9 +252,9 @@ services:
 ## Milestones
 
 ### Phase 1: 基盤構築
-- [ ] プロジェクト構造のセットアップ
-- [ ] Streamlit基本UI
-- [ ] 環境変数・設定管理
+- [x] プロジェクト構造のセットアップ
+- [x] React + FastAPI フルスタック基盤
+- [x] 環境変数・設定管理
 
 ### Phase 2: RAG機能
 - [ ] ドキュメントクローラー実装

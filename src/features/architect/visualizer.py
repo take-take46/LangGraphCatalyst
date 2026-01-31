@@ -15,6 +15,7 @@ def generate_mermaid_diagram(
     nodes: list[dict[str, Any]],
     edges: list[dict[str, Any]],
     diagram_type: str = "flowchart",
+    direction: str = "TD",
 ) -> str:
     """
     ノードとエッジからMermaid図を生成
@@ -23,6 +24,7 @@ def generate_mermaid_diagram(
         nodes: ノードのリスト
         edges: エッジのリスト
         diagram_type: 図のタイプ ("flowchart" or "graph")
+        direction: 図の方向 ("TD", "LR", "TB", "RL")
 
     Returns:
         Mermaid記法の文字列
@@ -45,9 +47,9 @@ def generate_mermaid_diagram(
 
     # ヘッダー
     if diagram_type == "flowchart":
-        lines = ["flowchart TD"]
+        lines = [f"flowchart {direction}"]
     else:
-        lines = ["graph TD"]
+        lines = [f"graph {direction}"]
 
     # 開始・終了ノードの追加
     lines.append("    START([開始])")
