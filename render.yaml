@@ -1,9 +1,10 @@
 services:
   # バックエンド（FastAPI）
+  # region: oregon (US West) または singapore (Asia) を選択可能
   - type: web
     name: langgraph-catalyst-api
     runtime: python
-    region: oregon  # または singapore（アジアに近い場合）
+    region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
@@ -52,8 +53,6 @@ services:
   - type: web
     name: langgraph-catalyst-frontend
     runtime: static
-    region: oregon
-    plan: free
     buildCommand: cd frontend && npm ci && npm run build
     staticPublishPath: ./frontend/dist
     pullRequestPreviewsEnabled: true  # PRプレビュー（オプション）
