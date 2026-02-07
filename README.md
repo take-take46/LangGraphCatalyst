@@ -1,483 +1,408 @@
-# ⚡ LangGraph Catalyst
+# LangGraph Catalyst
 
 <div align="center">
 
-**LangGraphの学習支援とビジネス活用を促進する、次世代の触媒システム**
+**LangGraphの学習支援とビジネス活用を促進する「触媒」システム**
 
 [![Python](https://img.shields.io/badge/Python-3.11+-blue.svg)](https://www.python.org/)
-[![LangGraph](https://img.shields.io/badge/LangGraph-Latest-green.svg)](https://github.com/langchain-ai/langgraph)
 [![React](https://img.shields.io/badge/React-18+-61DAFB.svg)](https://react.dev/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688.svg)](https://fastapi.tiangolo.com/)
+[![LangGraph](https://img.shields.io/badge/LangGraph-1.0+-green.svg)](https://github.com/langchain-ai/langgraph)
+[![Tests](https://img.shields.io/badge/Tests-155+-brightgreen.svg)](#テストci-cd)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[🚀 デモを見る](https://langgraph-catalyst-frontend.onrender.com) | [📚 ドキュメント](./docs/) | [💬 お問い合わせ](#お問い合わせ)
+**[デモサイトを見る](https://langgraph-catalyst-frontend.onrender.com)** | **[API Docs](https://langgraph-catalyst-api.onrender.com/docs)**
 
 </div>
 
 ---
 
-## 📋 目次
+## 目次
 
-- [概要](#-概要)
-- [主要機能](#-主要機能)
-- [技術スタック](#-技術スタック)
-- [セットアップ](#-セットアップ)
-- [使い方](#-使い方)
-- [開発ガイド](#-開発ガイド)
-- [デプロイ](#-デプロイ)
-- [設計思想](#-設計思想)
-- [ロードマップ](#-ロードマップ)
-- [ライセンス](#-ライセンス)
-
----
-
-## 🎯 概要
-
-**LangGraph Catalyst** は、LangGraphの学習からビジネス活用まで、開発者の生産性を最大化するオールインワンプラットフォームです。
-
-### 🌟 プロジェクトの特徴
-
-- 🎓 **体系的学習**: 初級から上級まで段階的にLangGraphを習得
-- 📚 **RAG学習支援**: 最新ドキュメントからソース付き回答を提供
-- 🎨 **豊富なテンプレート**: 即座に使える実装パターン集
-- 🏗️ **自動構成案生成**: ビジネス課題から最適なアーキテクチャを提案
-- 💼 **企業向け設計**: 実務での活用を想定したプロフェッショナルなUI/UX
+- [システム概要](#システム概要)
+- [制作目的・背景](#制作目的背景)
+- [技術スタック](#技術スタック)
+- [アーキテクチャ](#アーキテクチャ)
+- [機能詳細](#機能詳細)
+- [工夫した点](#工夫した点)
+- [ここを見てほしい](#ここを見てほしい)
+- [テスト・CI/CD](#テストci-cd)
+- [開発プロセス](#開発プロセス)
+- [学んだこと](#学んだこと)
+- [今後の展望](#今後の展望)
+- [セットアップ](#セットアップ)
 
 ---
 
-## 🚀 主要機能
+## システム概要
 
-### 1️⃣ **RAG学習支援システム**
+LangGraph Catalyst は、LangGraph（LangChain公式のステートフルエージェントフレームワーク）を**学び、活用する**ための統合プラットフォームです。
 
-> **[🚀 デモサイトで試す](https://langgraph-catalyst-frontend.onrender.com/rag)** | LangGraphの最新公式情報をベクトルDB（Chroma）に保存し、質問に対してソース付き+コード例付きで回答。
+主に2つの機能を提供します。
 
-- ✅ 公式ドキュメント、ブログ、GitHubリポジトリから自動収集
-- ✅ 高精度な意味検索による関連情報の抽出
-- ✅ 実行可能なコード例を含む詳細な回答
-- ✅ 参照元URLと抜粋を明示した信頼性の高い回答
+1. **RAG学習支援** — LangGraphの公式ドキュメント・ブログ・GitHubリポジトリをベクトルDBに取り込み、質問に対してソース付き・コード例付きで回答する
+2. **構成案自動生成** — ビジネス課題を入力すると、LangGraphを活用したシステム構成案（Mermaid図 + コード例 + 非技術者向けの説明）を自動生成する
 
-### 2️⃣ **学習パス機能**
-
-> **[🚀 デモサイトで試す](https://langgraph-catalyst-frontend.onrender.com/learning-path)** | 初級・中級・上級の3段階で体系的にLangGraphを学習。
-
-- ✅ 各トピックに学習目標と推定時間を明示
-- ✅ 進捗管理機能で学習状況を可視化
-- ✅ サンプル質問ボタンで即座にRAGモードで学習
-- ✅ 参考リソースへのリンク完備
-
-### 3️⃣ **テンプレート集**
-
-> **[🚀 デモサイトで試す](https://langgraph-catalyst-frontend.onrender.com/templates)** | カテゴリ別・難易度別に整理された、実践的なLangGraphテンプレート。
-
-- ✅ カスタマーサポート、データ分析、文書処理など10種類以上
-- ✅ 完全に動作するコード + Mermaid図 + 詳細な説明
-- ✅ 難易度フィルタでレベルに合わせて選択可能
-- ✅ ワンクリックでコードをコピー&実行
-
-### 4️⃣ **ビジネス課題→構成案自動生成**
-
-> **[🚀 デモサイトで試す](https://langgraph-catalyst-frontend.onrender.com/architect)** | ビジネス課題を入力すると、LangGraphを活用した最適な構成案を自動生成。
-
-- ✅ **Mermaid図**: システムフローを視覚的に表現
-- ✅ **コード例**: 実装サンプルを自動生成
-- ✅ **わかりやすい説明**: 非技術者向けのBiz視点の解説
-- ✅ **実装ノート**: 技術的な注意点を明示
+加えて、初級〜上級の**学習パス**とユースケース別の**テンプレート集**を備え、LangGraphの学習から実務活用までを一貫してサポートします。
 
 ---
 
-## 🛠️ 技術スタック
+## 制作目的・背景
 
-| カテゴリ | 技術 | バージョン | 用途 |
-|---------|------|-----------|------|
-| **言語** | Python | 3.11+ | バックエンド開発言語 |
-| **コアフレームワーク** | LangGraph | Latest | エージェントワークフロー構築 |
-| **LLMフレームワーク** | LangChain | Latest | LLMアプリケーション基盤 |
-| **ベクトルDB** | Chroma | Latest | ドキュメント埋め込みと検索 |
-| **LLM** | OpenAI API | GPT-4 Turbo | 言語モデル |
-| **バックエンドAPI** | FastAPI | Latest | REST APIサーバー |
-| **フロントエンド** | React + TypeScript | 18+ / 5+ | モダンなUI構築 |
-| **ビルドツール** | Vite | Latest | 高速開発環境 |
-| **UI Library** | Tailwind CSS | Latest | スタイリング |
-| **状態管理** | Zustand | Latest | クライアント状態管理 |
-| **デプロイ** | Render | - | フロントエンド + バックエンド統一ホスティング |
-| **テスト** | pytest + Vitest + Playwright | Latest | ユニット・統合・E2Eテスト |
-| **リント・フォーマット** | Ruff + ESLint | Latest | コード品質管理 |
+### なぜこのシステムを作ったのか
 
-### アーキテクチャ図
+DX推進・AIコンサルティング領域への転職を目指すなかで、「最新のAI技術を理解し、ビジネス価値に変換できる」ことを示すポートフォリオが必要でした。
+
+単にLangGraphを使ったアプリを作るのではなく、**LangGraphを「教える」システム**を構築することで、以下をアピールしています。
+
+- **技術の深い理解** — RAGシステムの設計・実装、LangGraphワークフローの構築
+- **ビジネス視点** — 技術を非技術者にも伝わる形に変換する構成案生成機能
+- **フルスタック開発力** — React + FastAPI によるモダンなアーキテクチャ
+- **エンジニアリング品質** — 155件以上のテスト、CI/CDパイプライン、JWT認証
+
+### なぜLangGraphなのか
+
+LangGraphは複雑なAIエージェントワークフローを**グラフ構造で明示的に管理**できるフレームワークです。状態管理・条件分岐・可視化が組み込まれており、エンタープライズでのAI活用に適しています。このフレームワークの学習コストを下げ、ビジネス活用のイメージを具体化するツールには価値があると考えました。
+
+---
+
+## 技術スタック
+
+| カテゴリ | 技術 | 選定理由 |
+|---------|------|---------|
+| **フロントエンド** | React 18 + TypeScript + Vite | 型安全なコンポーネント設計、Viteによる高速な開発体験 |
+| **スタイリング** | Tailwind CSS + カスタムCSS変数 | ユーティリティファーストで一貫したデザインシステムを構築 |
+| **状態管理** | Zustand | Reduxより軽量、localStorage永続化が容易 |
+| **バックエンドAPI** | FastAPI | 型安全、自動OpenAPIドキュメント生成、非同期対応 |
+| **AIフレームワーク** | LangGraph + LangChain | ステートフルなワークフロー構築の業界標準 |
+| **LLM** | OpenAI GPT-4 Turbo | ドキュメント・事例が豊富、日本語性能が高い |
+| **ベクトルDB** | ChromaDB | 軽量でローカル実行可能、永続化が容易 |
+| **認証** | JWT + bcrypt | ステートレスな認証、安全なパスワードハッシュ |
+| **テスト** | pytest / Vitest / Playwright | バックエンド・フロントエンド・E2Eの全層をカバー |
+| **CI/CD** | GitHub Actions + Render | プッシュ時の自動テスト・デプロイ |
+| **コード品質** | Ruff + ESLint | Python / TypeScript 両方のリント・フォーマット |
+
+---
+
+## アーキテクチャ
+
+### システム構成図
+
+```mermaid
+graph TB
+    subgraph Frontend["フロントエンド (React + TypeScript)"]
+        UI[React SPA]
+        Store[Zustand Store]
+        API_Client[API Client Layer]
+    end
+
+    subgraph Backend["バックエンド (FastAPI)"]
+        Auth[JWT認証 + 使用制限]
+        RAG_API[RAG API]
+        Arch_API[構成案生成 API]
+        LP_API[学習パス API]
+        Tmpl_API[テンプレート API]
+    end
+
+    subgraph Core["ビジネスロジック (Python)"]
+        Crawler[ドキュメントクローラー]
+        VectorStore[ChromaDB ベクトルストア]
+        RAGChain[RAG Chain]
+        ArchGraph[LangGraph ワークフロー]
+        Visualizer[Mermaid図生成]
+    end
+
+    subgraph External["外部サービス"]
+        OpenAI[OpenAI API]
+        Docs[LangGraph公式ドキュメント]
+        Blog[LangChain Blog]
+        GitHub[GitHub Repository]
+    end
+
+    UI --> Store --> API_Client
+    API_Client -->|HTTPS| Auth
+    Auth --> RAG_API --> RAGChain
+    Auth --> Arch_API --> ArchGraph
+    LP_API --> Core
+    Tmpl_API --> Core
+    RAGChain --> VectorStore
+    RAGChain --> OpenAI
+    ArchGraph --> OpenAI
+    ArchGraph --> Visualizer
+    Crawler --> Docs
+    Crawler --> Blog
+    Crawler --> GitHub
+    Crawler --> VectorStore
+```
+
+### ディレクトリ構成
 
 ```
 langgraph-catalyst/
-├── backend/                        # FastAPI バックエンド
-│   ├── main.py                     # FastAPIエントリーポイント
-│   ├── api/v1/                     # APIエンドポイント
-│   │   ├── rag.py                  # RAG API
-│   │   ├── architect.py            # 構成案生成 API
-│   │   ├── learning_path.py        # 学習パス API
-│   │   └── templates.py            # テンプレート API
-│   ├── core/                       # 設定・セキュリティ
-│   │   ├── config.py
-│   │   └── security.py
-│   ├── schemas/                    # Pydanticスキーマ
-│   └── tests/                      # APIテスト
-├── frontend/                       # React フロントエンド
-│   ├── src/
-│   │   ├── App.tsx                 # ルートコンポーネント
-│   │   ├── pages/                  # ページコンポーネント
-│   │   ├── components/             # 共通UIコンポーネント
-│   │   ├── api/                    # API通信層
-│   │   ├── store/                  # Zustand状態管理
-│   │   ├── types/                  # TypeScript型定義
-│   │   └── utils/
-│   ├── package.json
-│   └── vite.config.ts
-├── src/                            # 共有Pythonビジネスロジック
-│   ├── config/
-│   │   └── settings.py             # 環境変数・設定管理
-│   ├── features/                   # コア機能（FastAPIから使用）
-│   │   ├── rag/                    # RAG学習支援機能
-│   │   │   ├── crawler.py          # ドキュメントクローラー
-│   │   │   ├── vectorstore.py      # Chromaベクトルストア
-│   │   │   └── chain.py            # RAGチェーン
-│   │   ├── architect/              # 構成案生成機能
-│   │   │   ├── graph.py            # LangGraphワークフロー
-│   │   │   ├── prompts.py          # プロンプトテンプレート
-│   │   │   └── visualizer.py       # Mermaid図生成
-│   │   ├── templates/              # テンプレート定義
-│   │   └── learning_path/          # 学習パス定義
-│   └── utils/                      # ユーティリティ関数
-├── data/chroma/                    # ベクトルDB永続化
-├── tests/                          # バックエンドユニットテスト（115+ tests）
-│   ├── test_crawler.py
-│   ├── test_vectorstore.py
-│   ├── test_rag_chain.py
-│   └── test_architect_graph.py
-├── e2e/                            # E2Eテスト（Playwright）
-├── docs/                           # ドキュメント
-│   ├── API_SPECIFICATION.md        # API仕様書
-│   ├── TEST_SPECIFICATION.md       # テスト仕様書
-│   └── TODO.md                     # 開発計画
-├── scripts/                        # ユーティリティスクリプト
-│   └── init_vectorstore.py         # ベクトルストア初期化
-├── requirements.txt                # Python依存パッケージ
-├── pyproject.toml                  # プロジェクト設定（Ruff等）
-└── render.yaml                     # Renderデプロイ設定（Frontend + Backend）
+├── frontend/                  # React フロントエンド
+│   └── src/
+│       ├── pages/             # 6ページ (Home, RAG, Architect, LearningPath, Templates, Login)
+│       ├── components/        # 共通UI (Header, CodeBlock, MermaidDiagram, etc.)
+│       ├── api/               # API通信層 (7クライアント)
+│       ├── store/             # Zustand状態管理 (4ストア)
+│       └── types/             # TypeScript型定義
+├── backend/                   # FastAPI バックエンド
+│   ├── api/v1/                # エンドポイント (RAG, Architect, Auth, LearningPath, Templates)
+│   ├── core/                  # 認証・設定・使用制限
+│   └── schemas/               # Pydanticスキーマ
+├── src/                       # ビジネスロジック (FastAPIから呼び出し)
+│   └── features/
+│       ├── rag/               # crawler.py, vectorstore.py, chain.py
+│       ├── architect/         # graph.py, prompts.py, visualizer.py
+│       ├── learning_path/     # 学習パスデータ定義
+│       └── templates/         # テンプレートデータ定義
+├── tests/                     # Pythonユニットテスト (124件)
+├── .github/workflows/         # CI/CDパイプライン
+└── render.yaml                # Renderデプロイ設定 (IaC)
 ```
 
 ---
 
-## 📦 セットアップ
+## 機能詳細
+
+### 1. RAG学習支援システム
+
+**[デモで試す](https://langgraph-catalyst-frontend.onrender.com/rag)**（要ログイン）
+
+LangGraphに関する質問に対し、**根拠（ソース）付き**で回答するRAGシステムです。
+
+**仕組み:**
+
+1. **データ収集** — クローラーがLangGraph公式ドキュメント・LangChain Blog・GitHubリポジトリからドキュメントを取得し、メタデータ（ソースURL、タイトル、種別、更新日時）を付与
+2. **ベクトル化・保存** — OpenAI `text-embedding-3-small` でテキストをベクトル化し、ChromaDBに永続保存
+3. **検索・回答生成** — ユーザーの質問に対してセマンティック検索を行い、関連ドキュメントをコンテキストとしてGPT-4に渡し、ソース付きの回答を生成
+
+**使用技術:** LangChain RAG Chain, ChromaDB, OpenAI Embeddings, BeautifulSoup4
+
+**出力:** 回答テキスト / 参照元（URL + 関連度スコア） / 実行可能なコード例 / 信頼度スコア
+
+---
+
+### 2. ビジネス課題 → 構成案自動生成
+
+**[デモで試す](https://langgraph-catalyst-frontend.onrender.com/architect)**（要ログイン）
+
+ビジネス課題を入力すると、LangGraphを活用したシステム構成案を自動生成します。
+
+**仕組み（LangGraph StateGraphによる6ノードワークフロー）:**
+
+```mermaid
+graph LR
+    A[課題分析] --> B[構成生成]
+    B --> C[Mermaid図生成]
+    C --> D[コード生成]
+    D --> E[ビジネス説明生成]
+    E --> F[実装ノート]
+```
+
+1. **課題分析** — 入力された課題から要件・キーポイント・LangGraph適合理由を抽出
+2. **構成生成** — ノードとエッジの構造を設計（業界・制約条件を考慮）
+3. **Mermaid図生成** — 設計結果をフローチャートとして可視化
+4. **コード生成** — Pythonの実装サンプルを生成
+5. **ビジネス説明生成** — 非技術者にも伝わる平易な解説を生成
+6. **実装ノート** — 技術的な注意点をリスト化
+
+**使用技術:** LangGraph StateGraph, LangChain ChatOpenAI, Mermaid.js
+
+**出力:** Mermaidフロー図 / Pythonコード例 / ビジネス説明 / 実装ノート
+
+---
+
+### 3. 学習パス
+
+**[デモで試す](https://langgraph-catalyst-frontend.onrender.com/learning-path)**
+
+初級・中級・上級の3段階でLangGraphを体系的に学べるカリキュラムです。各トピックに学習目標・推定時間・参考リソースを記載し、進捗管理機能（localStorage永続化）を備えています。
+
+---
+
+### 4. テンプレート集
+
+**[デモで試す](https://langgraph-catalyst-frontend.onrender.com/templates)**
+
+カスタマーサポート、データ分析、文書処理など、ユースケース別のLangGraphテンプレートをカテゴリ・難易度でフィルタリングして閲覧できます。各テンプレートにはコード例、Mermaid図、詳細な説明が付属しています。
+
+---
+
+### 5. 認証・使用制限
+
+環境変数ベースの4ユーザー管理（admin + テストユーザー3名）を実装しています。
+
+- **JWT認証** — HS256アルゴリズム、24時間有効
+- **パスワード管理** — bcryptハッシュ化
+- **使用制限** — テストユーザーは1日5回（RAG・構成案生成が対象）、adminは無制限
+- **ルート保護** — React側のProtectedRouteで未認証時にリダイレクト
+
+---
+
+## 工夫した点
+
+### 1. ビジネスロジックとUI層の完全分離
+
+`src/features/` にビジネスロジックを集約し、FastAPIのエンドポイントはそれを呼び出すだけの薄いレイヤーとしました。この設計により、Streamlit → React への移行時に**Pythonロジック（120件のテスト含む）を一切変更せず**に移行を完了できました。
+
+### 2. API費用ゼロのテストパイプライン
+
+155件以上のテストすべてでOpenAI APIをモック化し、**CI実行時のAPI費用を完全にゼロ**にしています。LLMの出力をテストするのではなく、「LLMに正しい入力を渡しているか」「LLMの出力を正しく処理しているか」をテストする設計です。
+
+### 3. 構成案生成のLangGraphワークフロー
+
+構成案生成機能は、このシステム自体がLangGraphで構築されています。6つのノードをStateGraphで接続し、各ノードが独立してテスト可能な設計としました。LangGraphを「使う」システムがLangGraphを「教える」という構造になっています。
+
+### 4. Refined Brutalist デザインシステム
+
+汎用的なUIライブラリに頼らず、CSS変数とTailwind CSSで独自のデザインシステムを構築しました。IBM Plex Mono + Crimson Pro のフォント組み合わせ、ダークベースの配色、幾何学的なアクセント要素で、技術的なテーマに合った視覚的アイデンティティを持たせています。
+
+### 5. render.yamlによるInfrastructure as Code
+
+フロントエンド（Static Site）とバックエンド（Web Service）の両方を1つの `render.yaml` で宣言的に管理し、GitHubへのpushで自動デプロイされます。CORS設定、環境変数、キャッシュヘッダー、SPAルーティングまですべてコードで定義しています。
+
+---
+
+## ここを見てほしい
+
+採用担当者の方に特にご覧いただきたいポイントです。
+
+| 見どころ | ファイル | ポイント |
+|---------|---------|---------|
+| **LangGraphワークフロー設計** | `src/features/architect/graph.py` | 6ノードのStateGraphを用いたワークフロー。状態定義・ノード関数・グラフコンパイルまで一貫した実装 |
+| **RAGチェーン実装** | `src/features/rag/chain.py` | ベクトル検索→コンテキスト構築→LLM生成→ソース抽出の一連のパイプライン。学習向け/実装向けの2種類のプロンプト切り替え |
+| **テスト設計** | `tests/` | 外部API依存を完全にモック化した124件のテスト。特に `test_architect_graph.py` ではLangGraphの各ノードを独立テスト |
+| **API設計** | `backend/api/v1/` | FastAPIのエンドポイント設計。Pydanticスキーマによる型安全なリクエスト/レスポンス、認証・使用制限のDI |
+| **CI/CDパイプライン** | `.github/workflows/ci.yml` | バックエンド/フロントエンド/E2Eを並列実行し、API費用ゼロで品質を担保する設計 |
+| **フロントエンド状態管理** | `frontend/src/store/` | Zustandによるシンプルな状態管理。認証状態のlocalStorage永続化、学習進捗の永続化 |
+
+---
+
+## テスト・CI/CD
+
+### テスト構成
+
+| 種別 | 件数 | フレームワーク | 内容 |
+|------|------|--------------|------|
+| **Pythonユニットテスト** | 124件 | pytest | クローラー、ベクトルストア、RAGチェーン、LangGraphワークフロー、Mermaid生成、ヘルパー、設定管理、APIエンドポイント |
+| **Reactユニットテスト** | 35件 | Vitest + React Testing Library | ページコンポーネント（RAG、Architect）、UIコンポーネント（Button、Card） |
+| **E2E Smokeテスト** | 13件 | Playwright | ナビゲーション、認証フロー、レスポンシブ表示、アクセシビリティ |
+| **合計** | **155件以上** | — | **API費用: $0**（全テストでOpenAI APIをモック化） |
+
+### CI/CDパイプライン（GitHub Actions）
+
+```
+push / PR → ┬─ Pythonテスト (pytest + coverage)
+             ├─ Reactテスト (Vitest + coverage)
+             ├─ コード品質チェック (Ruff + ESLint)
+             ├─ E2E Smokeテスト (Playwright)
+             └─ ビルド検証 (Vite build)
+                  ↓
+             mainブランチマージ時 → Render自動デプロイ
+```
+
+- 5つのジョブが**並列実行**され、すべてパスした場合のみデプロイ
+- テストカバレッジはCodecovに送信
+- E2Eテスト結果はGitHub Artifactsに保存
+
+---
+
+## 開発プロセス
+
+### Streamlit → React + FastAPI への移行
+
+当初はStreamlitで高速にプロトタイプを構築しましたが、以下の理由でReact + FastAPIへの移行を決断しました。
+
+| 判断軸 | Streamlit | React + FastAPI |
+|--------|-----------|-----------------|
+| UI自由度 | ウィジェットベースで制約が多い | 完全にカスタム可能 |
+| パフォーマンス | サーバーサイドレンダリングで操作のたびに再実行 | CSRで高速なインタラクション |
+| スケーラビリティ | UIとロジックが密結合 | API分離により複数クライアント対応可能 |
+| ポートフォリオ価値 | データサイエンス寄りの印象 | フルスタック開発力をアピール可能 |
+
+**移行の進め方:**
+
+1. **ビジネスロジックの保護を最優先** — `src/features/` のコードと120件のテストを一切変更しない方針を決定
+2. **FastAPIで薄いAPI層を構築** — 既存のPythonロジックをそのまま呼び出すエンドポイントを実装
+3. **Reactで段階的にUI構築** — ページ単位で実装し、Zustandで状態管理
+4. **安定確認後にStreamlitを完全削除** — 並行稼働期間を設けず、React版の全機能確認後に削除
+
+この経験から、**最初から「交換可能な設計」にしておくことの重要性**を実感しました。
+
+---
+
+## 学んだこと
+
+### 技術面
+
+- **RAGの精度は前処理で決まる** — クローラーのメタデータ付与やチャンク分割の設計が、検索精度に大きく影響する。ベクトル検索だけでなく、メタデータフィルタリングの併用が有効
+- **LangGraphのテスタビリティ** — StateGraphの各ノードを独立した関数として実装することで、ワークフロー全体を実行せずに個別テストが可能になる。状態の型定義（TypedDict）が設計の基盤になる
+- **LLMアプリのテスト戦略** — LLMの出力自体をテストするのではなく、入出力のインターフェースをテストする。APIモック化により、CI環境でのAPI費用をゼロにできる
+
+### 設計面
+
+- **ビジネスロジックとUI層の分離** — Streamlit → React移行で、この分離がPythonコード変更ゼロでの移行を可能にした
+- **Infrastructure as Code** — render.yamlで宣言的にインフラを管理することで、環境の再現性とレビュー可能性が向上する
+- **認証は早期に設計すべき** — JWT + 使用制限の実装を後回しにすると、既存のAPIエンドポイントへの影響が大きくなる。依存性注入パターンで後から追加しやすい設計にした
+
+### プロセス面
+
+- **プロトタイプの価値** — Streamlit版で機能要件を素早く検証し、React版で品質を追求するアプローチは効果的だった
+- **テスト駆動の安心感** — 124件のPythonテストがあったことで、FastAPI移行時の「既存機能を壊していないか」という不安を解消できた
+
+---
+
+## 今後の展望
+
+- **RAGデータの自動更新** — 現在は手動実行のクローラーを定期実行に変更し、常に最新のLangGraph情報を提供
+- **マルチLLM対応** — Claude、Geminiなど複数のLLMプロバイダーを切り替え可能にし、コスト・精度の比較を可能に
+- **ストリーミングレスポンス** — RAGと構成案生成の出力をSSEで段階的に表示し、体感速度を改善
+- **Lighthouse最適化** — Performance 90+, Accessibility 95+ を目標にフロントエンドの最適化を実施
+
+---
+
+## セットアップ
 
 ### 前提条件
 
-- Python 3.11 以上
-- OpenAI API キー
-- Git
+- Python 3.11+、Node.js 18+、OpenAI APIキー
 
-### 1️⃣ リポジトリのクローン
+### 起動手順
 
 ```bash
+# リポジトリのクローン
 git clone https://github.com/your-username/LangGraphCatalyst.git
 cd LangGraphCatalyst
-```
 
-### 2️⃣ 仮想環境の作成
-
-```bash
-python -m venv venv
-
-# macOS/Linux
-source venv/bin/activate
-
-# Windows
-venv\Scripts\activate
-```
-
-### 3️⃣ 依存パッケージのインストール
-
-```bash
+# Python環境
+python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-```
 
-### 4️⃣ 環境変数の設定
-
-`.env.example` をコピーして `.env` ファイルを作成します。
-
-```bash
+# 環境変数
 cp .env.example .env
-```
+# .envにOPENAI_API_KEYを設定
 
-`.env` ファイルを編集して、OpenAI APIキーを設定してください：
-
-```bash
-OPENAI_API_KEY=your_openai_api_key_here
-CHROMA_PERSIST_DIR=./data/chroma
-LOG_LEVEL=INFO
-```
-
-### 5️⃣ RAGデータの初期化（必須）
-
-初回起動前に、ベクトルストアにLangGraphのドキュメントを投入する必要があります：
-
-```bash
+# ベクトルストア初期化
 python scripts/init_vectorstore.py
-```
 
-**オプション:**
-
-```bash
-# より多くのドキュメントを取得（時間がかかります）
-python scripts/init_vectorstore.py --max-docs-pages 20 --max-blog-articles 10
-
-# 既存のデータを削除して再作成
-python scripts/init_vectorstore.py --recreate
-
-# 詳細なログを表示
-python scripts/init_vectorstore.py --verbose
-```
-
-### 6️⃣ アプリケーションの起動
-
-**バックエンド（FastAPI）の起動:**
-
-```bash
+# バックエンド起動 (http://localhost:8000)
 uvicorn backend.main:app --reload
+
+# フロントエンド起動 (別ターミナル、http://localhost:5173)
+cd frontend && npm install && npm run dev
 ```
 
-バックエンドは `http://localhost:8000` で起動します。API仕様は `http://localhost:8000/docs` で確認できます。
+### デプロイ
 
-**フロントエンド（React）の起動:**
+Render上でフロントエンド（Static Site）とバックエンド（Web Service）を `render.yaml` で統一管理しています。GitHubへのpushで自動デプロイされます。
 
-別のターミナルで以下を実行:
-
-```bash
-cd frontend
-npm install  # 初回のみ
-npm run dev
-```
-
-ブラウザで `http://localhost:5173` にアクセスしてください。
+- フロントエンド: https://langgraph-catalyst-frontend.onrender.com
+- バックエンドAPI: https://langgraph-catalyst-api.onrender.com
+- API Docs (Swagger UI): https://langgraph-catalyst-api.onrender.com/docs
 
 ---
 
-## 📖 使い方
-
-### 🎓 学習パスモード
-
-1. サイドバーで「**学習パス**」を選択
-2. 初級・中級・上級から学習したいレベルを選択
-3. 各トピックの説明を読み、サンプル質問で学習
-4. 学習が完了したらチェックマークを付けて進捗管理
-
-### 📚 RAG学習支援モード
-
-1. サイドバーで「**RAG学習支援**」を選択
-2. LangGraphに関する質問を入力（例: "LangGraphでマルチエージェントシステムを構築する方法は？"）
-3. ソース付きの詳細な回答とコード例を確認
-4. 参照元ドキュメントへのリンクをクリックして深掘り
-
-### 🎨 テンプレートモード
-
-1. サイドバーで「**テンプレート**」を選択
-2. カテゴリや難易度でフィルタリング
-3. テンプレートを選択してコード・Mermaid図・説明を確認
-4. コードをコピーしてローカル環境で実行
-
-### 🏗️ 構成案生成モード
-
-1. サイドバーで「**構成案生成**」を選択
-2. ビジネス課題を入力（例: "カスタマーサポートの自動化を実現したい"）
-3. 業界や制約条件を指定（オプション）
-4. Mermaid図、コード例、説明を確認
-5. 結果をMarkdownファイルとしてダウンロード
-
----
-
-## 🧑‍💻 開発ガイド
-
-### コードフォーマット
-
-```bash
-# コードを自動フォーマット
-ruff format .
-```
-
-### リント
-
-```bash
-# コードの静的解析
-ruff check .
-
-# 自動修正可能な問題を修正
-ruff check . --fix
-```
-
-### テスト実行
-
-```bash
-# 全テストを実行
-pytest tests/ -v
-
-# 特定のテストマーカーで実行
-pytest tests/ -m "not integration" -v
-
-# カバレッジ付きで実行
-pytest tests/ --cov=src --cov-report=html
-```
-
-### 開発ワークフロー
-
-1. **ブランチ作成**: `git checkout -b feature/new-feature`
-2. **開発**: コードを実装
-3. **テスト**: `pytest tests/ -v`
-4. **フォーマット**: `ruff format .`
-5. **リント**: `ruff check .`
-6. **コミット**: `git commit -m "feat: add new feature"`
-7. **プッシュ**: `git push origin feature/new-feature`
-8. **プルリクエスト**: GitHubでPR作成
-
----
-
-## 🌐 デプロイ
-
-### Renderへのデプロイ
-
-本プロジェクトはRenderで**フロントエンド（React Static Site）とバックエンド（FastAPI）を統一管理**します。
-
-1. GitHubリポジトリをRenderに接続
-2. Render管理画面で以下の環境変数を設定（バックエンド）:
-   - `OPENAI_API_KEY`: OpenAI APIキー
-   - `CORS_ORIGINS`: フロントエンドのURL（例: `https://your-frontend.onrender.com`）
-3. `render.yaml` の設定に従って自動デプロイ
-
-**render.yaml 例:**
-
-```yaml
-services:
-  # バックエンド（FastAPI）
-  - type: web
-    name: langgraph-catalyst-api
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn backend.main:app --host 0.0.0.0 --port $PORT
-    envVars:
-      - key: OPENAI_API_KEY
-        sync: false
-      - key: CORS_ORIGINS
-        value: https://langgraph-catalyst-frontend.onrender.com
-
-  # フロントエンド（React）
-  - type: web
-    name: langgraph-catalyst-frontend
-    runtime: static
-    buildCommand: cd frontend && npm ci && npm run build
-    staticPublishPath: ./frontend/dist
-    envVars:
-      - key: VITE_API_BASE_URL
-        value: https://langgraph-catalyst-api.onrender.com/api/v1
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-```
-
-**公開URL:**
-- **フロントエンド**: `https://langgraph-catalyst-frontend.onrender.com`
-- **バックエンドAPI**: `https://langgraph-catalyst-api.onrender.com`
-- **API Docs**: `https://langgraph-catalyst-api.onrender.com/docs`
-
----
-
-## 💡 設計思想
-
-### なぜLangGraphを使うのか？
-
-- **🔄 状態管理**: 複雑な対話フローを明示的に管理できる
-- **👁️ 可視化**: グラフ構造で処理フローを視覚的に理解できる
-- **🔧 拡張性**: ノード追加で機能拡張が容易
-- **🧪 テスタビリティ**: 各ノードを独立してテスト可能
-
-### なぜRAGを組み合わせるのか？
-
-- **📰 最新情報対応**: LLMの学習データ以降の情報も回答可能
-- **📚 根拠の明示**: ソース付き回答で信頼性向上
-- **🎓 学習支援**: 公式ドキュメントへの導線を提供
-- **🔍 正確性向上**: ハルシネーションを大幅に削減
-
-### なぜこのシステムを作るのか？
-
-- **🎯 差別化**: LangGraphを「使う」だけでなく「教える」システム
-- **💼 Biz視点**: 技術だけでなくビジネス価値も説明できる構成案
-- **🏢 実用性**: 実際に企業のAI導入検討に使えるツール
-- **🚀 生産性**: 開発者の学習コストを削減し、実装速度を向上
-
----
-
-## 🗺️ ロードマップ
-
-### Phase 1-4: 基盤構築 ✅
-- [x] プロジェクト構造のセットアップ
-- [x] React + FastAPI フルスタック基盤
-- [x] RAG学習支援機能
-- [x] 構成案生成機能
-
-### Phase 5: テスト・品質向上 ✅
-- [x] ユニットテスト
-- [x] 統合テスト
-- [x] エラーハンドリング
-- [x] パフォーマンス最適化
-
-### Phase 6: UI/UX改善 ✅
-- [x] プロフェッショナルなデザイン
-- [x] ローディングアニメーション
-- [x] ヘルプセクション
-- [x] レスポンシブ対応
-- [x] アクセシビリティ向上
-
-### Phase 7: デプロイ・公開 ✅
-- [x] Renderへのデプロイ
-- [x] 本番環境テスト
-- [x] ドキュメント整備
-- [x] デモURL公開 ([🚀 デモサイト](https://langgraph-catalyst-frontend.onrender.com))
-
-### Phase 8: 継続的改善 📋
-- [ ] ユーザーフィードバック収集
-- [ ] RAGデータの自動更新機能
-- [ ] 他LLMプロバイダー対応（Claude, Gemini等）
-- [ ] マルチモーダル対応
-
----
-
-## 📄 ライセンス
+## ライセンス
 
 MIT License - 詳細は [LICENSE](LICENSE) をご覧ください。
-
----
-
-## 🤝 お問い合わせ
-
-- **GitHub Issues**: [Issues](https://github.com/your-username/LangGraphCatalyst/issues)
-- **Pull Requests**: [PRs](https://github.com/your-username/LangGraphCatalyst/pulls)
-- **Email**: your-email@example.com
-
----
-
-## 🙏 謝辞
-
-このプロジェクトは以下のオープンソースプロジェクトに支えられています：
-
-- [LangGraph](https://github.com/langchain-ai/langgraph) - LangChain公式のステートフルエージェントフレームワーク
-- [LangChain](https://github.com/langchain-ai/langchain) - LLMアプリケーション開発フレームワーク
-- [React](https://react.dev/) - モダンなWebアプリケーションフレームワーク
-- [FastAPI](https://fastapi.tiangolo.com/) - 高速で型安全なPython Webフレームワーク
-- [Chroma](https://www.trychroma.com/) - オープンソースベクトルデータベース
-- [OpenAI](https://openai.com/) - GPT-4 APIの提供
-
----
-
-<div align="center">
-
-**Built with ❤️ using LangGraph, React, and FastAPI**
-
-⭐ このプロジェクトが役に立ったら、スターをお願いします！
-
-</div>
