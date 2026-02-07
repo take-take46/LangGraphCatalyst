@@ -6,10 +6,10 @@ LangGraph 学習パス機能
 
 from .learning_path import (
     LEARNING_PATH,
-    get_level_topics,
-    get_all_topics,
-    get_topic_by_id,
     calculate_progress,
+    get_all_topics,
+    get_level_topics,
+    get_topic_by_id,
 )
 
 __all__ = [

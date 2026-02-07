@@ -46,9 +46,7 @@ async def login(
         )
 
     # JWTトークン生成
-    access_token = create_access_token(
-        data={"sub": user.username, "role": user.role}
-    )
+    access_token = create_access_token(data={"sub": user.username, "role": user.role})
 
     # レスポンス作成
     return LoginResponse(

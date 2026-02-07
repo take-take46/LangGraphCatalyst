@@ -11,9 +11,8 @@ import time
 from typing import Any
 
 from langchain_openai import ChatOpenAI
-from typing_extensions import TypedDict
-
 from langgraph.graph import END, START, StateGraph
+from typing_extensions import TypedDict
 
 from src.config.settings import settings
 from src.features.architect.prompts import (
@@ -194,7 +193,9 @@ class ArchitectGraph:
 
         try:
             # プロンプトの構築
-            challenge_analysis_str = json.dumps(state["challenge_analysis"], ensure_ascii=False, indent=2)
+            challenge_analysis_str = json.dumps(
+                state["challenge_analysis"], ensure_ascii=False, indent=2
+            )
             constraints_context = format_constraints_context(state.get("constraints"))
 
             prompt = ARCHITECTURE_GENERATION_PROMPT.format(
@@ -281,7 +282,9 @@ class ArchitectGraph:
 
         try:
             # プロンプトの構築
-            challenge_analysis_str = json.dumps(state["challenge_analysis"], ensure_ascii=False, indent=2)
+            challenge_analysis_str = json.dumps(
+                state["challenge_analysis"], ensure_ascii=False, indent=2
+            )
             architecture_str = json.dumps(state["architecture"], ensure_ascii=False, indent=2)
 
             prompt = CODE_GENERATION_PROMPT.format(
@@ -305,7 +308,9 @@ class ArchitectGraph:
 
             logger.info("Code example generated successfully")
 
-            return {"code_example": {"language": "python", "code": code, "explanation": explanation}}
+            return {
+                "code_example": {"language": "python", "code": code, "explanation": explanation}
+            }
 
         except Exception as e:
             logger.error(f"Failed to generate code: {e}")
@@ -331,7 +336,9 @@ class ArchitectGraph:
 
         try:
             # プロンプトの構築
-            challenge_analysis_str = json.dumps(state["challenge_analysis"], ensure_ascii=False, indent=2)
+            challenge_analysis_str = json.dumps(
+                state["challenge_analysis"], ensure_ascii=False, indent=2
+            )
             architecture_str = json.dumps(state["architecture"], ensure_ascii=False, indent=2)
 
             prompt = BUSINESS_EXPLANATION_PROMPT.format(

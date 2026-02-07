@@ -4,12 +4,13 @@ FastAPI Test Configuration
 FastAPIテストクライアントとフィクスチャを提供します。
 """
 
-import pytest
-from fastapi.testclient import TestClient
 from unittest.mock import Mock, patch
 
-from backend.main import app
+import pytest
+from fastapi.testclient import TestClient
+
 from backend.core.config import Settings
+from backend.main import app
 
 
 @pytest.fixture
@@ -61,7 +62,7 @@ def mock_rag_chain():
             "code_examples": [
                 {
                     "language": "python",
-                    "code": 'from langgraph.graph import StateGraph\n\ngraph = StateGraph()',
+                    "code": "from langgraph.graph import StateGraph\n\ngraph = StateGraph()",
                     "description": "Basic StateGraph initialization",
                     "source_url": "https://github.com/langchain-ai/langgraph",
                 }
@@ -120,7 +121,7 @@ def mock_architect_graph():
             },
             "code_example": {
                 "language": "python",
-                "code": 'from langgraph.graph import StateGraph\nfrom typing import TypedDict\n\nclass SupportState(TypedDict):\n    query: str\n    response: str\n\ngraph = StateGraph(SupportState)',
+                "code": "from langgraph.graph import StateGraph\nfrom typing import TypedDict\n\nclass SupportState(TypedDict):\n    query: str\n    response: str\n\ngraph = StateGraph(SupportState)",
                 "explanation": "基本的なカスタマーサポートワークフローの実装例",
             },
             "business_explanation": "このシステムは、FAQで即座に回答できる質問を自動処理し、複雑な質問は人間にエスカレーションします。",
@@ -142,10 +143,7 @@ def auth_token(test_settings):
     """テスト用認証トークン"""
     from backend.core.security import create_access_token
 
-    token_data = {
-        "sub": "admin",
-        "role": "admin"
-    }
+    token_data = {"sub": "admin", "role": "admin"}
     return create_access_token(token_data, settings=test_settings)
 
 
@@ -153,14 +151,13 @@ def auth_token(test_settings):
 def authenticated_client(client, test_settings):
     """認証済みテストクライアント - 認証をバイパス"""
     from backend.core.users import User
-    from backend.core.dependencies import UserWithUsageLimit
 
     # テスト用のモックユーザー
     test_user = User(
         username="testuser",
         password_hash="",  # テストではパスワードハッシュは不要
         role="admin",
-        daily_limit=None  # 無制限
+        daily_limit=None,  # 無制限
     )
 
     # 認証依存性をバイパス
@@ -171,8 +168,8 @@ def authenticated_client(client, test_settings):
     def override_require_usage_limit():
         return test_user
 
-    from backend.main import app
     from backend.core.dependencies import get_current_user, require_usage_limit
+    from backend.main import app
 
     app.dependency_overrides[get_current_user] = override_get_current_user
     app.dependency_overrides[require_usage_limit] = override_require_usage_limit
@@ -186,7 +183,9 @@ def authenticated_client(client, test_settings):
 @pytest.fixture
 def mock_usage_limiter():
     """モック使用制限"""
-    with patch("backend.core.dependencies.check_usage_limit") as mock_check, \
-         patch("backend.core.dependencies.increment_usage") as mock_increment:
+    with (
+        patch("backend.core.dependencies.check_usage_limit") as mock_check,
+        patch("backend.core.dependencies.increment_usage") as mock_increment,
+    ):
         mock_check.return_value = True  # 制限チェックは常に成功
         yield {"check": mock_check, "increment": mock_increment}

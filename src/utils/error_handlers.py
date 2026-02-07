@@ -6,16 +6,18 @@ LangGraph Catalyst - Error Handlers
 
 import logging
 import time
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
-from openai import APIError, RateLimitError, APIConnectionError
+from openai import APIConnectionError, APIError, RateLimitError
+
 from src.utils.exceptions import (
     CatalystException,
-    LLMError,
-    VectorStoreError,
     CrawlerError,
+    LLMError,
     ValidationError,
+    VectorStoreError,
 )
 
 logger = logging.getLogger(__name__)
@@ -62,9 +64,7 @@ def retry_on_error(
                         time.sleep(delay)
                         delay *= backoff_factor
                     else:
-                        logger.error(
-                            f"All {max_retries + 1} attempts failed for {func.__name__}"
-                        )
+                        logger.error(f"All {max_retries + 1} attempts failed for {func.__name__}")
 
             # すべてのリトライが失敗した場合
             raise last_exception
@@ -201,11 +201,10 @@ def validate_input(
         raise ValidationError(f"{field_name}は必須です")
 
     # 型チェック
-    if allowed_types and value is not None:
-        if not isinstance(value, allowed_types):
-            raise ValidationError(
-                f"{field_name}の型が不正です。期待: {allowed_types}, 実際: {type(value)}"
-            )
+    if allowed_types and value is not None and not isinstance(value, allowed_types):
+        raise ValidationError(
+            f"{field_name}の型が不正です。期待: {allowed_types}, 実際: {type(value)}"
+        )
 
     # 文字列長チェック
     if isinstance(value, str):
@@ -228,7 +227,9 @@ class ErrorContext:
             user_friendly_message: ユーザー向けメッセージ
         """
         self.operation_name = operation_name
-        self.user_friendly_message = user_friendly_message or f"{operation_name}中にエラーが発生しました"
+        self.user_friendly_message = (
+            user_friendly_message or f"{operation_name}中にエラーが発生しました"
+        )
 
     def __enter__(self):
         logger.debug(f"Starting operation: {self.operation_name}")

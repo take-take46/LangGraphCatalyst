@@ -73,9 +73,7 @@ async def get_templates(
     if category and difficulty:
         # 両方のフィルタを適用
         templates = [
-            t
-            for t in TEMPLATES
-            if t["category"] == category and t["difficulty"] == difficulty
+            t for t in TEMPLATES if t["category"] == category and t["difficulty"] == difficulty
         ]
     elif category:
         # カテゴリのみでフィルタ

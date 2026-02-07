@@ -46,10 +46,7 @@ def generate_mermaid_diagram(
         return ""
 
     # ヘッダー
-    if diagram_type == "flowchart":
-        lines = [f"flowchart {direction}"]
-    else:
-        lines = [f"graph {direction}"]
+    lines = [f"flowchart {direction}"] if diagram_type == "flowchart" else [f"graph {direction}"]
 
     # 開始・終了ノードの追加
     lines.append("    START([開始])")
@@ -140,16 +137,14 @@ def validate_mermaid_syntax(mermaid_code: str) -> dict[str, Any]:
     has_nodes = False
     has_edges = False
 
-    for i, line in enumerate(lines[1:], start=2):
+    for _i, line in enumerate(lines[1:], start=2):
         line = line.strip()
         if not line:
             continue
 
         if node_pattern.match(line):
             has_nodes = True
-        elif edge_pattern.match(line):
-            has_edges = True
-        elif "-->" in line or "---" in line or "==>" in line:
+        elif edge_pattern.match(line) or "-->" in line or "---" in line or "==>" in line:
             has_edges = True
 
     if not has_nodes:

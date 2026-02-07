@@ -5,13 +5,12 @@ Mermaid図生成機能のユニットテスト
 """
 
 import pytest
+
 from src.features.architect.visualizer import (
     generate_mermaid_diagram,
     validate_mermaid_syntax,
-    extract_mermaid_from_markdown,
-    format_mermaid_for_display,
-    add_styling_to_mermaid,
 )
+from src.utils.exceptions import ValidationError
 
 
 @pytest.mark.unit
@@ -37,19 +36,17 @@ class TestMermaidVisualizer:
                 "name": "開始",
                 "purpose": "入力受付",
                 "inputs": [],
-                "outputs": ["data"]
+                "outputs": ["data"],
             },
             {
                 "node_id": "B",
                 "name": "処理",
                 "purpose": "データ処理",
                 "inputs": ["data"],
-                "outputs": ["result"]
-            }
+                "outputs": ["result"],
+            },
         ]
-        edges = [
-            {"from_node": "A", "to_node": "B", "description": "データを渡す"}
-        ]
+        edges = [{"from_node": "A", "to_node": "B", "description": "データを渡す"}]
 
         # Act
         mermaid_code = generate_mermaid_diagram(nodes, edges)
@@ -72,11 +69,11 @@ class TestMermaidVisualizer:
         nodes = [
             {"node_id": "A", "name": "判定", "purpose": "条件判定"},
             {"node_id": "B", "name": "True", "purpose": "真の場合"},
-            {"node_id": "C", "name": "False", "purpose": "偽の場合"}
+            {"node_id": "C", "name": "False", "purpose": "偽の場合"},
         ]
         edges = [
             {"from_node": "A", "to_node": "B", "condition": "Yes", "description": "条件が真"},
-            {"from_node": "A", "to_node": "C", "condition": "No", "description": "条件が偽"}
+            {"from_node": "A", "to_node": "C", "condition": "No", "description": "条件が偽"},
         ]
 
         # Act
@@ -133,9 +130,7 @@ class TestMermaidVisualizer:
         - 生成されたMermaid図が有効であること
         """
         # Arrange
-        nodes = [
-            {"node_id": "A", "name": "処理\"特殊\"", "purpose": "特殊文字を含む"}
-        ]
+        nodes = [{"node_id": "A", "name": '処理"特殊"', "purpose": "特殊文字を含む"}]
         edges = []
 
         # Act
@@ -145,7 +140,7 @@ class TestMermaidVisualizer:
         # エスケープ処理が正しく行われていることを確認
         assert mermaid_code is not None
         # 不正な記法になっていないことを確認
-        assert "\"\"" not in mermaid_code or "\\\"" in mermaid_code
+        assert '""' not in mermaid_code or '\\"' in mermaid_code
 
     def test_node_label_with_special_characters(self):
         """
@@ -157,7 +152,7 @@ class TestMermaidVisualizer:
         # Arrange
         nodes = [
             {"node_id": "A", "name": "Node & <test>", "purpose": "特殊文字"},
-            {"node_id": "B", "name": "Node\nWith\nNewlines", "purpose": "改行含む"}
+            {"node_id": "B", "name": "Node\nWith\nNewlines", "purpose": "改行含む"},
         ]
         edges = [{"from_node": "A", "to_node": "B", "description": "Edge"}]
 
@@ -199,9 +194,7 @@ class TestMermaidVisualizer:
         - エッジがなくてもノードが表示されること
         """
         # Arrange
-        nodes = [
-            {"node_id": "A", "name": "ノードA", "purpose": "単独ノード"}
-        ]
+        nodes = [{"node_id": "A", "name": "ノードA", "purpose": "単独ノード"}]
         edges = []
 
         # Act
@@ -220,11 +213,10 @@ class TestMermaidVisualizer:
         """
         # Arrange
         nodes = [
-            {"node_id": f"N{i}", "name": f"ノード{i}", "purpose": f"目的{i}"}
-            for i in range(20)
+            {"node_id": f"N{i}", "name": f"ノード{i}", "purpose": f"目的{i}"} for i in range(20)
         ]
         edges = [
-            {"from_node": f"N{i}", "to_node": f"N{i+1}", "description": f"エッジ{i}"}
+            {"from_node": f"N{i}", "to_node": f"N{i + 1}", "description": f"エッジ{i}"}
             for i in range(19)
         ]
 
@@ -293,7 +285,7 @@ graph TD
         # Arrange
         nodes = [
             {"node_id": "start", "name": "開始", "purpose": "スタート"},
-            {"node_id": "end", "name": "終了", "purpose": "エンド"}
+            {"node_id": "end", "name": "終了", "purpose": "エンド"},
         ]
         edges = [{"from_node": "start", "to_node": "end", "description": "実行"}]
 
@@ -340,11 +332,11 @@ graph TD
         nodes = [
             {"node_id": "A", "name": "開始", "shape": "circle"},
             {"node_id": "B", "name": "判定", "shape": "diamond"},
-            {"node_id": "C", "name": "処理", "shape": "rectangle"}
+            {"node_id": "C", "name": "処理", "shape": "rectangle"},
         ]
         edges = [
             {"from_node": "A", "to_node": "B", "description": "次へ"},
-            {"from_node": "B", "to_node": "C", "description": "実行"}
+            {"from_node": "B", "to_node": "C", "description": "実行"},
         ]
 
         # Act
@@ -369,12 +361,12 @@ graph TD
         nodes = [
             {"node_id": "A", "name": "ノードA", "purpose": "開始"},
             {"node_id": "B", "name": "ノードB", "purpose": "処理"},
-            {"node_id": "C", "name": "ノードC", "purpose": "判定"}
+            {"node_id": "C", "name": "ノードC", "purpose": "判定"},
         ]
         edges = [
             {"from_node": "A", "to_node": "B", "description": "進む"},
             {"from_node": "B", "to_node": "C", "description": "判定"},
-            {"from_node": "C", "to_node": "A", "description": "戻る"}  # 循環
+            {"from_node": "C", "to_node": "A", "description": "戻る"},  # 循環
         ]
 
         # Act
@@ -398,11 +390,11 @@ graph TD
         nodes = [
             {"node_id": "A", "name": "ノードA", "purpose": "開始1"},
             {"node_id": "B", "name": "ノードB", "purpose": "開始2"},
-            {"node_id": "C", "name": "ノードC", "purpose": "合流"}
+            {"node_id": "C", "name": "ノードC", "purpose": "合流"},
         ]
         edges = [
             {"from_node": "A", "to_node": "C", "description": "パス1"},
-            {"from_node": "B", "to_node": "C", "description": "パス2"}
+            {"from_node": "B", "to_node": "C", "description": "パス2"},
         ]
 
         # Act
@@ -425,11 +417,11 @@ graph TD
             {"node_id": "A", "name": "グループ1-A", "purpose": "目的A"},
             {"node_id": "B", "name": "グループ1-B", "purpose": "目的B"},
             {"node_id": "C", "name": "グループ2-C", "purpose": "目的C"},
-            {"node_id": "D", "name": "グループ2-D", "purpose": "目的D"}
+            {"node_id": "D", "name": "グループ2-D", "purpose": "目的D"},
         ]
         edges = [
             {"from_node": "A", "to_node": "B", "description": "グループ1"},
-            {"from_node": "C", "to_node": "D", "description": "グループ2"}
+            {"from_node": "C", "to_node": "D", "description": "グループ2"},
             # A-BとC-Dは接続されていない
         ]
 
@@ -474,12 +466,8 @@ graph TD
         - 存在しないノードを参照するエッジがエラーまたはスキップされること
         """
         # Arrange
-        nodes = [
-            {"node_id": "A", "name": "ノードA", "purpose": "目的A"}
-        ]
-        edges = [
-            {"from_node": "A", "to_node": "NonExistent", "description": "無効"}
-        ]
+        nodes = [{"node_id": "A", "name": "ノードA", "purpose": "目的A"}]
+        edges = [{"from_node": "A", "to_node": "NonExistent", "description": "無効"}]
 
         # Act & Assert
         try:

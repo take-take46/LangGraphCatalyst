@@ -4,15 +4,15 @@ LangGraph Catalyst - Crawler Tests
 ドキュメントクローラーのユニットテスト
 """
 
-import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import MagicMock, patch
 
+import pytest
 from langchain_core.documents import Document
 
 from src.features.rag.crawler import (
-    crawl_langgraph_docs,
-    crawl_langchain_blog,
     crawl_github_repo,
+    crawl_langchain_blog,
+    crawl_langgraph_docs,
     update_all_sources,
 )
 
@@ -33,8 +33,7 @@ class TestCrawler:
         """
         # Arrange
         mock_doc = Document(
-            page_content="LangGraph is a framework for building stateful agents.",
-            metadata={}
+            page_content="LangGraph is a framework for building stateful agents.", metadata={}
         )
         mock_loader = MagicMock()
         mock_loader.load.return_value = [mock_doc]
@@ -61,10 +60,7 @@ class TestCrawler:
         ブログクロール正常実行テスト
         """
         # Arrange
-        mock_doc = Document(
-            page_content="Blog post about LangGraph",
-            metadata={}
-        )
+        mock_doc = Document(page_content="Blog post about LangGraph", metadata={})
         mock_loader = MagicMock()
         mock_loader.load.return_value = [mock_doc]
         mock_loader_class.return_value = mock_loader
@@ -84,10 +80,7 @@ class TestCrawler:
         GitHubリポジトリクロール正常実行テスト
         """
         # Arrange
-        mock_doc = Document(
-            page_content="GitHub README content",
-            metadata={}
-        )
+        mock_doc = Document(page_content="GitHub README content", metadata={})
         mock_loader = MagicMock()
         mock_loader.load.return_value = [mock_doc]
         mock_loader_class.return_value = mock_loader

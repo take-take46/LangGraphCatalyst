@@ -66,7 +66,10 @@ LEARNING_PATH: list[Topic] = [
         "prerequisites": ["LangGraphとは何か"],
         "estimated_time": "30分",
         "resources": [
-            {"type": "公式ドキュメント", "url": "https://langchain-ai.github.io/langgraph/concepts/"},
+            {
+                "type": "公式ドキュメント",
+                "url": "https://langchain-ai.github.io/langgraph/concepts/",
+            },
         ],
     },
     {
@@ -128,7 +131,10 @@ LEARNING_PATH: list[Topic] = [
         "prerequisites": ["Node（ノード）の基礎", "Edge（エッジ）の基礎", "State（状態）の管理"],
         "estimated_time": "40分",
         "resources": [
-            {"type": "GitHub例", "url": "https://github.com/langchain-ai/langgraph/tree/main/examples"},
+            {
+                "type": "GitHub例",
+                "url": "https://github.com/langchain-ai/langgraph/tree/main/examples",
+            },
         ],
     },
     # ========== 中級レベル ==========

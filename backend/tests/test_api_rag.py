@@ -4,7 +4,6 @@ RAG API Endpoint Tests
 RAG学習支援APIのテスト。
 """
 
-import pytest
 from unittest.mock import patch
 
 

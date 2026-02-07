@@ -4,8 +4,8 @@ LangGraph Catalyst - RAG Chain Tests
 RAGチェーンのユニットテスト
 """
 
+
 import pytest
-from unittest.mock import Mock
 
 from src.features.rag.chain import RAGChain
 from src.features.rag.vectorstore import ChromaVectorStore
@@ -71,7 +71,7 @@ class TestRAGChain:
     def test_query_success(self, mocker, mock_openai_chat, sample_documents):
         """正常なクエリ実行のテスト"""
         # Arrange
-        mock_chat = mock_openai_chat(
+        mock_openai_chat(
             response_content="LangGraph is a framework for building stateful agents.", tokens=150
         )
 
@@ -94,7 +94,7 @@ class TestRAGChain:
     def test_query_with_sources(self, mocker, mock_openai_chat, sample_documents):
         """ソース付き回答のテスト"""
         # Arrange
-        mock_chat = mock_openai_chat(response_content="LangGraph is...", tokens=100)
+        mock_openai_chat(response_content="LangGraph is...", tokens=100)
 
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         mock_vectorstore.similarity_search.return_value = sample_documents
@@ -127,7 +127,7 @@ graph = StateGraph(State)
 ```
         """.strip()
 
-        mock_chat = mock_openai_chat(response_content=code_response, tokens=200)
+        mock_openai_chat(response_content=code_response, tokens=200)
 
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         mock_vectorstore.similarity_search.return_value = sample_documents
@@ -144,9 +144,7 @@ graph = StateGraph(State)
     def test_query_without_code_examples(self, mocker, mock_openai_chat, sample_documents):
         """コード例なしのテスト"""
         # Arrange
-        mock_chat = mock_openai_chat(
-            response_content="LangGraph is a framework...", tokens=100
-        )
+        mock_openai_chat(response_content="LangGraph is a framework...", tokens=100)
 
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         mock_vectorstore.similarity_search.return_value = sample_documents
@@ -163,7 +161,7 @@ graph = StateGraph(State)
     def test_query_empty_question(self, mocker, mock_openai_chat):
         """空の質問のテスト"""
         # Arrange
-        mock_chat = mock_openai_chat()
+        mock_openai_chat()
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         rag_chain = RAGChain(vectorstore=mock_vectorstore)
 
@@ -174,7 +172,7 @@ graph = StateGraph(State)
     def test_query_no_documents_found(self, mocker, mock_openai_chat):
         """ドキュメントが見つからない場合のテスト"""
         # Arrange
-        mock_chat = mock_openai_chat()
+        mock_openai_chat()
 
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         mock_vectorstore.similarity_search.return_value = []
@@ -212,7 +210,7 @@ graph = StateGraph(State)
     def test_should_include_code_japanese(self, mocker, mock_openai_chat):
         """日本語のコード要求キーワード検出テスト"""
         # Arrange
-        mock_chat = mock_openai_chat()
+        mock_openai_chat()
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         rag_chain = RAGChain(vectorstore=mock_vectorstore)
 
@@ -225,7 +223,7 @@ graph = StateGraph(State)
     def test_should_include_code_english(self, mocker, mock_openai_chat):
         """英語のコード要求キーワード検出テスト"""
         # Arrange
-        mock_chat = mock_openai_chat()
+        mock_openai_chat()
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         rag_chain = RAGChain(vectorstore=mock_vectorstore)
 
@@ -238,7 +236,7 @@ graph = StateGraph(State)
     def test_build_context(self, mocker, mock_openai_chat, sample_documents):
         """コンテキスト構築のテスト"""
         # Arrange
-        mock_chat = mock_openai_chat()
+        mock_openai_chat()
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         rag_chain = RAGChain(vectorstore=mock_vectorstore)
 
@@ -255,7 +253,7 @@ graph = StateGraph(State)
     def test_calculate_confidence(self, mocker, mock_openai_chat, sample_documents):
         """信頼度計算のテスト"""
         # Arrange
-        mock_chat = mock_openai_chat()
+        mock_openai_chat()
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         rag_chain = RAGChain(vectorstore=mock_vectorstore)
 
@@ -304,7 +302,7 @@ graph = StateGraph(State)
 このように、LangGraphを使用することで、複雑な対話フローを構築できます。
         """.strip()
 
-        mock_chat = mock_openai_chat(response_content=realistic_response, tokens=300)
+        mock_openai_chat(response_content=realistic_response, tokens=300)
 
         mock_vectorstore = mocker.Mock(spec=ChromaVectorStore)
         mock_vectorstore.similarity_search.return_value = sample_documents

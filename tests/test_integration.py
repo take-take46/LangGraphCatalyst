@@ -5,12 +5,13 @@ LangGraph Catalyst - Integration Tests
 """
 
 import json
-import pytest
 from unittest.mock import Mock
 
+import pytest
+
+from src.features.architect.graph import ArchitectGraph
 from src.features.rag.chain import RAGChain
 from src.features.rag.vectorstore import ChromaVectorStore
-from src.features.architect.graph import ArchitectGraph
 
 
 @pytest.mark.integration
@@ -24,7 +25,7 @@ class TestRAGIntegration:
         # Arrange
         # 1. ベクトルストアのセットアップ
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma(sample_documents)
+        mock_chroma(sample_documents)
 
         vectorstore = ChromaVectorStore(collection_name="test_integration")
 
@@ -47,7 +48,7 @@ graph = StateGraph(State)
 LangGraphの詳細については、公式ドキュメントをご参照ください。
         """.strip()
 
-        mock_chat = mock_openai_chat(response_content=rag_response, tokens=200)
+        mock_openai_chat(response_content=rag_response, tokens=200)
 
         rag_chain = RAGChain(vectorstore=vectorstore)
 
@@ -70,7 +71,7 @@ LangGraphの詳細については、公式ドキュメントをご参照くだ�
         """関連ドキュメントがない場合の統合テスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma([])  # 空のドキュメント
+        mock_chroma([])  # 空のドキュメント
 
         vectorstore = ChromaVectorStore()
         rag_chain = RAGChain(vectorstore=vectorstore)
@@ -284,7 +285,7 @@ class TestFullSystemIntegration:
 
         # RAGのセットアップ
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma(sample_documents)
+        mock_chroma(sample_documents)
 
         vectorstore = ChromaVectorStore()
         rag_chain = RAGChain(vectorstore=vectorstore)

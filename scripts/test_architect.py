@@ -2,15 +2,15 @@
 ArchitectGraph機能の簡易テストスクリプト
 """
 
-import sys
 import os
+import sys
 
 # プロジェクトルートをPythonパスに追加
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, project_root)
 
-from src.features.architect.graph import ArchitectGraph
 from src.config.settings import settings
+from src.features.architect.graph import ArchitectGraph
 
 
 def test_architect_graph():
@@ -96,6 +96,7 @@ def test_architect_graph():
     except Exception as e:
         print(f"❌ 構成案生成失敗: {e}")
         import traceback
+
         traceback.print_exc()
 
 

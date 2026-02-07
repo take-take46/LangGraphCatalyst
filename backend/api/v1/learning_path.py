@@ -4,7 +4,7 @@ LangGraph Catalyst - Learning Path API Endpoints
 学習パス機能のAPIエンドポイント。
 """
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 
 from backend.schemas.learning_path import (
     LearningPathResponse,

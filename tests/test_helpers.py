@@ -4,23 +4,16 @@ LangGraph Catalyst - Helpers Tests
 ユーティリティヘルパー関数のユニットテスト
 """
 
+
 import pytest
-from datetime import datetime
-from langchain_core.documents import Document
+
 from src.utils.helpers import (
-    split_documents,
-    create_text_splitter,
-    split_text_into_chunks,
-    extract_code_blocks,
-    format_sources,
-    format_source_metadata,
-    truncate_text,
-    get_current_timestamp,
-    validate_url,
-    safe_get,
     calculate_token_count,
-    sanitize_filename,
+    extract_code_blocks,
+    format_source_metadata,
     parse_mermaid_diagram,
+    sanitize_filename,
+    split_text_into_chunks,
 )
 
 
@@ -295,7 +288,7 @@ class TestHelpers:
             "source": "https://example.com/doc",
             "title": "Test Document",
             "doc_type": "official_docs",
-            "updated_at": "2026-01-15T00:00:00Z"
+            "updated_at": "2026-01-15T00:00:00Z",
         }
 
         # Act

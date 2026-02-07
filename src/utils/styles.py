@@ -671,7 +671,11 @@ def create_gradient_header(title: str, subtitle: str | None = None) -> str:
     Returns:
         ヘッダーのHTML文字列
     """
-    subtitle_html = f"<p style='margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 1.1rem;'>{subtitle}</p>" if subtitle else ""
+    subtitle_html = (
+        f"<p style='margin: 0.5rem 0 0 0; opacity: 0.9; font-size: 1.1rem;'>{subtitle}</p>"
+        if subtitle
+        else ""
+    )
 
     return f"""
     <div class='gradient-bg-blue fade-in' style='margin-bottom: 2rem;'>
@@ -746,7 +750,7 @@ def create_step_indicator(current_step: int, total_steps: int, step_names: list[
         else:
             step_class = "background: var(--bg-tertiary); color: var(--text-tertiary);"
 
-        step_name = step_names[i-1] if i-1 < len(step_names) else f"Step {i}"
+        step_name = step_names[i - 1] if i - 1 < len(step_names) else f"Step {i}"
 
         steps_html += f"""
         <div style='flex: 1; text-align: center;'>

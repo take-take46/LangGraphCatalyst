@@ -8,7 +8,6 @@ LangGraph Catalyst - Usage Limiter
 import json
 from datetime import date
 from pathlib import Path
-from typing import Optional
 
 from fastapi import HTTPException, status
 
@@ -37,9 +36,9 @@ def _load_usage_data() -> dict:
         return {}
 
     try:
-        with open(USAGE_LIMITS_FILE, "r", encoding="utf-8") as f:
+        with open(USAGE_LIMITS_FILE, encoding="utf-8") as f:
             return json.load(f)
-    except (json.JSONDecodeError, IOError):
+    except (OSError, json.JSONDecodeError):
         return {}
 
 
@@ -55,12 +54,12 @@ def _save_usage_data(data: dict) -> None:
     try:
         with open(USAGE_LIMITS_FILE, "w", encoding="utf-8") as f:
             json.dump(data, f, indent=2, ensure_ascii=False)
-    except IOError as e:
+    except OSError as e:
         # 保存失敗時はログを出力（ただしエラーは投げない）
         print(f"Warning: Failed to save usage data: {e}")
 
 
-def get_remaining_usage(user: User) -> Optional[int]:
+def get_remaining_usage(user: User) -> int | None:
     """
     ユーザーの残り使用回数を取得
 

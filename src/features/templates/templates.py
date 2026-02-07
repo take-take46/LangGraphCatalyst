@@ -130,7 +130,7 @@ if __name__ == "__main__":
     print(f"Response: {result['response']}")
     print(f"Escalated: {result['escalated']}")
 ''',
-        "mermaid": '''graph TD
+        "mermaid": """graph TD
     A[問い合わせ受付] --> B[FAQ検索]
     B --> C[複雑度分析]
     C --> D{判定}
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     style A fill:#667eea,color:#fff
     style E fill:#28a745,color:#fff
     style F fill:#ffc107,color:#333
-    style G fill:#17a2b8,color:#fff''',
+    style G fill:#17a2b8,color:#fff""",
         "explanation": "お客様からの問い合わせをまず自動的にFAQデータベースで検索します。"
         "見つかった場合でも、質問が複雑な場合は人間のオペレーターにエスカレーションします。"
         "シンプルな質問にはAIが自動で回答し、複雑な質問は人間が対応することで、"
@@ -255,7 +255,7 @@ if __name__ == "__main__":
     })
     print(result["report"])
 ''',
-        "mermaid": '''graph LR
+        "mermaid": """graph LR
     A[データ取得] --> B[前処理]
     B --> C[データ分析]
     C --> D[レポート生成]
@@ -265,7 +265,7 @@ if __name__ == "__main__":
     style B fill:#17a2b8,color:#fff
     style C fill:#764ba2,color:#fff
     style D fill:#28a745,color:#fff
-    style E fill:#ffc107,color:#333''',
+    style E fill:#ffc107,color:#333""",
         "explanation": "営業データなどを自動的に取得し、前処理（クリーニング）を行い、"
         "統計分析や予測を実施します。最終的に経営層向けのレポートを自動生成します。"
         "毎週自動実行することで、週次レポート作成の工数を大幅に削減できます。",
@@ -401,7 +401,7 @@ if __name__ == "__main__":
     })
     print(result["final_content"])
 ''',
-        "mermaid": '''graph TD
+        "mermaid": """graph TD
     A[アイデア生成] --> B[下書き作成]
     B --> C[レビュー]
     C --> D{承認?}
@@ -415,7 +415,7 @@ if __name__ == "__main__":
     style C fill:#ffc107,color:#333
     style E fill:#ff6b6b,color:#fff
     style F fill:#28a745,color:#fff
-    style G fill:#764ba2,color:#fff''',
+    style G fill:#764ba2,color:#fff""",
         "explanation": "ブログ記事や技術ドキュメントの作成を自動化します。"
         "トピックを入力すると、AIがアイデアを生成し、下書きを作成します。"
         "自動レビュー機能で品質をチェックし、必要に応じて修正を繰り返します。"
@@ -512,7 +512,7 @@ if __name__ == "__main__":
     print(f"Summary: {result['summary']}")
     print(f"Saved to: {result['saved_path']}")
 ''',
-        "mermaid": '''graph LR
+        "mermaid": """graph LR
     A[ドキュメント読み込み] --> B[分類]
     B --> C[要約生成]
     C --> D[保存]
@@ -522,7 +522,7 @@ if __name__ == "__main__":
     style B fill:#ffc107,color:#333
     style C fill:#17a2b8,color:#fff
     style D fill:#28a745,color:#fff
-    style E fill:#764ba2,color:#fff''',
+    style E fill:#764ba2,color:#fff""",
         "explanation": "大量のドキュメントを自動的に処理します。"
         "契約書、請求書、レポートなどを自動で分類し、要約を生成して、"
         "適切なフォルダに保存します。手動での仕分け作業を大幅に削減できます。",
@@ -651,7 +651,7 @@ if __name__ == "__main__":
     })
     print(result["final_report"])
 ''',
-        "mermaid": '''graph TD
+        "mermaid": """graph TD
     A[タスク分解] --> B[Web検索エージェント]
     A --> C[学術論文エージェント]
     A --> D[ニュース検索エージェント]
@@ -669,7 +669,7 @@ if __name__ == "__main__":
     style D fill:#17a2b8,color:#fff
     style E fill:#ffc107,color:#333
     style F fill:#28a745,color:#fff
-    style G fill:#764ba2,color:#fff''',
+    style G fill:#764ba2,color:#fff""",
         "explanation": "複数の専門エージェントが並列で調査を実行します。"
         "Web検索、学術論文、最新ニュースの3つのエージェントが同時に動き、"
         "それぞれの専門分野の情報を収集します。最後に全ての情報を統合し、"
