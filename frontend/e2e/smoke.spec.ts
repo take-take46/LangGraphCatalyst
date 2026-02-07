@@ -37,12 +37,12 @@ test.describe('Smoke Tests - No API Calls', () => {
     // 学習パスページ（認証不要）
     await page.goto('/learning-path');
     await expect(page).toHaveURL('/learning-path');
-    await expect(page.locator('h1').first()).toContainText(/学習パス|Learning Path/i);
+    await expect(page.locator('h1:has-text("学習パス")')).toBeVisible();
 
     // テンプレートページ（認証不要）
     await page.goto('/templates');
     await expect(page).toHaveURL('/templates');
-    await expect(page.locator('h1').first()).toContainText(/テンプレート|Templates/i);
+    await expect(page.locator('h1:has-text("テンプレート")')).toBeVisible();
   });
 
   test('should redirect to login when accessing protected pages @smoke', async ({ page }) => {
@@ -51,7 +51,7 @@ test.describe('Smoke Tests - No API Calls', () => {
 
     // ログインページにリダイレクト
     await expect(page).toHaveURL(/.*login/);
-    await expect(page.locator('h1').first()).toContainText(/ログイン|Login/i);
+    await expect(page.locator('input[id="username"]')).toBeVisible();
 
     // 構成案生成ページにアクセス（保護されている）
     await page.goto('/architect');
