@@ -13,8 +13,8 @@ from backend.core.config import Settings, get_settings
 from backend.core.dependencies import UserWithUsageLimit
 from backend.schemas.architect import (
     ArchitectMetadata,
-    ArchitectResponse,
     ArchitectRequest,
+    ArchitectResponse,
     Architecture,
     ChallengeAnalysis,
     CodeExample,

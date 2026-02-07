@@ -10,7 +10,7 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-Latest-009688.svg)](https://fastapi.tiangolo.com/)
 [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-[デモを見る](#) | [ドキュメント](./docs/) | [お問い合わせ](#お問い合わせ)
+[🚀 デモを見る](https://langgraph-catalyst-frontend.onrender.com) | [📚 ドキュメント](./docs/) | [💬 お問い合わせ](#お問い合わせ)
 
 </div>
 
@@ -49,9 +49,7 @@
 
 ### 1️⃣ **RAG学習支援システム**
 
-<img src="https://via.placeholder.com/800x400?text=RAG+Learning+Support+Screenshot" alt="RAG Learning Support" width="100%">
-
-LangGraphの最新公式情報をベクトルDB（Chroma）に保存し、質問に対してソース付き+コード例付きで回答。
+> **[🚀 デモサイトで試す](https://langgraph-catalyst-frontend.onrender.com/rag)** | LangGraphの最新公式情報をベクトルDB（Chroma）に保存し、質問に対してソース付き+コード例付きで回答。
 
 - ✅ 公式ドキュメント、ブログ、GitHubリポジトリから自動収集
 - ✅ 高精度な意味検索による関連情報の抽出
@@ -60,9 +58,7 @@ LangGraphの最新公式情報をベクトルDB（Chroma）に保存し、質問
 
 ### 2️⃣ **学習パス機能**
 
-<img src="https://via.placeholder.com/800x400?text=Learning+Path+Screenshot" alt="Learning Path" width="100%">
-
-初級・中級・上級の3段階で体系的にLangGraphを学習。
+> **[🚀 デモサイトで試す](https://langgraph-catalyst-frontend.onrender.com/learning-path)** | 初級・中級・上級の3段階で体系的にLangGraphを学習。
 
 - ✅ 各トピックに学習目標と推定時間を明示
 - ✅ 進捗管理機能で学習状況を可視化
@@ -71,9 +67,7 @@ LangGraphの最新公式情報をベクトルDB（Chroma）に保存し、質問
 
 ### 3️⃣ **テンプレート集**
 
-<img src="https://via.placeholder.com/800x400?text=Templates+Screenshot" alt="Templates" width="100%">
-
-カテゴリ別・難易度別に整理された、実践的なLangGraphテンプレート。
+> **[🚀 デモサイトで試す](https://langgraph-catalyst-frontend.onrender.com/templates)** | カテゴリ別・難易度別に整理された、実践的なLangGraphテンプレート。
 
 - ✅ カスタマーサポート、データ分析、文書処理など10種類以上
 - ✅ 完全に動作するコード + Mermaid図 + 詳細な説明
@@ -82,9 +76,7 @@ LangGraphの最新公式情報をベクトルDB（Chroma）に保存し、質問
 
 ### 4️⃣ **ビジネス課題→構成案自動生成**
 
-<img src="https://via.placeholder.com/800x400?text=Architecture+Generation+Screenshot" alt="Architecture Generation" width="100%">
-
-ビジネス課題を入力すると、LangGraphを活用した最適な構成案を自動生成。
+> **[🚀 デモサイトで試す](https://langgraph-catalyst-frontend.onrender.com/architect)** | ビジネス課題を入力すると、LangGraphを活用した最適な構成案を自動生成。
 
 - ✅ **Mermaid図**: システムフローを視覚的に表現
 - ✅ **コード例**: 実装サンプルを自動生成
@@ -441,11 +433,11 @@ services:
 - [x] レスポンシブ対応
 - [x] アクセシビリティ向上
 
-### Phase 7: デプロイ・公開 🚧
-- [ ] Renderへのデプロイ
-- [ ] 本番環境テスト
-- [ ] ドキュメント整備
-- [ ] デモURL公開
+### Phase 7: デプロイ・公開 ✅
+- [x] Renderへのデプロイ
+- [x] 本番環境テスト
+- [x] ドキュメント整備
+- [x] デモURL公開 ([🚀 デモサイト](https://langgraph-catalyst-frontend.onrender.com))
 
 ### Phase 8: 継続的改善 📋
 - [ ] ユーザーフィードバック収集

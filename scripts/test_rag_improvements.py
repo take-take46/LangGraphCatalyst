@@ -17,17 +17,18 @@ sys.path.insert(0, str(project_root))
 from src.features.rag.chain import RAGChain
 from src.features.rag.vectorstore import ChromaVectorStore
 
+
 # カラー出力用のANSIエスケープコード
 class Colors:
-    HEADER = '\033[95m'
-    OKBLUE = '\033[94m'
-    OKCYAN = '\033[96m'
-    OKGREEN = '\033[92m'
-    WARNING = '\033[93m'
-    FAIL = '\033[91m'
-    ENDC = '\033[0m'
-    BOLD = '\033[1m'
-    UNDERLINE = '\033[4m'
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
 
 
 def print_section(title: str):
@@ -49,7 +50,7 @@ def print_result(response: dict, test_num: int):
     """テスト結果を表示"""
     print(f"\n{Colors.OKGREEN}--- Result {test_num} ---{Colors.ENDC}")
     print(f"{Colors.BOLD}回答:{Colors.ENDC}")
-    print(response['answer'][:300] + "..." if len(response['answer']) > 300 else response['answer'])
+    print(response["answer"][:300] + "..." if len(response["answer"]) > 300 else response["answer"])
 
     print(f"\n{Colors.BOLD}メタデータ:{Colors.ENDC}")
     print(f"  - Model: {response['metadata']['model']}")
@@ -58,12 +59,12 @@ def print_result(response: dict, test_num: int):
     print(f"  - Confidence: {response['confidence']:.2f}")
 
     print(f"\n{Colors.BOLD}ソース数: {len(response['sources'])}{Colors.ENDC}")
-    for i, source in enumerate(response['sources'][:2], 1):
+    for i, source in enumerate(response["sources"][:2], 1):
         print(f"  {i}. {source['title']} ({source['url']})")
 
     print(f"\n{Colors.BOLD}コード例数: {len(response['code_examples'])}{Colors.ENDC}")
-    if response['code_examples']:
-        for i, code_ex in enumerate(response['code_examples'][:2], 1):
+    if response["code_examples"]:
+        for i, code_ex in enumerate(response["code_examples"][:2], 1):
             print(f"  {i}. {code_ex['language']} - {code_ex['description']}")
 
 
@@ -86,7 +87,7 @@ def main():
                 ("LangGraphとは何ですか？", False),
                 ("StateGraphの役割を教えてください", False),
                 ("LangGraphとLangChainの違いは？", False),
-            ]
+            ],
         },
         # カテゴリ2: 実装の質問（コードあり期待）
         {
@@ -95,7 +96,7 @@ def main():
                 ("LangGraphでグラフを作る方法のコードを見せてください", True),
                 ("conditional edgeの実装例を教えて", True),
                 ("StateGraphのサンプルコードを書いて", True),
-            ]
+            ],
         },
         # カテゴリ3: LangChainエコシステムの質問
         {
@@ -104,7 +105,7 @@ def main():
                 ("エージェントとは何ですか？", False),
                 ("ツールの使い方を教えてください", False),
                 ("メッセージの構造について説明してください", False),
-            ]
+            ],
         },
     ]
 
@@ -125,17 +126,19 @@ def main():
                     question=question,
                     k=3,
                     include_sources=True,
-                    include_code_examples=None  # 自動判定
+                    include_code_examples=None,  # 自動判定
                 )
 
                 print_result(response, current_test)
 
                 # コード検出の検証
-                has_code = len(response['code_examples']) > 0
+                has_code = len(response["code_examples"]) > 0
                 if has_code == expected_code:
                     print(f"{Colors.OKGREEN}✅ コード検出: 期待通り{Colors.ENDC}")
                 else:
-                    print(f"{Colors.WARNING}⚠️  コード検出: 期待と異なる (期待: {expected_code}, 実際: {has_code}){Colors.ENDC}")
+                    print(
+                        f"{Colors.WARNING}⚠️  コード検出: 期待と異なる (期待: {expected_code}, 実際: {has_code}){Colors.ENDC}"
+                    )
 
             except Exception as e:
                 print(f"{Colors.FAIL}❌ Error: {e}{Colors.ENDC}")

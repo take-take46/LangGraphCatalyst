@@ -6,7 +6,6 @@ DBを使用せず、4ユーザー（開発者1名 + テストユーザー3名）
 """
 
 import os
-from typing import Optional
 
 from passlib.context import CryptContext
 
@@ -22,7 +21,7 @@ class User:
         username: str,
         password_hash: str,
         role: str,
-        daily_limit: Optional[int] = None,
+        daily_limit: int | None = None,
     ):
         self.username = username
         self.password_hash = password_hash
@@ -98,12 +97,12 @@ def initialize_users() -> dict[str, User]:
 USERS_DB = initialize_users()
 
 
-def get_user(username: str) -> Optional[User]:
+def get_user(username: str) -> User | None:
     """ユーザー名でユーザーを取得"""
     return USERS_DB.get(username)
 
 
-def authenticate_user(username: str, password: str) -> Optional[User]:
+def authenticate_user(username: str, password: str) -> User | None:
     """
     ユーザー認証
 

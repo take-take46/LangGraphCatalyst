@@ -4,15 +4,12 @@ Architect API Endpoint Tests
 構成案生成APIのテスト。
 """
 
-import pytest
 from unittest.mock import patch
 
 
 def test_architect_generate_success(authenticated_client, mock_architect_graph):
     """構成案生成正常実行テスト"""
-    with patch(
-        "backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph
-    ):
+    with patch("backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph):
         response = authenticated_client.post(
             "/api/v1/architect/generate",
             json={
@@ -90,9 +87,7 @@ def test_architect_generate_success(authenticated_client, mock_architect_graph):
 
 def test_architect_generate_without_optional_fields(authenticated_client, mock_architect_graph):
     """オプションフィールドなしでの構成案生成テスト"""
-    with patch(
-        "backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph
-    ):
+    with patch("backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph):
         response = authenticated_client.post(
             "/api/v1/architect/generate",
             json={
@@ -161,9 +156,7 @@ def test_architect_generate_llm_error(authenticated_client, mock_architect_graph
 
     mock_architect_graph.generate_architecture.side_effect = LLMError("OpenAI API error")
 
-    with patch(
-        "backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph
-    ):
+    with patch("backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph):
         response = authenticated_client.post(
             "/api/v1/architect/generate",
             json={
@@ -183,9 +176,7 @@ def test_architect_generate_validation_error(authenticated_client, mock_architec
         "Invalid business challenge"
     )
 
-    with patch(
-        "backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph
-    ):
+    with patch("backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph):
         response = authenticated_client.post(
             "/api/v1/architect/generate",
             json={
@@ -199,9 +190,7 @@ def test_architect_generate_validation_error(authenticated_client, mock_architec
 
 def test_architect_generate_with_japanese_input(authenticated_client, mock_architect_graph):
     """日本語入力での構成案生成テスト"""
-    with patch(
-        "backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph
-    ):
+    with patch("backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph):
         response = authenticated_client.post(
             "/api/v1/architect/generate",
             json={
@@ -219,9 +208,7 @@ def test_architect_generate_with_japanese_input(authenticated_client, mock_archi
 
 def test_architect_generate_with_english_input(authenticated_client, mock_architect_graph):
     """英語入力での構成案生成テスト"""
-    with patch(
-        "backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph
-    ):
+    with patch("backend.api.v1.architect.get_architect_graph", return_value=mock_architect_graph):
         response = authenticated_client.post(
             "/api/v1/architect/generate",
             json={

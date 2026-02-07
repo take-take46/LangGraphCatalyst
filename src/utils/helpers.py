@@ -143,7 +143,7 @@ def extract_code_blocks(text: str, language: str | None = None) -> list[str] | l
                     code_blocks_all.append(
                         {
                             "language": current_language or "unknown",
-                            "code": "\n".join(current_block)
+                            "code": "\n".join(current_block),
                         }
                     )
                 current_block = []
@@ -162,9 +162,7 @@ def extract_code_blocks(text: str, language: str | None = None) -> list[str] | l
     # 言語でフィルタリング（指定された場合）
     if language:
         filtered_blocks = [
-            block["code"]
-            for block in code_blocks_all
-            if block["language"] == language.lower()
+            block["code"] for block in code_blocks_all if block["language"] == language.lower()
         ]
         return filtered_blocks
     else:
@@ -392,16 +390,12 @@ def parse_mermaid_diagram(mermaid_code: str) -> dict[str, Any]:
         # ノードのマッチ
         node_match = node_pattern.match(line)
         if node_match:
-            result["nodes"].append(
-                {"id": node_match.group(1), "label": node_match.group(2)}
-            )
+            result["nodes"].append({"id": node_match.group(1), "label": node_match.group(2)})
 
         # エッジのマッチ
         edge_match = edge_pattern.match(line)
         if edge_match:
-            result["edges"].append(
-                {"from": edge_match.group(1), "to": edge_match.group(2)}
-            )
+            result["edges"].append({"from": edge_match.group(1), "to": edge_match.group(2)})
 
     result["valid"] = len(result["nodes"]) > 0 or len(result["edges"]) > 0
 

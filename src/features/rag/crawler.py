@@ -9,7 +9,6 @@ import argparse
 import logging
 from typing import Any
 
-import bs4
 from langchain_community.document_loaders import WebBaseLoader
 from langchain_core.documents import Document
 
@@ -86,7 +85,8 @@ LANGGRAPH_KEY_PAGES = [
 
 
 def crawl_langgraph_docs(
-    max_pages: int = 100, include_api_reference: bool = True  # noqa: ARG001
+    max_pages: int = 100,
+    include_api_reference: bool = True,  # noqa: ARG001
 ) -> list[Document]:
     """
     LangGraph公式ドキュメントをクロール
@@ -116,9 +116,7 @@ def crawl_langgraph_docs(
         try:
             # URLからページ名を抽出してタイトルに使用
             page_name = url.split("/")[-1] or "index"
-            docs = _load_web_page(
-                url, doc_type="official_docs", title=f"LangGraph - {page_name}"
-            )
+            docs = _load_web_page(url, doc_type="official_docs", title=f"LangGraph - {page_name}")
             documents.extend(docs)
             logger.info(f"Successfully crawled: {url}")
         except Exception as e:
@@ -153,9 +151,7 @@ def crawl_langchain_docs(max_pages: int = 10) -> list[Document]:
         try:
             # URLからページ名を抽出してタイトルに使用
             page_name = url.split("/")[-1] or "index"
-            docs = _load_web_page(
-                url, doc_type="langchain_docs", title=f"LangChain - {page_name}"
-            )
+            docs = _load_web_page(url, doc_type="langchain_docs", title=f"LangChain - {page_name}")
             documents.extend(docs)
             logger.info(f"Successfully crawled: {url}")
         except Exception as e:
@@ -167,7 +163,8 @@ def crawl_langchain_docs(max_pages: int = 10) -> list[Document]:
 
 
 def crawl_langchain_blog(
-    tag: str = "langgraph", max_articles: int = 50  # noqa: ARG001
+    tag: str = "langgraph",
+    max_articles: int = 50,  # noqa: ARG001
 ) -> list[Document]:
     """
     LangChain Blogから記事をクロール

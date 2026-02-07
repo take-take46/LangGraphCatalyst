@@ -4,9 +4,7 @@ LangGraph Catalyst - Settings/Config Tests
 設定クラスのユニットテスト
 """
 
-import os
 from pathlib import Path
-from unittest.mock import Mock
 
 import pytest
 from pydantic import ValidationError as PydanticValidationError
@@ -22,8 +20,6 @@ def mock_no_env_file():
     テスト実行中、一時的に.envファイルを.env.bakにリネームし、
     テスト終了後に復元する。
     """
-    import os
-    from pathlib import Path
 
     env_file = Path(".env")
     env_backup = Path(".env.bak")
@@ -208,7 +204,7 @@ class TestSettings:
         assert not test_dir.exists()
 
         # Act
-        settings = Settings()
+        Settings()
 
         # Assert - ディレクトリが作成されたことを確認
         assert test_dir.exists()

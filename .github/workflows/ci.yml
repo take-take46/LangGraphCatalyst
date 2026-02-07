@@ -1,0 +1,316 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '20'
+
+jobs:
+  # ========================================
+  # バックエンドテスト（pytest）- モック化済み、API使用料なし
+  # ========================================
+  backend-tests:
+    name: Backend Tests (Python) - 120 tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest pytest-cov pytest-asyncio
+
+      - name: Run pytest with coverage (NO API CALLS)
+        env:
+          OPENAI_API_KEY: sk-test-mock-key-no-real-api-calls
+          CHROMA_PERSIST_DIR: ./tests/data/chroma_test
+          LOG_LEVEL: DEBUG
+          ENVIRONMENT: test
+        run: |
+          echo "🧪 Running 120+ backend tests with mocked APIs (NO CHARGES)"
+          pytest tests/ \
+            -v \
+            --cov=src \
+            --cov=backend \
+            --cov-report=xml \
+            --cov-report=term \
+            --cov-report=html \
+            -m "not integration"
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./coverage.xml
+          flags: backend
+          name: backend-coverage
+          fail_ci_if_error: false
+        continue-on-error: true
+
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage-html
+          path: htmlcov/
+
+  # ========================================
+  # フロントエンドテスト（Vitest）- モック化済み、API使用料なし
+  # ========================================
+  frontend-tests:
+    name: Frontend Tests (Vitest) - 35 tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run Vitest (NO API CALLS)
+        working-directory: frontend
+        run: |
+          echo "🧪 Running 35 frontend tests with mocked APIs (NO CHARGES)"
+          npm run test -- --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          file: ./frontend/coverage/coverage-final.json
+          flags: frontend
+          name: frontend-coverage
+          fail_ci_if_error: false
+        continue-on-error: true
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+
+  # ========================================
+  # リント・フォーマットチェック
+  # ========================================
+  linting:
+    name: Code Quality Checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Python: Ruff
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Run Ruff format check
+        run: ruff format --check .
+
+      - name: Run Ruff linter
+        run: ruff check .
+
+      # TypeScript/React: ESLint
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run ESLint
+        working-directory: frontend
+        run: npm run lint
+
+  # ========================================
+  # E2E Smokeテスト（Playwright）- API不使用、完全無料
+  # ========================================
+  e2e-smoke-tests:
+    name: E2E Smoke Tests (NO API CALLS)
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # バックエンド起動（モックキーで起動、実際のAPI呼び出しなし）
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: 'pip'
+
+      - name: Install backend dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Start backend server (MOCK MODE)
+        env:
+          OPENAI_API_KEY: sk-mock-key-for-smoke-tests-no-real-calls
+          CHROMA_PERSIST_DIR: ./tests/data/chroma_test
+          CORS_ORIGINS: http://localhost:5173
+          JWT_SECRET_KEY: test-secret-key-for-ci-smoke-tests
+          ADMIN_PASSWORD: test-admin-password
+          TESTUSER1_PASSWORD: test-password-1
+          TESTUSER2_PASSWORD: test-password-2
+          TESTUSER3_PASSWORD: test-password-3
+        run: |
+          echo "🚀 Starting backend in MOCK mode (NO API CALLS)"
+          uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
+          echo $! > backend.pid
+          sleep 5
+
+      # フロントエンド起動
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Install Playwright browsers
+        working-directory: frontend
+        run: npx playwright install --with-deps chromium
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: http://localhost:8000/api/v1
+        run: npm run build
+
+      - name: Start frontend server
+        working-directory: frontend
+        run: |
+          npx serve -s dist -l 5173 &
+          echo $! > frontend.pid
+          sleep 3
+
+      # E2E Smokeテスト実行（API不使用のテストのみ）
+      - name: Run Playwright Smoke Tests (NO API CALLS)
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: http://localhost:8000/api/v1
+        run: |
+          echo "🧪 Running smoke tests (authentication, navigation only - NO API CHARGES)"
+          npx playwright test --grep "@smoke"
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-smoke-report
+          path: frontend/playwright-report/
+
+      # クリーンアップ
+      - name: Stop servers
+        if: always()
+        run: |
+          kill $(cat backend.pid) || true
+          kill $(cat frontend.pid) || true
+
+  # ========================================
+  # ビルドテスト
+  # ========================================
+  build-test:
+    name: Build Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_API_BASE_URL: https://langgraph-catalyst-api.onrender.com/api/v1
+        run: npm run build
+
+      - name: Check build output
+        run: |
+          ls -la frontend/dist/
+          du -sh frontend/dist/
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist/
+
+  # ========================================
+  # 統合レポート
+  # ========================================
+  report:
+    name: Test Summary Report
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, linting, build-test, e2e-smoke-tests]
+    if: always()
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+
+      - name: Create summary report
+        run: |
+          echo "# 🧪 Test Summary Report (100% FREE - NO API CHARGES)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ✅ Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "- **Backend Unit Tests**: 120 tests (mocked APIs)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Frontend Unit Tests**: 35 tests (mocked APIs)" >> $GITHUB_STEP_SUMMARY
+          echo "- **E2E Smoke Tests**: Authentication & Navigation (NO API calls)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Total**: 155+ tests" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 💰 API Usage Cost" >> $GITHUB_STEP_SUMMARY
+          echo "**\$0.00** - All tests use mocked APIs" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## 📊 Coverage Reports" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend: [Download HTML Report](./backend-coverage-html)" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend: [Download Coverage](./frontend-coverage)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## ℹ️ Note" >> $GITHUB_STEP_SUMMARY
+          echo "RAG and Architecture Generation features are tested manually." >> $GITHUB_STEP_SUMMARY

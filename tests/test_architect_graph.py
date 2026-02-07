@@ -5,11 +5,12 @@ LangGraph Catalyst - Architect Graph Tests
 """
 
 import json
-import pytest
 from unittest.mock import Mock
 
+import pytest
+
 from src.features.architect.graph import ArchitectGraph
-from src.utils.exceptions import LLMError, ValidationError
+from src.utils.exceptions import ValidationError
 
 
 @pytest.mark.unit
@@ -50,9 +51,7 @@ class TestArchitectGraph:
     def test_architect_graph_initialization_failure(self, mocker):
         """LLM初期化失敗のテスト"""
         # Arrange
-        mocker.patch(
-            "src.features.architect.graph.ChatOpenAI", side_effect=Exception("API Error")
-        )
+        mocker.patch("src.features.architect.graph.ChatOpenAI", side_effect=Exception("API Error"))
 
         # Act & Assert
         with pytest.raises(ValidationError, match="Failed to initialize LLM"):
@@ -106,7 +105,9 @@ graph.add_node("faq_search", faq_search_node)
 
 このコードは、FAQ検索ノードを追加する例です。"""
 
-        explanation_response = "このシステムは、ユーザーの問い合わせを受け付け、まずFAQデータベースで検索します..."
+        explanation_response = (
+            "このシステムは、ユーザーの問い合わせを受け付け、まずFAQデータベースで検索します..."
+        )
 
         notes_response = """- FAQ検索にはベクトルDBを使用することを推奨
 - Zendesk APIの認証情報が必要"""
@@ -163,13 +164,13 @@ graph.add_node("faq_search", faq_search_node)
         with pytest.raises(ValidationError, match="Business challenge cannot be empty"):
             architect.generate_architecture(business_challenge="")
 
-    def test_generate_architecture_with_industry_only(
-        self, mocker, sample_business_challenge
-    ):
+    def test_generate_architecture_with_industry_only(self, mocker, sample_business_challenge):
         """業界のみ指定のテスト"""
         # Arrange
         responses = [
-            json.dumps({"summary": "分析結果", "key_requirements": [], "suggested_approach": "方法"}),
+            json.dumps(
+                {"summary": "分析結果", "key_requirements": [], "suggested_approach": "方法"}
+            ),
             json.dumps({"nodes": [], "edges": [], "state_schema": {}}),
             "```mermaid\ngraph TD\n```",
             "```python\ncode\n```",
@@ -198,9 +199,7 @@ graph.add_node("faq_search", faq_search_node)
     # Node Tests
     # ========================================================================
 
-    def test_analyze_challenge_node(
-        self, mocker, mock_openai_chat, sample_business_challenge
-    ):
+    def test_analyze_challenge_node(self, mocker, mock_openai_chat, sample_business_challenge):
         """課題分析ノードのテスト"""
         # Arrange
         analysis_json = json.dumps(
@@ -211,7 +210,7 @@ graph.add_node("faq_search", faq_search_node)
             }
         )
 
-        mock_chat = mock_openai_chat(response_content=analysis_json)
+        mock_openai_chat(response_content=analysis_json)
         architect = ArchitectGraph()
 
         # Act
@@ -237,7 +236,7 @@ graph.add_node("faq_search", faq_search_node)
             }
         )
 
-        mock_chat = mock_openai_chat(response_content=architecture_json)
+        mock_openai_chat(response_content=architecture_json)
         architect = ArchitectGraph()
 
         # Act
@@ -260,7 +259,7 @@ graph TD
     A[ノードA] --> B[ノードB]
 ```"""
 
-        mock_chat = mock_openai_chat(response_content=mermaid_code)
+        mock_openai_chat(response_content=mermaid_code)
         architect = ArchitectGraph()
 
         # Act
@@ -286,7 +285,7 @@ graph = StateGraph(State)
 
 上記のコードは基本的な例です。"""
 
-        mock_chat = mock_openai_chat(response_content=code_response)
+        mock_openai_chat(response_content=code_response)
         architect = ArchitectGraph()
 
         # Act
@@ -307,7 +306,7 @@ graph = StateGraph(State)
         # Arrange
         explanation = "このシステムは、ユーザーの問い合わせを自動的に処理します..."
 
-        mock_chat = mock_openai_chat(response_content=explanation)
+        mock_openai_chat(response_content=explanation)
         architect = ArchitectGraph()
 
         # Act
@@ -331,7 +330,7 @@ graph = StateGraph(State)
 - API認証情報の管理
 - エラーハンドリングの実装"""
 
-        mock_chat = mock_openai_chat(response_content=notes_response)
+        mock_openai_chat(response_content=notes_response)
         architect = ArchitectGraph()
 
         # Act

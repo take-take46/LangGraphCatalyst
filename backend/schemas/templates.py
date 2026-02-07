@@ -28,7 +28,8 @@ class TemplatesListResponse(BaseModel):
     templates: list[TemplateResponse] = Field(..., description="テンプレートのリスト")
     total_count: int = Field(..., description="総テンプレート数")
     categories: dict[str, int] = Field(
-        ..., description="カテゴリ別のテンプレート数（例: {'customer_support': 2, 'data_analysis': 1}）"
+        ...,
+        description="カテゴリ別のテンプレート数（例: {'customer_support': 2, 'data_analysis': 1}）",
     )
     difficulties: dict[str, int] = Field(
         ..., description="難易度別のテンプレート数（例: {'初級': 2, '中級': 2, '上級': 1}）"

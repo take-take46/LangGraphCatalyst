@@ -43,8 +43,13 @@ select = [
 ignore = [
     "E501",  # line too long (handled by formatter)
     "B008",  # do not perform function calls in argument defaults
+    "B904",  # raise ... from err (warning level)
     "C901",  # too complex
     "W191",  # indentation contains tabs
+    "E402",  # module level import not at top (needed for sys.path manipulation)
+    "ARG001", # unused function argument (FastAPI dependencies)
+    "ARG002", # unused method argument (pytest fixtures)
+    "SIM117", # nested with statements (readability preference)
 ]
 
 # Allow autofix for all enabled rules

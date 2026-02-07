@@ -5,7 +5,6 @@
 """
 
 import json
-import os
 from pathlib import Path
 
 
@@ -32,7 +31,7 @@ class ProgressManager:
         """
         try:
             if self.progress_file.exists():
-                with open(self.progress_file, "r", encoding="utf-8") as f:
+                with open(self.progress_file, encoding="utf-8") as f:
                     data = json.load(f)
                     return data.get("completed_topics", [])
             return []

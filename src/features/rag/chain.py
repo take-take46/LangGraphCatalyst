@@ -100,9 +100,7 @@ class RAGChain:
 
         # プロンプトテンプレートの作成（2種類）
         self.prompt_template_learning = ChatPromptTemplate.from_template(SYSTEM_PROMPT_LEARNING)
-        self.prompt_template_with_code = ChatPromptTemplate.from_template(
-            SYSTEM_PROMPT_WITH_CODE
-        )
+        self.prompt_template_with_code = ChatPromptTemplate.from_template(SYSTEM_PROMPT_WITH_CODE)
 
     def _should_include_code(self, question: str) -> bool:
         """

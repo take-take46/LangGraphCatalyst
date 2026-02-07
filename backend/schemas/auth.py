@@ -19,9 +19,7 @@ class UserResponse(BaseModel):
 
     username: str = Field(..., description="ユーザー名")
     role: str = Field(..., description="ロール（admin または user）")
-    daily_limit: int | None = Field(
-        None, description="1日の使用制限回数（Noneは無制限）"
-    )
+    daily_limit: int | None = Field(None, description="1日の使用制限回数（Noneは無制限）")
 
 
 class LoginResponse(BaseModel):

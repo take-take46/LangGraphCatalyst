@@ -4,9 +4,9 @@ LangGraph Catalyst - Vector Store Tests
 ベクトルストアのユニットテスト
 """
 
-import pytest
 from unittest.mock import Mock
 
+import pytest
 from langchain_core.documents import Document
 
 from src.features.rag.vectorstore import ChromaVectorStore
@@ -25,7 +25,7 @@ class TestChromaVectorStore:
         """ベクトルストアの初期化テスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma = mocker.patch("src.features.rag.vectorstore.Chroma")
+        mocker.patch("src.features.rag.vectorstore.Chroma")
 
         # Act
         vectorstore = ChromaVectorStore(
@@ -41,7 +41,7 @@ class TestChromaVectorStore:
         """デフォルト値での初期化テスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma = mocker.patch("src.features.rag.vectorstore.Chroma")
+        mocker.patch("src.features.rag.vectorstore.Chroma")
 
         # Act
         vectorstore = ChromaVectorStore()
@@ -71,7 +71,7 @@ class TestChromaVectorStore:
         """ドキュメント追加の成功テスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma(sample_documents)
+        mock_chroma(sample_documents)
 
         vectorstore = ChromaVectorStore()
 
@@ -88,7 +88,7 @@ class TestChromaVectorStore:
         """空のドキュメントリストのテスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma([])
+        mock_chroma([])
 
         vectorstore = ChromaVectorStore()
 
@@ -106,7 +106,7 @@ class TestChromaVectorStore:
         """バッチ処理のテスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma(sample_documents)
+        mock_chroma(sample_documents)
 
         vectorstore = ChromaVectorStore()
 
@@ -122,9 +122,7 @@ class TestChromaVectorStore:
         # バッチ処理が複数回呼ばれることを確認
         assert vectorstore.vector_store.add_documents.call_count == 3
 
-    def test_add_documents_partial_failure(
-        self, mocker, mock_openai_embeddings, sample_documents
-    ):
+    def test_add_documents_partial_failure(self, mocker, mock_openai_embeddings, sample_documents):
         """部分的な失敗のテスト"""
         # Arrange
         mock_openai_embeddings()
@@ -165,7 +163,7 @@ class TestChromaVectorStore:
         """類似度検索の成功テスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma(sample_documents)
+        mock_chroma(sample_documents)
 
         vectorstore = ChromaVectorStore()
 
@@ -185,12 +183,12 @@ class TestChromaVectorStore:
         """フィルタ付き検索のテスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma(sample_documents)
+        mock_chroma(sample_documents)
 
         vectorstore = ChromaVectorStore()
 
         # Act
-        results = vectorstore.similarity_search(
+        vectorstore.similarity_search(
             "LangGraph", k=3, filter_metadata={"doc_type": "official_docs"}
         )
 
@@ -203,7 +201,7 @@ class TestChromaVectorStore:
         """空クエリのテスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma([])
+        mock_chroma([])
 
         vectorstore = ChromaVectorStore()
 
@@ -219,7 +217,7 @@ class TestChromaVectorStore:
         """スコア付き検索のテスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma(sample_documents)
+        mock_chroma(sample_documents)
 
         vectorstore = ChromaVectorStore()
 
@@ -254,7 +252,7 @@ class TestChromaVectorStore:
         """コレクション削除の成功テスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma([])
+        mock_chroma([])
 
         vectorstore = ChromaVectorStore()
 
@@ -284,7 +282,7 @@ class TestChromaVectorStore:
         """コレクション内のドキュメント数取得テスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma(sample_documents)
+        mock_chroma(sample_documents)
 
         vectorstore = ChromaVectorStore()
 
@@ -319,12 +317,12 @@ class TestChromaVectorStore:
         """Retrieverとして取得するテスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma([])
+        mock_chroma([])
 
         vectorstore = ChromaVectorStore()
 
         # Act
-        retriever = vectorstore.as_retriever(search_kwargs={"k": 10})
+        vectorstore.as_retriever(search_kwargs={"k": 10})
 
         # Assert
         vectorstore.vector_store.as_retriever.assert_called_once_with(search_kwargs={"k": 10})
@@ -333,12 +331,12 @@ class TestChromaVectorStore:
         """デフォルトパラメータでのRetriever取得テスト"""
         # Arrange
         mock_openai_embeddings()
-        mock_chroma_instance = mock_chroma([])
+        mock_chroma([])
 
         vectorstore = ChromaVectorStore()
 
         # Act
-        retriever = vectorstore.as_retriever()
+        vectorstore.as_retriever()
 
         # Assert
         # デフォルト値で呼ばれることを確認

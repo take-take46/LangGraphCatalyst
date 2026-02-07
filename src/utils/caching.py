@@ -6,8 +6,9 @@ LangGraph Catalyst - Caching Utilities
 
 import hashlib
 import logging
+from collections.abc import Callable
 from functools import wraps
-from typing import Any, Callable, TypeVar
+from typing import Any, TypeVar
 
 import streamlit as st
 
