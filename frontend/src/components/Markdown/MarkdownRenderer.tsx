@@ -10,7 +10,7 @@ export default function MarkdownRenderer({ content }: MarkdownRendererProps) {
     <div className="prose prose-invert max-w-none">
       <ReactMarkdown
         components={{
-          code({ node, className, children, ...props }: any) {
+          code({ node: _node, className, children, ...props }: any) {
             const match = /language-(\w+)/.exec(className || '');
             const codeString = String(children).replace(/\n$/, '');
             const inline = props.inline || !match;
