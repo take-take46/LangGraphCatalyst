@@ -122,7 +122,7 @@ describe('RAGPage', () => {
 
     renderRAGPage();
 
-    expect(screen.getByText(/回答を生成中/i)).toBeInTheDocument();
+    expect(screen.getByText(/処理中/i)).toBeInTheDocument();
   });
 
   it('displays error message', () => {

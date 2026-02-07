@@ -154,7 +154,7 @@ describe('ArchitectPage', () => {
 
     renderArchitectPage();
 
-    expect(screen.getByText(/構成案を生成中/i)).toBeInTheDocument();
+    expect(screen.getByText(/処理中/i)).toBeInTheDocument();
   });
 
   it('displays error message', () => {

@@ -4,7 +4,6 @@ LangGraph Catalyst - RAG Chain Tests
 RAGチェーンのユニットテスト
 """
 
-
 import pytest
 
 from src.features.rag.chain import RAGChain
