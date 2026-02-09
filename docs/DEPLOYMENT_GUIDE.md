@@ -30,20 +30,29 @@ LangGraph Catalystは、Render上で以下の2つのサービスとしてデプ�
 │ Frontend (React)    │ ← Render Static Site
 │  - Vite Build       │
 │  - Tailwind CSS     │
+│  - Zustand (状態)   │
 └─────────┬───────────┘
-          │ API Calls
+          │ API Calls (JWT認証)
           ↓
 ┌─────────────────────┐
 │ Backend (FastAPI)   │ ← Render Web Service
+│  - JWT認証          │
+│  - 使用制限(5回/日) │
 │  - LangChain        │
 │  - LangGraph        │
 │  - Chroma Vector DB │
-└─────────────────────┘
+└─────────┬───────────┘
           │
           ↓
 ┌─────────────────────┐
 │ OpenAI API          │
 └─────────────────────┘
+
+データストア:
+- Chroma: ベクトルDB（ローカルファイル）
+- JSON: 使用制限カウンター（data/usage_limits.json）
+- 環境変数: ユーザー情報（4ユーザー）
+- localStorage: 学習進捗（フロントエンド）
 ```
 
 ---
@@ -113,16 +122,29 @@ render.yamlで`sync: false`と設定されている環境変数は、Render Dash
 | 変数名 | 値 | 説明 |
 |--------|-----|------|
 | `OPENAI_API_KEY` | `sk-...` | OpenAI APIキー（必須） |
-| `JWT_SECRET_KEY` | `<ランダム文字列>` | JWT署名用秘密鍵（認証使用時） |
-| `ADMIN_PASSWORD` | `<管理者パスワード>` | 管理者ユーザーのパスワード |
-| `TESTUSER1_PASSWORD` | `<テストユーザー1パスワード>` | テストユーザー1のパスワード |
-| `TESTUSER2_PASSWORD` | `<テストユーザー2パスワード>` | テストユーザー2のパスワード |
-| `TESTUSER3_PASSWORD` | `<テストユーザー3パスワード>` | テストユーザー3のパスワード |
+| `JWT_SECRET_KEY` | `<ランダム文字列>` | JWT署名用秘密鍵（認証必須） |
+| `ADMIN_PASSWORD` | `<管理者パスワード>` | 管理者ユーザーのパスワード（認証必須） |
+| `TESTUSER1_PASSWORD` | `<テストユーザー1パスワード>` | テストユーザー1のパスワード（認証必須） |
+| `TESTUSER2_PASSWORD` | `<テストユーザー2パスワード>` | テストユーザー2のパスワード（認証必須） |
+| `TESTUSER3_PASSWORD` | `<テストユーザー3パスワード>` | テストユーザー3のパスワード（認証必須） |
 
 **JWT秘密鍵の生成方法**:
 ```bash
 openssl rand -hex 32
 ```
+
+**パスワードの要件**:
+- 最低8文字以上を推奨
+- 英数字 + 記号の組み合わせを推奨
+- 環境変数に直接設定（bcryptハッシュ化は自動）
+
+**ユーザー一覧**:
+| ユーザー名 | ロール | 使用制限 |
+|----------|-------|---------|
+| `admin` | 管理者 | 無制限 |
+| `testuser1` | 一般ユーザー | 5回/日 |
+| `testuser2` | 一般ユーザー | 5回/日 |
+| `testuser3` | 一般ユーザー | 5回/日 |
 
 4. "Save Changes"をクリック
 
@@ -167,22 +189,25 @@ Deploying static site...
 
 | 変数名 | デフォルト値 | 説明 | 必須 |
 |--------|------------|------|------|
-| `OPENAI_API_KEY` | - | OpenAI APIキー | ✅ |
-| `CHROMA_PERSIST_DIR` | `./data/chroma` | Chromaベクトルストアのパス | - |
-| `CORS_ORIGINS` | `https://langgraph-catalyst-frontend.onrender.com,http://localhost:5173` | CORS許可オリジン | - |
-| `JWT_SECRET_KEY` | - | JWT署名用秘密鍵 | ✅（認証使用時） |
+| **認証関連** | | | |
+| `JWT_SECRET_KEY` | - | JWT署名用秘密鍵（`openssl rand -hex 32`で生成） | ✅ |
 | `JWT_ALGORITHM` | `HS256` | JWTアルゴリズム | - |
 | `JWT_ACCESS_TOKEN_EXPIRE_MINUTES` | `1440` | トークン有効期限（24時間） | - |
-| `LOG_LEVEL` | `INFO` | ログレベル | - |
-| `ENVIRONMENT` | `production` | 実行環境 | - |
+| `ADMIN_PASSWORD` | - | 管理者パスワード（bcrypt自動ハッシュ化） | ✅ |
+| `TESTUSER1_PASSWORD` | - | テストユーザー1パスワード | ✅ |
+| `TESTUSER2_PASSWORD` | - | テストユーザー2パスワード | ✅ |
+| `TESTUSER3_PASSWORD` | - | テストユーザー3パスワード | ✅ |
+| **OpenAI API** | | | |
+| `OPENAI_API_KEY` | - | OpenAI APIキー | ✅ |
 | `DEFAULT_LLM_MODEL` | `gpt-4-turbo-preview` | LLMモデル | - |
 | `DEFAULT_EMBEDDING_MODEL` | `text-embedding-3-small` | 埋め込みモデル | - |
 | `MAX_TOKENS` | `4096` | 最大トークン数 | - |
 | `TEMPERATURE` | `0.3` | LLM温度パラメータ | - |
-| `ADMIN_PASSWORD` | - | 管理者パスワード | ✅ |
-| `TESTUSER1_PASSWORD` | - | テストユーザー1パスワード | ✅ |
-| `TESTUSER2_PASSWORD` | - | テストユーザー2パスワード | ✅ |
-| `TESTUSER3_PASSWORD` | - | テストユーザー3パスワード | ✅ |
+| **インフラ設定** | | | |
+| `CHROMA_PERSIST_DIR` | `./data/chroma` | Chromaベクトルストアのパス | - |
+| `CORS_ORIGINS` | `https://langgraph-catalyst-frontend.onrender.com,http://localhost:5173` | CORS許可オリジン | - |
+| `LOG_LEVEL` | `INFO` | ログレベル（DEBUG/INFO/WARNING/ERROR） | - |
+| `ENVIRONMENT` | `production` | 実行環境（production/development） | - |
 
 ### フロントエンド環境変数一覧
 
@@ -248,15 +273,44 @@ CORS errorが出た場合:
 
 ### 6. 機能テスト
 
+#### 認証機能
+1. ログインページ（`/login`）にアクセス
+2. **管理者アカウントでログイン**
+   - Username: `admin`
+   - Password: `ADMIN_PASSWORD`環境変数に設定した値
+3. ログイン成功後、ホームページにリダイレクトされることを確認
+4. ヘッダーにユーザー名が表示されることを確認
+
 #### RAG機能
-1. RAGページにアクセス
+1. RAGページにアクセス（認証必要）
 2. 「LangGraphとは何ですか？」と質問
 3. ソース付きで回答が返ってくることを確認
+4. 使用回数が正しくカウントされているか確認（テストユーザーの場合）
 
 #### 構成案生成機能
-1. Architectページにアクセス
+1. Architectページにアクセス（認証必要）
 2. ビジネス課題を入力（例: 「カスタマーサポートの自動化」）
 3. Mermaid図、コード例、説明が生成されることを確認
+
+#### 学習パス機能
+1. Learning Pathページにアクセス（認証不要）
+2. 初級/中級/上級のトピックが表示されることを確認
+3. トピック完了チェックボックスが動作するか確認
+4. 進捗バーが正しく更新されるか確認
+
+#### テンプレート機能
+1. Templatesページにアクセス（認証不要）
+2. カテゴリ別にテンプレートが表示されることを確認
+3. 難易度フィルタが動作するか確認
+4. コード例が正しく表示されるか確認
+
+#### 使用制限機能
+1. **テストユーザー1でログイン**
+   - Username: `testuser1`
+   - Password: `TESTUSER1_PASSWORD`環境変数に設定した値
+2. RAGまたはArchitect機能を5回使用
+3. 6回目のリクエストで「本日の使用回数上限に達しました」エラーが表示されることを確認
+4. ヘッダーに「残り0回」が表示されることを確認
 
 ---
 
@@ -364,6 +418,55 @@ CORS errorが出た場合:
 2. **ウォームアップスクリプト**（無料プランで継続使用）
    - 定期的にヘルスチェックを叩くスクリプトを外部サービス（UptimeRobot等）で実行
    - 15分ごとにアクセスしてスリープを防ぐ
+
+### 問題7: 使用制限カウンターがリセットされない
+
+**症状**: 日付が変わっても使用回数がリセットされない、またはリセットされすぎる
+
+**原因**:
+1. サーバーのタイムゾーンが異なる（Render無料プランは通常UTC）
+2. Render再起動により`data/usage_limits.json`が消失
+
+**対策**:
+1. **タイムゾーン確認**
+   ```bash
+   # ローカルで確認
+   python -c "from datetime import date; print(date.today())"
+   ```
+
+2. **使用制限カウンターの手動リセット**（管理者のみ）
+   - Renderシェルで`data/usage_limits.json`を削除
+   ```bash
+   rm -f data/usage_limits.json
+   ```
+
+3. **Render無料プランの制約を理解**
+   - 再起動時にファイルが消える可能性がある
+   - 永続化が必要な場合は有料プランのDisk機能を使用
+
+### 問題8: 「本日の使用回数上限に達しました」エラーが出るが、実際は使用していない
+
+**症状**: テストユーザーで初めてログインしたのに、すぐに429エラーが表示される
+
+**原因**:
+1. 別のユーザーが同じアカウントを使用している
+2. `data/usage_limits.json`のカウントが正しく更新されていない
+3. サーバーが再起動せず、前日のカウントが残っている
+
+**対策**:
+1. **使用制限カウンターの確認**（管理者のみ）
+   - Renderシェルで`data/usage_limits.json`の内容を確認
+   ```bash
+   cat data/usage_limits.json
+   ```
+
+2. **日付が正しいか確認**
+   - カウンター内のdateフィールドが今日の日付（YYYY-MM-DD）か確認
+
+3. **カウンターの手動リセット**
+   ```bash
+   rm -f data/usage_limits.json
+   ```
 
 ---
 
@@ -485,4 +588,4 @@ headers:
 
 ---
 
-**Last Updated**: 2026-01-31
+**Last Updated**: 2026-02-07

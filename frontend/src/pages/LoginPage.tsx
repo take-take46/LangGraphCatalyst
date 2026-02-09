@@ -94,16 +94,6 @@ export default function LoginPage() {
               {isLoading ? 'ログイン中...' : 'ログイン'}
             </Button>
           </form>
-
-          <div className="mt-6 pt-6 border-t border-[var(--color-border)]">
-            <div className="text-xs text-[var(--color-text-tertiary)] space-y-1">
-              <p className="font-bold">テスト用アカウント:</p>
-              <p className="font-mono">開発者: admin / admin123 (無制限)</p>
-              <p className="font-mono">テスト1: testuser1 / test123 (5回/日)</p>
-              <p className="font-mono">テスト2: testuser2 / test123 (5回/日)</p>
-              <p className="font-mono">テスト3: testuser3 / test123 (5回/日)</p>
-            </div>
-          </div>
         </Card>
       </div>
     </div>

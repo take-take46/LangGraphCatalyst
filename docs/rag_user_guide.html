@@ -469,7 +469,7 @@ graph LR
     A[あなたの質問] --> B[📚 関連情報を検索]
     B --> C[📖 資料から<br/>関連部分を抽出]
     C --> D[🤖 AIが資料を読んで<br/>回答を作成]
-    D --> E[💬 回答 +<br/>情報源リンク]
+    D --> E[💬 回答 +<br/>情報源リンク<br/>+ コード例]
 
     style A fill:#667eea,color:#fff
     style E fill:#28a745,color:#fff
@@ -484,8 +484,12 @@ graph LR
                     <div class="step">
                         <div class="step-number">1</div>
                         <div class="step-content">
-                            <h4>質問の受付</h4>
-                            <p>あなたが「LangGraphで条件分岐を作るには？」のような質問を入力します。</p>
+                            <h4>質問の受付と自動分析</h4>
+                            <p>あなたが「LangGraphで条件分岐を作るには？」のような質問を入力すると、システムが質問内容を自動分析します。</p>
+                            <p style="margin-top: 10px; padding: 10px; background: rgba(102, 126, 234, 0.1); border-radius: 5px;">
+                                <strong>🎯 賢い質問分析:</strong><br>
+                                「実装方法」「書き方」「コード」などのキーワードを検出すると、コード例付きで回答するモードに自動切り替え。「概念」「とは」などのキーワードの場合は、わかりやすい説明に集中したモードになります。
+                            </p>
                         </div>
                     </div>
 
@@ -504,7 +508,7 @@ graph LR
                     <div class="step">
                         <div class="step-number">3</div>
                         <div class="step-content">
-                            <h4>関連部分の抽出</h4>
+                            <h4>関連部分の抽出と信頼度判定</h4>
                             <p>見つかった資料の中から、特に関連性の高い部分（上位5件程度）を取り出します。まるで本の目次から必要な章を選ぶように。</p>
                             <p style="margin-top: 10px; padding: 10px; background: rgba(40, 167, 69, 0.1); border-radius: 5px;">
                                 <strong>📊 信頼度スコア:</strong><br>
@@ -519,8 +523,8 @@ graph LR
                             <h4>AIによる回答生成</h4>
                             <p>抽出した資料をAI（GPT-4）に渡し、「これらの情報を基に、わかりやすく回答してください」と指示します。AIは資料を読み解き、あなたの質問に最適な回答を作成します。</p>
                             <p style="margin-top: 10px; padding: 10px; background: rgba(23, 162, 184, 0.1); border-radius: 5px;">
-                                <strong>🤖 賢い指示出し:</strong><br>
-                                質問の内容から「概念を知りたいのか」「実装方法を知りたいのか」を自動判断。知りたい内容に合わせて、AIへの指示を変えています。これにより、あなたが明示的に指定しなくても、最適な形式で回答が得られます。
+                                <strong>🤖 適応的プロンプト:</strong><br>
+                                質問の種類に応じて、AIへの指示を自動的に変更します。概念を知りたい質問には「わかりやすく説明して」、実装方法を知りたい質問には「コード例を含めて説明して」と指示を出し分けます。
                             </p>
                         </div>
                     </div>
@@ -528,11 +532,11 @@ graph LR
                     <div class="step">
                         <div class="step-number">5</div>
                         <div class="step-content">
-                            <h4>回答の表示</h4>
+                            <h4>回答の表示（ソース + コード例）</h4>
                             <p>生成された回答に加えて、<strong>参照した資料のリンク</strong>や<strong>コード例</strong>も一緒に表示されます。あなたは回答だけでなく、元の資料も確認できます。</p>
                             <p style="margin-top: 10px; padding: 10px; background: rgba(118, 75, 162, 0.1); border-radius: 5px;">
                                 <strong>📝 コード例の整理:</strong><br>
-                                複数のソースから同じコード例が見つかっても、重複を自動的に除去。最大5件の異なるコード例を、わかりやすく整理して表示します。
+                                複数のソース（AIの回答 + 公式ドキュメント）から同じコード例が見つかっても、重複を自動的に除去。最大5件の異なるコード例を、わかりやすく整理して表示します。
                             </p>
                         </div>
                     </div>
@@ -540,7 +544,7 @@ graph LR
 
                 <div class="success-box">
                     <h4>🎯 ポイント</h4>
-                    <p>RAGの最大の特徴は、<span class="highlight">「AIが勝手に答えを作るのではなく、信頼できる資料を参照してから答える」</span>という点です。これにより、より正確で信頼性の高い回答が得られます。</p>
+                    <p>RAGの最大の特徴は、<span class="highlight">「AIが勝手に答えを作るのではなく、信頼できる資料を参照してから答える」</span>という点です。さらに、<span class="highlight">質問の意図を自動判断して、最適な形式で回答する</span>賢さも備えています。</p>
                 </div>
 
                 <h3>🧠 システムの賢い工夫</h3>
@@ -555,14 +559,20 @@ graph LR
 
                     <div class="feature-card">
                         <div class="icon">📚</div>
-                        <h4>関連知識も提供</h4>
-                        <p>LangGraphだけでなく、その基礎となるLangChainの知識も含めて回答。体系的に学習できます。</p>
+                        <h4>LangGraph + LangChain を学べる</h4>
+                        <p>LangGraphだけでなく、その基礎となるLangChainの知識（Agents, Tools, Memory等）も含めて回答。体系的に学習できます。</p>
                     </div>
 
                     <div class="feature-card">
                         <div class="icon">🔍</div>
                         <h4>重複を自動除去</h4>
                         <p>複数のソースから同じコード例が見つかっても、重複を除去して見やすく整理します。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">⚡</div>
+                        <h4>高速レスポンス</h4>
+                        <p>通常10秒以内で回答を生成。待ち時間が少なく、スムーズに学習を進められます。</p>
                     </div>
                 </div>
 
@@ -579,7 +589,7 @@ graph LR
                     <div class="feature-card">
                         <div class="icon">📘</div>
                         <h4>LangGraph公式ドキュメント</h4>
-                        <p>LangGraphの公式サイトから、APIリファレンスやチュートリアルを収集。最も信頼性の高い情報源。</p>
+                        <p>LangGraphの公式サイトから、主要なドキュメントページ（overview, quickstart, persistence等）を収集。最も信頼性の高い情報源。</p>
                     </div>
 
                     <div class="feature-card">
@@ -597,7 +607,7 @@ graph LR
                     <div class="feature-card">
                         <div class="icon">💻</div>
                         <h4>GitHub</h4>
-                        <p>LangGraphのGitHubリポジトリから、実際のコード例やREADMEを収集。実装の参考になる。</p>
+                        <p>LangGraphのGitHubリポジトリから、READMEや重要なコード例（RAG, Multi-Agent等）を収集。実装の参考になる。</p>
                     </div>
                 </div>
 
@@ -622,6 +632,7 @@ graph LR
                         <li><strong>学習効率の向上</strong>: 回答だけでなく、コード例や関連ドキュメントも一緒に提示されるため、理解が深まる</li>
                         <li><strong>専門知識への対応</strong>: LangGraphのような専門的な技術に関する質問にも、正確に答えられる</li>
                         <li><strong>体系的な学習</strong>: LangGraphだけでなく、基礎となるLangChainの知識も含めて学べる</li>
+                        <li><strong>高速レスポンス</strong>: 通常10秒以内で回答を生成、待ち時間が少ない</li>
                     </ul>
                 </div>
 
@@ -675,9 +686,39 @@ graph.add_conditional_edges(
 
                         <p><strong>情報源:</strong></p>
                         <ul>
-                            <li>📘 <a href="#">Conditional Edges - LangGraph Documentation</a></li>
-                            <li>💻 <a href="#">GitHub Example: Conditional Routing</a></li>
+                            <li>📘 Conditional Edges - LangGraph Documentation</li>
+                            <li>💻 GitHub Example: Conditional Routing</li>
                         </ul>
+
+                        <p><strong>信頼度スコア:</strong> 90% (十分な資料が見つかりました)</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h4>例2: 概念の理解</h4>
+
+                    <div class="question">
+                        <strong>質問:</strong> LangGraphのステート管理とは何ですか？
+                    </div>
+
+                    <div class="answer">
+                        <strong>RAGの回答:</strong>
+                        <p>LangGraphのステート管理は、エージェントワークフローの実行中に情報を保持・更新するための仕組みです。従来のチェーンと違い、各ノード間で状態を共有し、複雑なフローを管理できます。</p>
+
+                        <p><strong>主な特徴:</strong></p>
+                        <ul>
+                            <li>TypedDictで型安全な状態定義</li>
+                            <li>各ノードが状態を読み書き可能</li>
+                            <li>永続化により、中断・再開が可能</li>
+                        </ul>
+
+                        <p><strong>情報源:</strong></p>
+                        <ul>
+                            <li>📘 Thinking in LangGraph - Official Documentation</li>
+                            <li>📝 State Management Best Practices - LangChain Blog</li>
+                        </ul>
+
+                        <p><em>※ この質問では「コード」のキーワードがないため、わかりやすい説明に集中しています。</em></p>
                     </div>
                 </div>
 
@@ -780,6 +821,12 @@ graph.add_conditional_edges(
                                 <td>✓✓ いつでも可能</td>
                                 <td>✓✓ いつでも可能</td>
                             </tr>
+                            <tr>
+                                <td><strong>自動コード提供</strong></td>
+                                <td>✗ 自分で探す</td>
+                                <td>✓ 生成可能</td>
+                                <td>✓✓ 質問に応じて<br>自動提供</td>
+                            </tr>
                         </tbody>
                     </table>
                 </div>
@@ -823,12 +870,13 @@ graph.add_conditional_edges(
                         <li>24時間対応が必要</li>
                         <li>一貫した品質の回答が求められる</li>
                         <li>最新情報への迅速な対応が重要</li>
+                        <li>質問の意図に応じた柔軟な回答が必要</li>
                     </ul>
                 </div>
 
                 <div class="info-box">
                     <h4>💡 まとめ</h4>
-                    <p>RAGは、<span class="highlight">検索エンジンの「信頼性」とAIの「わかりやすさ」を組み合わせた</span>、次世代の情報検索システムです。特に<span class="highlight">専門知識が必要な分野</span>や<span class="highlight">頻繁に更新される情報</span>を扱う場合に、大きな効果を発揮します。</p>
+                    <p>RAGは、<span class="highlight">検索エンジンの「信頼性」とAIの「わかりやすさ」を組み合わせた</span>、次世代の情報検索システムです。さらに、<span class="highlight">質問の意図を自動判断して最適な形式で回答する</span>賢さも備えています。特に<span class="highlight">専門知識が必要な分野</span>や<span class="highlight">頻繁に更新される情報</span>を扱う場合に、大きな効果を発揮します。</p>
                 </div>
             </section>
 
@@ -848,21 +896,26 @@ graph.add_conditional_edges(
 
                 <div style="margin-top: 30px;">
                     <h4 style="color: #667eea;">Q3. 「コード例を教えて」と言わなくても、コード例が表示されるのはなぜ？</h4>
-                    <p>A. システムが質問の内容を自動分析しています。「実装」「書き方」「作り方」などのキーワードを検出すると、コード例が必要だと判断し、自動的にコード付きで回答します。逆に「とは？」「概念」などの場合は、説明に集中した回答になります。</p>
+                    <p>A. システムが質問の内容を自動分析しています。「実装」「書き方」「作り方」「コード」などのキーワードを検出すると、コード例が必要だと判断し、自動的にコード付きで回答します。逆に「とは？」「概念」などの場合は、説明に集中した回答になります。これにより、あなたが明示的に指定しなくても、質問の意図に合った回答を得られます。</p>
                 </div>
 
                 <div style="margin-top: 30px;">
-                    <h4 style="color: #667eea;">Q4. 資料の更新はどのくらいの頻度で必要ですか？</h4>
+                    <h4 style="color: #667eea;">Q4. LangChainの知識も含まれているのはなぜ？</h4>
+                    <p>A. LangGraphはLangChainの上に構築されているため、LangGraphを理解するにはLangChainの基礎知識（Agents, Tools, Memory等）が不可欠です。このシステムは、LangGraphの質問に答えるために必要なLangChainの背景知識も自動的に提供できるよう設計されています。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q5. 資料の更新はどのくらいの頻度で必要ですか？</h4>
                     <p>A. 情報の変更頻度によります。技術ドキュメントなら月1回、ニュース的な内容なら週1回、ほぼ変わらない社内規定なら四半期に1回など、内容に応じて調整します。</p>
                 </div>
 
                 <div style="margin-top: 30px;">
-                    <h4 style="color: #667eea;">Q5. 導入にはどのくらいのコストがかかりますか？</h4>
+                    <h4 style="color: #667eea;">Q6. 導入にはどのくらいのコストがかかりますか？</h4>
                     <p>A. 初期構築費用（システム開発・資料整備）と、運用費用（APIコスト・保守）が必要です。本システムの場合、OpenAI APIの利用料が主なコストで、1クエリあたり数円〜数十円程度です。</p>
                 </div>
 
                 <div style="margin-top: 30px;">
-                    <h4 style="color: #667eea;">Q6. セキュリティは大丈夫ですか？</h4>
+                    <h4 style="color: #667eea;">Q7. セキュリティは大丈夫ですか？</h4>
                     <p>A. 機密情報を扱う場合は、クラウドではなくオンプレミス環境での運用や、プライベートLLMの使用を検討します。また、アクセス制御や暗号化など、適切なセキュリティ対策が必要です。</p>
                 </div>
             </section>
@@ -871,7 +924,7 @@ graph.add_conditional_edges(
         <footer>
             <p>&copy; 2026 LangGraph Catalyst</p>
             <p>あなたの「知りたい」を、AIが最新の資料から見つけ出します</p>
-            <p style="margin-top: 20px; font-size: 0.9em;">Built with LangChain, LangGraph, Chroma, and OpenAI</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">Built with React, FastAPI, LangChain, and Chroma</p>
         </footer>
     </div>
 

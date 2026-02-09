@@ -13,17 +13,19 @@
 ## 概要
 
 ### 目的
-LangGraph Catalystは、LangGraphの学習支援とビジネス活用を促進するポートフォリオシステムです。本API仕様書では、システム内部のモジュール間インターフェースと、将来的な外部API公開を見据えた仕様を定義します。
+LangGraph Catalystは、LangGraphの学習支援とビジネス活用を促進するポートフォリオシステムです。本API仕様書では、システム内部のモジュール間インターフェースと、REST APIエンドポイントの仕様を定義します。
 
 ### アーキテクチャ
-- **フロントエンド**: Streamlit (Web UI)
-- **バックエンド**: Python (LangChain/LangGraph)
+- **フロントエンド**: React + TypeScript + Vite (Web UI)
+- **バックエンド**: FastAPI + LangChain + LangGraph
+- **認証**: JWT（環境変数ベースユーザー管理）
 - **ベクトルDB**: Chroma
 - **LLM**: OpenAI API (GPT-4等)
 
 ### バージョン
 - API Version: 1.0.0
-- 最終更新日: 2026-01-19
+- 実装フェーズ: Phase 9 完了（React + FastAPI）
+- 最終更新日: 2026-02-07
 
 ---
 
@@ -548,19 +550,39 @@ print(settings.openai_api_key)  # 環境変数から取得
 
 ---
 
-## REST API仕様（将来実装）
+## REST API仕様（実装済み）
 
-将来的にStreamlitアプリとは別に、REST APIとして公開する場合の仕様です。
+FastAPIで実装されたREST APIエンドポイントの仕様です。
 
 ### ベースURL
 ```
-https://api.langgraph-catalyst.com/v1
+# 本番環境
+https://langgraph-catalyst-api.onrender.com/api/v1
+
+# ローカル開発
+http://localhost:8000/api/v1
 ```
 
 ### 認証
+JWT（JSON Web Token）ベースの認証を使用します。
+
 ```http
-Authorization: Bearer <API_KEY>
+Authorization: Bearer <JWT_TOKEN>
 ```
+
+**トークン取得方法**:
+1. `POST /api/v1/auth/login` でログイン
+2. レスポンスの `access_token` を取得
+3. 以降のリクエストで `Authorization: Bearer <access_token>` ヘッダーを付与
+
+**認証が必要なエンドポイント**:
+- `POST /api/v1/rag/query`
+- `POST /api/v1/architect/generate`
+
+**認証不要なエンドポイント**:
+- `GET /api/v1/learning-path/*`
+- `GET /api/v1/templates/*`
+- `POST /api/v1/auth/login`
 
 ---
 
@@ -693,72 +715,321 @@ Authorization: Bearer <API_KEY>
 
 ---
 
-#### 3. ドキュメント更新
+#### 3. 認証
 
-##### `POST /admin/update-documents`
-RAGデータソースを更新します（管理者用）。
+##### `POST /api/v1/auth/login`
+ログインしてJWTトークンを取得します。
 
 **リクエスト**:
 ```http
-POST /admin/update-documents
-Content-Type: application/json
-Authorization: Bearer <ADMIN_API_KEY>
+POST /api/v1/auth/login
+Content-Type: application/x-www-form-urlencoded
 
-{
-    "sources": ["official_docs", "blog", "github"],
-    "max_documents": 200
-}
-```
-
-**レスポンス** (202 Accepted):
-```json
-{
-    "job_id": "update-20260119-abc123",
-    "status": "processing",
-    "message": "Document update started",
-    "estimated_time": 300
-}
-```
-
-**ジョブ状態確認**:
-```http
-GET /admin/jobs/{job_id}
+username=admin&password=your_password
 ```
 
 **レスポンス** (200 OK):
 ```json
 {
-    "job_id": "update-20260119-abc123",
-    "status": "completed",
-    "result": {
-        "total_documents": 187,
-        "sources": {
-            "official_docs": 92,
-            "blog": 45,
-            "github": 50
-        },
-        "updated_at": "2026-01-19T10:30:45Z"
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+    "token_type": "bearer",
+    "user": {
+        "username": "admin",
+        "role": "admin",
+        "daily_limit": null
+    }
+}
+```
+
+**エラーレスポンス**:
+- `401 Unauthorized`: ユーザー名またはパスワードが間違っている
+
+---
+
+##### `GET /api/v1/auth/me`
+現在ログインしているユーザー情報を取得します。
+
+**リクエスト**:
+```http
+GET /api/v1/auth/me
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**レスポンス** (200 OK):
+```json
+{
+    "username": "admin",
+    "role": "admin",
+    "daily_limit": null
+}
+```
+
+---
+
+##### `POST /api/v1/auth/logout`
+ログアウトします（トークン無効化は不要、フロントエンドで削除）。
+
+**リクエスト**:
+```http
+POST /api/v1/auth/logout
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**レスポンス** (200 OK):
+```json
+{
+    "message": "Successfully logged out"
+}
+```
+
+---
+
+#### 4. 学習パス
+
+##### `GET /api/v1/learning-path`
+学習パス全体を取得します（認証不要）。
+
+**リクエスト**:
+```http
+GET /api/v1/learning-path
+```
+
+**レスポンス** (200 OK):
+```json
+{
+    "path_id": "langgraph_learning_path",
+    "title": "LangGraph 学習パス",
+    "description": "初級から上級まで、LangGraphをマスターするための体系的なカリキュラム",
+    "levels": {
+        "初級": [
+            {
+                "topic_id": "intro-to-langgraph",
+                "level": "初級",
+                "title": "LangGraphとは",
+                "description": "LangGraphの基本概念と使い方を学びます",
+                "duration_minutes": 30,
+                "prerequisites": [],
+                "resources": [...]
+            }
+        ],
+        "中級": [...],
+        "上級": [...]
     }
 }
 ```
 
 ---
 
-### レート制限
-| プラン | リクエスト数 | 期間 |
-|--------|------------|------|
-| Free | 10 | 1時間 |
-| Basic | 100 | 1時間 |
-| Pro | 1000 | 1時間 |
+##### `GET /api/v1/learning-path/level/{level}`
+特定レベル（初級/中級/上級）のトピックを取得します。
 
-**レート制限時のレスポンス** (429):
+**リクエスト**:
+```http
+GET /api/v1/learning-path/level/初級
+```
+
+**レスポンス** (200 OK):
 ```json
 {
-    "error": "rate_limit_exceeded",
-    "message": "API rate limit exceeded",
-    "retry_after": 3600,
-    "limit": 10,
-    "remaining": 0
+    "level": "初級",
+    "topics": [
+        {
+            "topic_id": "intro-to-langgraph",
+            "title": "LangGraphとは",
+            ...
+        }
+    ]
+}
+```
+
+---
+
+##### `GET /api/v1/learning-path/topic/{topic_id}`
+個別トピックの詳細を取得します。
+
+**リクエスト**:
+```http
+GET /api/v1/learning-path/topic/intro-to-langgraph
+```
+
+**レスポンス** (200 OK):
+```json
+{
+    "topic_id": "intro-to-langgraph",
+    "level": "初級",
+    "title": "LangGraphとは",
+    "description": "LangGraphの基本概念と使い方を学びます",
+    "duration_minutes": 30,
+    "prerequisites": [],
+    "resources": [...]
+}
+```
+
+**エラーレスポンス**:
+- `404 Not Found`: トピックが見つからない
+
+---
+
+##### `POST /api/v1/learning-path/progress`
+学習進捗を計算します。
+
+**リクエスト**:
+```http
+POST /api/v1/learning-path/progress
+Content-Type: application/json
+
+{
+    "completed_topics": ["intro-to-langgraph", "basic-graph"]
+}
+```
+
+**レスポンス** (200 OK):
+```json
+{
+    "total_topics": 15,
+    "completed_topics": 2,
+    "progress_percentage": 13.33,
+    "by_level": {
+        "初級": {"total": 5, "completed": 2, "percentage": 40.0},
+        "中級": {"total": 6, "completed": 0, "percentage": 0.0},
+        "上級": {"total": 4, "completed": 0, "percentage": 0.0}
+    }
+}
+```
+
+---
+
+#### 5. テンプレート
+
+##### `GET /api/v1/templates`
+テンプレート一覧を取得します（認証不要）。
+
+**リクエスト**:
+```http
+GET /api/v1/templates?category=conversational&difficulty=初級
+```
+
+**クエリパラメータ**:
+| 名前 | 型 | 必須 | 説明 |
+|------|-----|------|------|
+| `category` | `str` | No | カテゴリでフィルタリング |
+| `difficulty` | `str` | No | 難易度でフィルタリング（初級/中級/上級） |
+
+**レスポンス** (200 OK):
+```json
+{
+    "templates": [
+        {
+            "template_id": "chatbot",
+            "category": "conversational",
+            "name": "基本的なチャットボット",
+            "description": "状態管理を使った対話型チャットボット",
+            "difficulty": "初級",
+            "use_case": "カスタマーサポート、FAQ自動応答",
+            "code_example": "from langgraph.graph import StateGraph\n...",
+            "key_features": [
+                "対話履歴管理",
+                "コンテキスト保持",
+                "エラーハンドリング"
+            ]
+        }
+    ],
+    "total": 1,
+    "filtered": true
+}
+```
+
+---
+
+##### `GET /api/v1/templates/categories`
+テンプレートカテゴリ一覧を取得します。
+
+**リクエスト**:
+```http
+GET /api/v1/templates/categories
+```
+
+**レスポンス** (200 OK):
+```json
+{
+    "categories": [
+        {
+            "category_id": "conversational",
+            "name": "対話型AI",
+            "description": "チャットボット、対話システム"
+        },
+        {
+            "category_id": "automation",
+            "name": "業務自動化",
+            "description": "ワークフロー自動化、タスク処理"
+        }
+    ]
+}
+```
+
+---
+
+##### `GET /api/v1/templates/{template_id}`
+個別テンプレートの詳細を取得します。
+
+**リクエスト**:
+```http
+GET /api/v1/templates/chatbot
+```
+
+**レスポンス** (200 OK):
+```json
+{
+    "template_id": "chatbot",
+    "category": "conversational",
+    "name": "基本的なチャットボット",
+    "description": "状態管理を使った対話型チャットボット",
+    "difficulty": "初級",
+    "use_case": "カスタマーサポート、FAQ自動応答",
+    "code_example": "from langgraph.graph import StateGraph\n...",
+    "key_features": [...]
+}
+```
+
+**エラーレスポンス**:
+- `404 Not Found`: テンプレートが見つからない
+
+---
+
+### 使用制限（認証ユーザーのみ）
+
+環境変数ベースのユーザー管理システムでは、以下の使用制限が適用されます。
+
+| ユーザー | ロール | 1日の使用制限 |
+|---------|-------|-------------|
+| `admin` | 管理者 | 無制限 |
+| `testuser1` | 一般ユーザー | 5回/日 |
+| `testuser2` | 一般ユーザー | 5回/日 |
+| `testuser3` | 一般ユーザー | 5回/日 |
+
+**使用制限対象エンドポイント**:
+- `POST /api/v1/rag/query`
+- `POST /api/v1/architect/generate`
+
+**使用制限超過時のレスポンス** (429 Too Many Requests):
+```json
+{
+    "detail": "本日の使用回数上限（5回）に達しました。明日再度お試しください。"
+}
+```
+
+**残り使用回数の取得**:
+```http
+GET /api/v1/usage/remaining
+Authorization: Bearer <JWT_TOKEN>
+```
+
+**レスポンス** (200 OK):
+```json
+{
+    "daily_limit": 5,
+    "used_today": 3,
+    "remaining": 2
 }
 ```
 
@@ -1036,4 +1307,4 @@ results = vectorstore.similarity_search(
 
 ---
 
-**Last Updated**: 2026-01-19
+**Last Updated**: 2026-02-07
