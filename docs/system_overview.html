@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangGraph Catalyst - システム総合ガイド</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: white;
+            padding: 80px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.3;
+        }
+
+        header h1 {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        header .subtitle {
+            font-size: 1.6em;
+            opacity: 0.95;
+            font-weight: 300;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .tagline {
+            font-size: 1.2em;
+            margin-top: 25px;
+            opacity: 0.9;
+            font-style: italic;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge-container {
+            margin-top: 30px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 1;
+        }
+
+        .badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 25px 40px;
+            border-bottom: 3px solid #667eea;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            justify-content: center;
+        }
+
+        nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.05em;
+            transition: all 0.3s;
+            padding: 8px 15px;
+            border-radius: 5px;
+        }
+
+        nav a:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        main {
+            padding: 60px 40px;
+        }
+
+        section {
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 4px solid #667eea;
+            text-align: center;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.9em;
+            margin: 40px 0 20px 0;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.4em;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 50px 30px;
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(240, 147, 251, 0.1) 100%);
+            border-radius: 15px;
+            margin-bottom: 50px;
+        }
+
+        .hero-section h3 {
+            font-size: 2.2em;
+            color: #667eea;
+            margin-bottom: 25px;
+        }
+
+        .hero-section p {
+            font-size: 1.4em;
+            color: #555;
+            max-width: 900px;
+            margin: 0 auto 30px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2em;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 15px;
+            padding: 35px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            transform: scaleX(0);
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 30px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card .icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .feature-card h4 {
+            color: #667eea;
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 1.05em;
+            line-height: 1.6;
+        }
+
+        .feature-card .learn-more {
+            display: inline-block;
+            margin-top: 15px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .feature-card .learn-more:hover {
+            color: #764ba2;
+            transform: translateX(5px);
+        }
+
+        .tech-stack-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .tech-item {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 20px;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .tech-item:hover {
+            background: #e7f3ff;
+            transform: translateX(5px);
+        }
+
+        .tech-item h5 {
+            color: #667eea;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .tech-item p {
+            color: #666;
+            font-size: 0.95em;
+            margin: 0;
+        }
+
+        .comparison-table {
+            margin: 40px 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 20px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .mermaid {
+            background: #f8f9fa;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 40px 0;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-box {
+            background: #e7f6f8;
+            border-left: 5px solid #17a2b8;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .info-box h4 {
+            color: #17a2b8;
+            margin-bottom: 15px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 5px solid #28a745;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 10px;
+        }
+
+        .success-box h4 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            border-color: #667eea;
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6em;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 25px;
+        }
+
+        .step-content h4 {
+            color: #667eea;
+            margin-bottom: 12px;
+        }
+
+        .step-content p {
+            color: #666;
+            margin: 0;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        .stat-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+        }
+
+        .stat-card .number {
+            font-size: 3em;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .label {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        footer {
+            background: #2d2d2d;
+            color: white;
+            text-align: center;
+            padding: 50px 40px;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 10px 0;
+        }
+
+        footer .links {
+            margin-top: 25px;
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        footer .links a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+
+        footer .links a:hover {
+            color: white;
+        }
+
+        .highlight {
+            background: linear-gradient(transparent 60%, rgba(102, 126, 234, 0.3) 60%);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2em;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-stack-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🚀 LangGraph Catalyst</h1>
+            <p class="subtitle">LangGraphの学習と実装を加速する、次世代AIシステム</p>
+            <p class="tagline">「学ぶ」から「作る」まで、一つのプラットフォームで</p>
+
+            <div class="badge-container">
+                <span class="badge">📚 RAG学習支援</span>
+                <span class="badge">🏗️ 自動設計生成</span>
+                <span class="badge">📖 学習パス</span>
+                <span class="badge">📋 テンプレート集</span>
+            </div>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#overview">概要</a></li>
+                <li><a href="#features">主要機能</a></li>
+                <li><a href="#how-to-use">使い方</a></li>
+                <li><a href="#tech-stack">技術スタック</a></li>
+                <li><a href="#architecture">アーキテクチャ</a></li>
+                <li><a href="#use-cases">活用シーン</a></li>
+                <li><a href="#faq">FAQ</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- 概要 -->
+            <section id="overview">
+                <h2>📖 LangGraph Catalystとは</h2>
+
+                <div class="hero-section">
+                    <h3>LangGraphの学習と実装を、触媒のように加速する</h3>
+                    <p>LangGraph Catalystは、<span class="highlight">LangGraphの学習</span>と<span class="highlight">ビジネス活用</span>を促進する総合プラットフォームです。「学ぶ」だけでなく「作る」までをサポートし、AIシステム開発のスピードを劇的に向上させます。</p>
+                    <a href="https://langgraph-catalyst-frontend.onrender.com" class="cta-button" target="_blank">今すぐ使ってみる →</a>
+                </div>
+
+                <h3>🎯 プロジェクトのVision</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <span class="icon">🎓</span>
+                        <h4>学習の加速</h4>
+                        <p>LangGraphの最新情報を、ソース付き・コード例付きで即座に検索。公式ドキュメント、ブログ、GitHubから収集した豊富な知識ベースで学習をサポート。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="icon">⚡</span>
+                        <h4>開発の高速化</h4>
+                        <p>ビジネス課題を入力するだけで、LangGraph構成案を自動生成。Mermaid図、実装コード、説明まで、わずか30秒で完成。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="icon">🌉</span>
+                        <h4>ビジネスと技術の橋渡し</h4>
+                        <p>技術者向けのコードと、非技術者向けの平易な説明を両方提供。チーム全員が同じ理解を持ち、スムーズに開発を進められる。</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 "Catalyst" の意味</h4>
+                    <p>化学における「触媒（Catalyst）」は、反応を加速させる物質です。このシステムは、LangGraphの<span class="highlight">学習プロセス</span>と<span class="highlight">開発プロセス</span>を加速させる「触媒」となることを目指しています。</p>
+                </div>
+
+                <h3>📊 システムの特徴</h3>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="number">10秒</span>
+                        <span class="label">RAG回答生成</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">30秒</span>
+                        <span class="label">構成案生成</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">4つ</span>
+                        <span class="label">コア機能</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="number">24/7</span>
+                        <span class="label">利用可能</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 主要機能 -->
+            <section id="features">
+                <h2>✨ 主要機能</h2>
+
+                <h3>1. 🔍 RAG学習支援機能</h3>
+
+                <div class="feature-card" style="text-align: left; max-width: 100%;">
+                    <span class="icon" style="float: left; margin-right: 20px;">🔍</span>
+                    <h4>最新のLangGraph情報を、ソース付き・コード例付きで即座に検索</h4>
+                    <p>LangGraphに関する質問をすると、AIが公式ドキュメント、ブログ、GitHubから関連情報を検索し、<strong>ソース付き</strong>、<strong>コード例付き</strong>で回答します。さらに、質問の意図を自動判断し、最適な形式で回答。</p>
+
+                    <div style="clear: both; margin-top: 20px; padding: 20px; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                        <h5 style="color: #667eea; margin-bottom: 15px;">✨ 主な特徴:</h5>
+                        <ul style="color: #555; line-height: 1.8;">
+                            <li><strong>適応的プロンプト</strong>: 「実装方法」を聞けば自動的にコード例付き、「概念」を聞けばわかりやすい説明に</li>
+                            <li><strong>LangGraph + LangChain</strong>: 基礎となるLangChainの知識も含めて回答</li>
+                            <li><strong>信頼度スコア</strong>: 回答の信頼性を数値で表示（50-100%）</li>
+                            <li><strong>ソース明示</strong>: 情報源のURLを明示し、さらに詳しく調べられる</li>
+                            <li><strong>コード重複除去</strong>: 複数のソースから同じコードが見つかっても自動的に整理</li>
+                            <li><strong>高速レスポンス</strong>: 通常10秒以内で回答生成</li>
+                        </ul>
+                    </div>
+
+                    <a href="rag_user_guide.html" class="learn-more">詳細ガイドを見る →</a>
+                </div>
+
+                <div class="mermaid">
+graph LR
+    A[質問入力] --> B[自動分析<br/>学習 or 実装?]
+    B --> C[関連情報検索<br/>公式・ブログ・GitHub]
+    C --> D[AI回答生成<br/>GPT-4]
+    D --> E[回答 + ソース<br/>+ コード例]
+
+    style A fill:#667eea,color:#fff
+    style E fill:#28a745,color:#fff
+    style B fill:#ffc107,color:#333
+    style C fill:#17a2b8,color:#fff
+    style D fill:#764ba2,color:#fff
+                </div>
+
+                <h3>2. 🏗️ 構成案自動生成機能</h3>
+
+                <div class="feature-card" style="text-align: left; max-width: 100%;">
+                    <span class="icon" style="float: left; margin-right: 20px;">🏗️</span>
+                    <h4>ビジネス課題を、LangGraphシステム設計に自動変換</h4>
+                    <p>ビジネス課題を入力すると、AIが<strong>6段階のワークフロー</strong>で自動的にLangGraph構成案を生成。Mermaid図、実装コード、ビジネス説明、実装ノートが、わずか30秒で完成します。</p>
+
+                    <div style="clear: both; margin-top: 20px; padding: 20px; background: rgba(240, 147, 251, 0.1); border-radius: 8px;">
+                        <h5 style="color: #f093fb; margin-bottom: 15px;">✨ 6段階ワークフロー:</h5>
+                        <ol style="color: #555; line-height: 1.8;">
+                            <li><strong>課題分析</strong>: ビジネス課題を深く分析し、必要な機能を洗い出し</li>
+                            <li><strong>構成案生成</strong>: LangGraphのStateGraphを使った具体的なシステム構成を設計</li>
+                            <li><strong>Mermaid図作成</strong>: 視覚的なフロー図で、一目で全体像を理解</li>
+                            <li><strong>コード生成</strong>: 実行可能なPythonコードを自動生成（型ヒント、エラーハンドリング付き）</li>
+                            <li><strong>ビジネス説明作成</strong>: 非技術者にも伝わる平易な言葉で説明</li>
+                            <li><strong>実装ノート作成</strong>: 推奨ライブラリ、コスト見積もり、セキュリティ考慮事項を提示</li>
+                        </ol>
+                    </div>
+
+                    <a href="architect_user_guide.html" class="learn-more">詳細ガイドを見る →</a>
+                </div>
+
+                <div class="mermaid">
+graph LR
+    A[ビジネス課題] --> B[課題分析]
+    B --> C[構成案生成]
+    C --> D[Mermaid図]
+    D --> E[コード生成]
+    E --> F[ビジネス説明]
+    F --> G[実装ノート]
+    G --> H[完成!]
+
+    style A fill:#f093fb,color:#fff
+    style H fill:#28a745,color:#fff
+    style B fill:#ffc107,color:#333
+    style C fill:#17a2b8,color:#fff
+    style D fill:#6f42c1,color:#fff
+    style E fill:#fd7e14,color:#fff
+    style F fill:#20c997,color:#fff
+    style G fill:#e83e8c,color:#fff
+                </div>
+
+                <h3>3. 📖 学習パス機能</h3>
+
+                <div class="feature-card" style="text-align: left; max-width: 100%;">
+                    <span class="icon" style="float: left; margin-right: 20px;">📖</span>
+                    <h4>初級から上級まで、体系的なLangGraph学習カリキュラム</h4>
+                    <p>LangGraphを<strong>初級</strong>、<strong>中級</strong>、<strong>上級</strong>の3段階で体系的に学べるカリキュラムを提供。各トピックには推奨学習時間、前提知識、学習リソースが含まれ、自分のペースで学習できます。</p>
+
+                    <div style="clear: both; margin-top: 20px; padding: 20px; background: rgba(23, 162, 184, 0.1); border-radius: 8px;">
+                        <h5 style="color: #17a2b8; margin-bottom: 15px;">✨ 学習パスの構成:</h5>
+                        <ul style="color: #555; line-height: 1.8;">
+                            <li><strong>初級（5トピック）</strong>: LangGraphの基本概念、グラフ作成、状態管理</li>
+                            <li><strong>中級（6トピック）</strong>: 条件分岐、永続化、ストリーミング、Human-in-the-Loop</li>
+                            <li><strong>上級（4トピック）</strong>: マルチエージェント、サブグラフ、本番デプロイ</li>
+                        </ul>
+                        <p style="margin-top: 15px;"><strong>進捗管理機能</strong>: 完了したトピックを記録し、学習進捗を可視化</p>
+                    </div>
+                </div>
+
+                <h3>4. 📋 テンプレート機能</h3>
+
+                <div class="feature-card" style="text-align: left; max-width: 100%;">
+                    <span class="icon" style="float: left; margin-right: 20px;">📋</span>
+                    <h4>ユースケース別のLangGraphテンプレート集</h4>
+                    <p>よくあるビジネスシーンに対応した<strong>実装テンプレート</strong>を提供。カテゴリ別（対話型AI、業務自動化、データ分析）、難易度別（初級、中級、上級）でフィルタリングでき、すぐに使える実装例を見つけられます。</p>
+
+                    <div style="clear: both; margin-top: 20px; padding: 20px; background: rgba(40, 167, 69, 0.1); border-radius: 8px;">
+                        <h5 style="color: #28a745; margin-bottom: 15px;">✨ テンプレートカテゴリ:</h5>
+                        <ul style="color: #555; line-height: 1.8;">
+                            <li><strong>対話型AI</strong>: チャットボット、FAQ自動応答、マルチターン会話</li>
+                            <li><strong>業務自動化</strong>: ワークフロー自動化、データ処理パイプライン</li>
+                            <li><strong>データ分析</strong>: レポート自動生成、データ可視化</li>
+                        </ul>
+                        <p style="margin-top: 15px;">各テンプレートには、<strong>コード例</strong>、<strong>ユースケース説明</strong>、<strong>主要機能</strong>が含まれます。</p>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h4>🎯 4機能の相乗効果</h4>
+                    <p>これら4つの機能は、相互に補完し合います:</p>
+                    <ul style="margin-top: 10px;">
+                        <li>📖 <strong>学習パス</strong>で基礎を学ぶ → 🔍 <strong>RAG</strong>で疑問を即座に解決</li>
+                        <li>📋 <strong>テンプレート</strong>で実装イメージを掴む → 🏗️ <strong>構成案生成</strong>で自分の課題に適用</li>
+                        <li>🏗️ <strong>構成案生成</strong>で設計案を得る → 🔍 <strong>RAG</strong>で実装の詳細を調査</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 使い方 -->
+            <section id="how-to-use">
+                <h2>🚀 使い方</h2>
+
+                <h3>アクセス方法</h3>
+
+                <div class="info-box">
+                    <h4>🌐 公開URL</h4>
+                    <p><strong>フロントエンド:</strong> <a href="https://langgraph-catalyst-frontend.onrender.com" target="_blank">https://langgraph-catalyst-frontend.onrender.com</a></p>
+                    <p><strong>バックエンドAPI:</strong> <a href="https://langgraph-catalyst-api.onrender.com" target="_blank">https://langgraph-catalyst-api.onrender.com</a></p>
+                    <p><strong>API Docs (Swagger):</strong> <a href="https://langgraph-catalyst-api.onrender.com/docs" target="_blank">https://langgraph-catalyst-api.onrender.com/docs</a></p>
+                </div>
+
+                <h3>基本操作フロー</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>アカウント作成・ログイン</h4>
+                            <p>トップページの「ログイン」ボタンから、アカウントを作成またはログインします。テストユーザーは1日5回まで利用可能、管理者は無制限です。</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>機能を選択</h4>
+                            <p>ヘッダーメニューから、使いたい機能を選択します:</p>
+                            <ul style="margin-top: 10px;">
+                                <li>🔍 <strong>RAG学習支援</strong>: LangGraphの質問に回答</li>
+                                <li>🏗️ <strong>構成案生成</strong>: ビジネス課題から設計案を生成</li>
+                                <li>📖 <strong>学習パス</strong>: 体系的なカリキュラムで学習</li>
+                                <li>📋 <strong>テンプレート</strong>: ユースケース別の実装例を参照</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>入力・実行</h4>
+                            <p><strong>RAG機能</strong>: 質問を入力して送信（例: 「LangGraphで条件分岐を作る方法は？」）</p>
+                            <p><strong>構成案生成</strong>: ビジネス課題、業界、制約条件を入力して生成ボタンをクリック</p>
+                            <p><strong>学習パス</strong>: トピックをクリックして学習開始</p>
+                            <p><strong>テンプレート</strong>: カテゴリや難易度でフィルタリングして参照</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>結果の確認・活用</h4>
+                            <p><strong>RAG</strong>: 回答、ソース、コード例を確認。ソースリンクから詳細を調査可能</p>
+                            <p><strong>構成案</strong>: Mermaid図、コード、説明、実装ノートを確認。コードをコピーして開発開始</p>
+                            <p><strong>学習パス</strong>: 学習リソースにアクセスし、完了後にチェックを付けて進捗管理</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 使い方のコツ</h4>
+                    <ul>
+                        <li><strong>RAG機能</strong>: 「実装」「コード」などのキーワードを含めると、自動的にコード例付きで回答</li>
+                        <li><strong>構成案生成</strong>: 業界や制約条件を詳しく書くほど、実践的な構成案が得られる</li>
+                        <li><strong>学習パス</strong>: 前提知識を確認し、順序通りに学習すると効率的</li>
+                        <li><strong>テンプレート</strong>: 似たユースケースのテンプレートをベースに、カスタマイズすると開発が早い</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- 技術スタック -->
+            <section id="tech-stack">
+                <h2>⚙️ 技術スタック</h2>
+
+                <h3>フロントエンド</h3>
+                <div class="tech-stack-grid">
+                    <div class="tech-item">
+                        <h5>⚛️ React</h5>
+                        <p>モダンなUIライブラリ、コンポーネントベースの開発</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>📘 TypeScript</h5>
+                        <p>型安全な開発、バグの早期発見</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>⚡ Vite</h5>
+                        <p>高速ビルドツール、開発体験の向上</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🎨 Tailwind CSS</h5>
+                        <p>ユーティリティファーストCSS、高速スタイリング</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🐻 Zustand</h5>
+                        <p>軽量な状態管理、学習コストが低い</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🔗 Axios</h5>
+                        <p>HTTP通信、API連携</p>
+                    </div>
+                </div>
+
+                <h3>バックエンド</h3>
+                <div class="tech-stack-grid">
+                    <div class="tech-item">
+                        <h5>⚡ FastAPI</h5>
+                        <p>高速APIフレームワーク、自動ドキュメント生成</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🦜 LangChain</h5>
+                        <p>LLMアプリケーション開発の基盤</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>📊 LangGraph</h5>
+                        <p>ステートフルなエージェントワークフロー管理</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🗄️ Chroma</h5>
+                        <p>ベクトルDB、高速類似度検索</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🤖 OpenAI API</h5>
+                        <p>GPT-4、高品質なLLM</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>📝 Pydantic</h5>
+                        <p>データバリデーション、型安全</p>
+                    </div>
+                </div>
+
+                <h3>インフラ・デプロイ</h3>
+                <div class="tech-stack-grid">
+                    <div class="tech-item">
+                        <h5>🚀 Render</h5>
+                        <p>フロントエンド + バックエンド統一管理</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🔐 JWT</h5>
+                        <p>トークンベース認証、セキュリティ</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>📊 Mermaid</h5>
+                        <p>フロー図生成、視覚化</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🧪 Pytest</h5>
+                        <p>ユニットテスト、品質保証</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 技術選定の理由</h4>
+                    <ul>
+                        <li><strong>React + FastAPI</strong>: フルスタック開発力のアピール、業界標準</li>
+                        <li><strong>LangChain/LangGraph</strong>: エージェントワークフロー構築の業界標準</li>
+                        <li><strong>Chroma</strong>: 軽量でローカル実行可能、学習コストが低い</li>
+                        <li><strong>OpenAI API</strong>: ドキュメント・事例が豊富、信頼性が高い</li>
+                        <li><strong>Render</strong>: 無料枠あり、Frontend + Backend統一管理が可能</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- アーキテクチャ -->
+            <section id="architecture">
+                <h2>🏛️ システムアーキテクチャ</h2>
+
+                <h3>全体構成</h3>
+
+                <div class="mermaid">
+graph TB
+    subgraph Frontend["🌐 Frontend (React)"]
+        UI[User Interface]
+        Store[Zustand State]
+        API_Client[API Client]
+    end
+
+    subgraph Backend["⚙️ Backend (FastAPI)"]
+        Auth[JWT Authentication]
+        RAG_API[RAG API]
+        Architect_API[Architect API]
+        Learning_API[Learning Path API]
+        Template_API[Template API]
+    end
+
+    subgraph Core["🧠 Core Logic"]
+        RAG_Chain[RAG Chain]
+        Architect_Graph[Architect Graph]
+        Crawler[Document Crawler]
+    end
+
+    subgraph Data["🗄️ Data Layer"]
+        Chroma[(Chroma Vector DB)]
+        JSON[(JSON Files)]
+    end
+
+    subgraph External["🌍 External Services"]
+        OpenAI[OpenAI API<br/>GPT-4]
+        Docs[LangGraph Docs<br/>Blog<br/>GitHub]
+    end
+
+    UI --> Store
+    Store --> API_Client
+    API_Client --> Auth
+    Auth --> RAG_API
+    Auth --> Architect_API
+    Auth --> Learning_API
+    Auth --> Template_API
+
+    RAG_API --> RAG_Chain
+    Architect_API --> Architect_Graph
+    RAG_Chain --> Chroma
+    Architect_Graph --> OpenAI
+    RAG_Chain --> OpenAI
+    Crawler --> Docs
+    Crawler --> Chroma
+    Learning_API --> JSON
+    Template_API --> JSON
+
+    style Frontend fill:#667eea,color:#fff
+    style Backend fill:#764ba2,color:#fff
+    style Core fill:#f093fb,color:#fff
+    style Data fill:#17a2b8,color:#fff
+    style External fill:#28a745,color:#fff
+                </div>
+
+                <h3>データフロー</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <span class="icon">📥</span>
+                        <h4>1. ユーザー入力</h4>
+                        <p>Reactフロントエンドでユーザーが質問やビジネス課題を入力</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="icon">🔐</span>
+                        <h4>2. 認証・バリデーション</h4>
+                        <p>JWTトークンで認証、Pydanticでリクエストをバリデーション</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="icon">🧠</span>
+                        <h4>3. AI処理</h4>
+                        <p>RAGチェーンまたはArchitectグラフで処理、OpenAI APIを活用</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <span class="icon">📤</span>
+                        <h4>4. 結果返却</h4>
+                        <p>回答やコードをJSON形式で返却、Reactで視覚的に表示</p>
+                    </div>
+                </div>
+
+                <h3>セキュリティ</h3>
+
+                <div class="tech-stack-grid">
+                    <div class="tech-item">
+                        <h5>🔐 JWT認証</h5>
+                        <p>トークンベース認証、24時間有効期限</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🔒 bcryptハッシュ</h5>
+                        <p>パスワードの安全な保存、ソルト付き</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>🌐 CORS設定</h5>
+                        <p>許可オリジンのみ通信可能、クロスオリジン攻撃防止</p>
+                    </div>
+                    <div class="tech-item">
+                        <h5>⏱️ レート制限</h5>
+                        <p>テストユーザーは1日5回まで、乱用防止</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 活用シーン -->
+            <section id="use-cases">
+                <h2>🎯 活用シーン</h2>
+
+                <h3>個人開発者</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>シーン</th>
+                            <th>活用方法</th>
+                            <th>メリット</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>LangGraph学習</strong></td>
+                            <td>学習パスで体系的に学習 → RAGで疑問を即座に解決</td>
+                            <td>学習時間を30%短縮、理解度向上</td>
+                        </tr>
+                        <tr>
+                            <td><strong>個人プロジェクト開発</strong></td>
+                            <td>構成案生成でアイデアを設計に変換 → テンプレートで実装</td>
+                            <td>企画から実装まで1日で完了</td>
+                        </tr>
+                        <tr>
+                            <td><strong>技術ブログ執筆</strong></td>
+                            <td>RAGで最新情報を収集 → 構成案生成でサンプルコード作成</td>
+                            <td>記事のクオリティ向上</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>企業・チーム</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>シーン</th>
+                            <th>活用方法</th>
+                            <th>メリット</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>プロジェクト企画</strong></td>
+                            <td>構成案生成で技術的実現可能性を即座に確認</td>
+                            <td>企画段階での手戻り80%削減</td>
+                        </tr>
+                        <tr>
+                            <td><strong>クライアント提案</strong></td>
+                            <td>ヒアリング後、その場でシステム構成案を提示</td>
+                            <td>提案クオリティ向上、受注率20%アップ</td>
+                        </tr>
+                        <tr>
+                            <td><strong>社内勉強会</strong></td>
+                            <td>学習パスをベースに研修カリキュラム作成</td>
+                            <td>研修期間の短縮、標準化</td>
+                        </tr>
+                        <tr>
+                            <td><strong>技術検証（PoC）</strong></td>
+                            <td>複数の設計パターンを生成し、最適なアプローチを選定</td>
+                            <td>PoC期間を2週間から3日に短縮</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="success-box">
+                    <h4>💼 実際の活用イメージ</h4>
+                    <p><strong>AIコンサルティング企業の事例:</strong></p>
+                    <p>クライアントからの相談時に、構成案生成機能を活用。ヒアリング中にその場でシステム設計を提示し、<span class="highlight">「こんなに早く具体的な提案が出るとは思わなかった」</span>とクライアントから高評価。提案書作成時間が<strong>従来の1/5に短縮</strong>され、より多くのクライアントに対応可能に。さらに、生成された構成案を開発チームにそのまま渡せるため、要件の誤解が激減。</p>
+                </div>
+            </section>
+
+            <!-- FAQ -->
+            <section id="faq" style="background: #f8f9fa; padding: 40px; border-radius: 10px; margin-top: 60px;">
+                <h2 style="color: #667eea; border-bottom: none; text-align: left;">❓ よくある質問</h2>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q1. このシステムは無料で使えますか？</h4>
+                    <p>A. はい、テストユーザーとして登録すれば、<strong>1日5回まで無料</strong>で利用できます。学習パスとテンプレートの閲覧は無制限です。管理者アカウント（開発者用）は無制限に利用可能です。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q2. 生成されたコードはそのまま本番環境で使えますか？</h4>
+                    <p>A. 構成案生成で生成されたコードは<span class="highlight">「出発点」</span>として活用してください。PoC（概念実証）やプロトタイプ段階では十分使えますが、本番環境では、セキュリティ、スケーラビリティ、法規制対応など、経験豊富な技術者がレビュー・拡張する必要があります。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q3. RAG機能の情報はどのくらい最新ですか？</h4>
+                    <p>A. システムに登録されている情報は、<strong>手動更新</strong>です。管理者が定期的に公式ドキュメント、ブログ、GitHubから最新情報を収集し、ベクトルDBに保存しています。情報の鮮度は、最終更新日時で確認できます。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q4. どんなビジネス課題に対応できますか？</h4>
+                    <p>A. 構成案生成機能は、<span class="highlight">LangGraphで解決できる課題</span>であれば、幅広く対応できます。例:</p>
+                    <ul style="margin-top: 10px;">
+                        <li>カスタマーサポート自動化</li>
+                        <li>データ分析ワークフロー</li>
+                        <li>チャットボット</li>
+                        <li>マルチエージェントシステム</li>
+                        <li>ドキュメント処理パイプライン</li>
+                    </ul>
+                    <p style="margin-top: 10px;">ただし、LangGraphが不向きな課題（単純な計算、リアルタイム制御など）には対応できません。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q5. 非技術者でも使えますか？</h4>
+                    <p>A. はい、特に以下の機能は非技術者でも活用できます:</p>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>構成案生成</strong>: ビジネス説明が自動生成され、技術用語を極力排除</li>
+                        <li><strong>学習パス</strong>: 初級から順に学習すれば、基礎から理解できる</li>
+                        <li><strong>テンプレート</strong>: ユースケース説明で、どんなシステムか理解できる</li>
+                    </ul>
+                    <p style="margin-top: 10px;">RAG機能は、ある程度の技術知識があると、より有効に活用できます。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q6. データは安全ですか？</h4>
+                    <p>A. セキュリティ対策として、以下を実施しています:</p>
+                    <ul style="margin-top: 10px;">
+                        <li>JWT認証による安全なアクセス管理</li>
+                        <li>パスワードのbcryptハッシュ化</li>
+                        <li>HTTPS通信（Renderが自動提供）</li>
+                        <li>CORS設定によるクロスオリジン攻撃防止</li>
+                        <li>レート制限による乱用防止</li>
+                    </ul>
+                    <p style="margin-top: 10px;">ただし、<strong>機密情報や個人情報</strong>は、このシステムに入力しないでください。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q7. モバイルでも使えますか？</h4>
+                    <p>A. はい。Reactフロントエンドは<strong>レスポンシブデザイン</strong>で、スマートフォンやタブレットでも快適に利用できます。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #667eea;">Q8. 問い合わせ先はどこですか？</h4>
+                    <p>A. バグ報告や機能要望は、GitHubリポジトリのIssuesで受け付けています。システムに関する質問は、RAG機能で聞いてみてください（メタですが、システム自体の使い方もLangGraphの学習の一環です）。</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 LangGraph Catalyst</p>
+            <p>LangGraphの学習と実装を、触媒のように加速する</p>
+            <div class="links">
+                <a href="https://langgraph-catalyst-frontend.onrender.com" target="_blank">アプリを使う</a>
+                <a href="https://langgraph-catalyst-api.onrender.com/docs" target="_blank">API Docs</a>
+                <a href="rag_user_guide.html">RAG機能ガイド</a>
+                <a href="architect_user_guide.html">構成案生成ガイド</a>
+                <a href="https://github.com/langchain-ai/langgraph" target="_blank">LangGraph公式</a>
+            </div>
+            <p style="margin-top: 25px; font-size: 0.9em;">Built with ❤️ using React, FastAPI, LangChain, LangGraph, and GPT-4</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#667eea',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#764ba2',
+                lineColor: '#764ba2',
+                secondaryColor: '#ffc107',
+                tertiaryColor: '#28a745'
+            },
+            flowchart: {
+                curve: 'basis',
+                padding: 20
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LangGraph Catalyst - 開発者ガイド（総合技術ドキュメント）</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: 100px 100px;
+            opacity: 0.3;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        header .subtitle {
+            font-size: 1.4em;
+            opacity: 0.95;
+            font-weight: 300;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        header .meta {
+            font-size: 0.95em;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+            margin-top: 15px;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 20px 40px;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        nav h3 {
+            margin-bottom: 10px;
+            color: #667eea;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+        }
+
+        nav a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: color 0.3s;
+        }
+
+        nav a:hover {
+            color: #764ba2;
+        }
+
+        main {
+            padding: 40px;
+        }
+
+        section {
+            margin-bottom: 50px;
+        }
+
+        h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 30px 0 15px;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.2em;
+            margin: 20px 0 10px;
+        }
+
+        p {
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0 25px;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #dee2e6;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        tr:hover {
+            background: #e9ecef;
+        }
+
+        code {
+            background: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9em;
+            color: #d63384;
+        }
+
+        pre {
+            background: #1e1e2e;
+            color: #cdd6f4;
+            padding: 20px;
+            border-radius: 10px;
+            overflow-x: auto;
+            margin: 15px 0 25px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+
+        pre code {
+            background: none;
+            color: inherit;
+            padding: 0;
+        }
+
+        .keyword { color: #cba6f7; }
+        .string { color: #a6e3a1; }
+        .comment { color: #6c7086; font-style: italic; }
+        .function { color: #89b4fa; }
+        .class-name { color: #f9e2af; }
+        .decorator { color: #fab387; }
+
+        .info-box {
+            background: linear-gradient(135deg, #e8f4f8, #d1ecf1);
+            border-left: 4px solid #17a2b8;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+
+        .success-box {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border-left: 4px solid #28a745;
+            padding: 20px;
+            border-radius: 0 10px 10px 0;
+            margin: 20px 0;
+        }
+
+        .mermaid {
+            text-align: center;
+            margin: 25px 0;
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .card h4 {
+            color: #667eea;
+            margin-top: 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: 600;
+            margin: 2px;
+        }
+
+        .badge-python { background: #3776ab; color: white; }
+        .badge-react { background: #61dafb; color: #333; }
+        .badge-fastapi { background: #009688; color: white; }
+        .badge-ts { background: #3178c6; color: white; }
+        .badge-llm { background: #412991; color: white; }
+
+        .flow-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin: 15px 0;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .flow-step .step-number {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .flow-step .step-content h4 {
+            margin: 0 0 5px;
+            color: #333;
+        }
+
+        .flow-step .step-content p {
+            margin: 0;
+            color: #666;
+            font-size: 0.95em;
+        }
+
+        footer {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            text-align: center;
+            color: #666;
+            border-top: 2px solid #e9ecef;
+        }
+
+        @media (max-width: 768px) {
+            header { padding: 40px 20px; }
+            header h1 { font-size: 2em; }
+            main { padding: 20px; }
+            nav { padding: 15px 20px; }
+            nav ul { flex-direction: column; gap: 5px; }
+            .card-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LangGraph Catalyst</h1>
+            <div class="subtitle">開発者ガイド - 総合技術ドキュメント</div>
+            <div class="meta">
+                Version 1.0.0 | 最終更新: 2026-02-07 |
+                <span class="badge badge-python">Python 3.11</span>
+                <span class="badge badge-react">React 18</span>
+                <span class="badge badge-fastapi">FastAPI</span>
+                <span class="badge badge-ts">TypeScript</span>
+                <span class="badge badge-llm">LangGraph</span>
+            </div>
+        </header>
+
+        <nav>
+            <h3>目次</h3>
+            <ul>
+                <li><a href="#overview">1. システム全体像</a></li>
+                <li><a href="#architecture">2. アーキテクチャ</a></li>
+                <li><a href="#tech-stack">3. 技術スタック詳細</a></li>
+                <li><a href="#rag-system">4. RAG学習支援システム</a></li>
+                <li><a href="#architect-system">5. 構成案生成システム</a></li>
+                <li><a href="#backend-api">6. バックエンドAPI</a></li>
+                <li><a href="#auth-system">7. 認証・使用制限</a></li>
+                <li><a href="#frontend">8. フロントエンド</a></li>
+                <li><a href="#config">9. 設定管理</a></li>
+                <li><a href="#testing">10. テスト</a></li>
+                <li><a href="#cicd">11. CI/CD</a></li>
+                <li><a href="#deployment">12. デプロイ</a></li>
+                <li><a href="#error-handling">13. エラーハンドリング</a></li>
+                <li><a href="#prerequisites">14. 前提知識</a></li>
+            </ul>
+        </nav>
+
+        <main>
+
+            <!-- ============================== -->
+            <!-- 1. システム全体像 -->
+            <!-- ============================== -->
+            <section id="overview">
+                <h2>1. システム全体像</h2>
+
+                <p>
+                    <strong>LangGraph Catalyst</strong>は、LangGraphの学習支援とビジネス活用を促進するフルスタックWebアプリケーションです。
+                    React + FastAPI のモダンアーキテクチャで構築され、RAG（検索拡張生成）とLangGraphワークフローを組み合わせた2つのコア機能を提供します。
+                </p>
+
+                <h3>コア機能</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>RAG学習支援システム</h4>
+                        <p>LangGraphの公式ドキュメント・ブログ・GitHubリポジトリをクロールし、ChromaDBにベクトル化して保存。ユーザーの質問に対してソース付き・コード例付きで回答します。</p>
+                        <p><span class="badge badge-python">LangChain</span> <span class="badge badge-llm">OpenAI GPT-4</span> <span class="badge badge-python">ChromaDB</span></p>
+                    </div>
+                    <div class="card">
+                        <h4>構成案生成（Architect）</h4>
+                        <p>ビジネス課題を入力すると、LangGraphのStateGraphを使った6段階のワークフローで課題分析→構成案→Mermaid図→コード例→ビジネス説明→実装ノートを自動生成します。</p>
+                        <p><span class="badge badge-llm">LangGraph</span> <span class="badge badge-python">StateGraph</span> <span class="badge badge-llm">GPT-4</span></p>
+                    </div>
+                    <div class="card">
+                        <h4>学習パス</h4>
+                        <p>初級・中級・上級の体系的な学習カリキュラムを提供。トピック別の学習リソースと進捗管理機能（localStorageに永続化）を実装しています。</p>
+                        <p><span class="badge badge-react">React</span> <span class="badge badge-ts">Zustand</span></p>
+                    </div>
+                    <div class="card">
+                        <h4>テンプレート集</h4>
+                        <p>ユースケース別のLangGraphテンプレートをカテゴリ・難易度でフィルタリング可能。コード例とフロー図を含む実践的なテンプレートを提供します。</p>
+                        <p><span class="badge badge-react">React</span> <span class="badge badge-fastapi">FastAPI</span></p>
+                    </div>
+                </div>
+
+                <h3>システムアーキテクチャ概観</h3>
+                <div class="mermaid">
+                    graph TB
+                        subgraph "Frontend (React + TypeScript)"
+                            FE_Pages["Pages<br/>Home / RAG / Architect / LearningPath / Templates / Login"]
+                            FE_Store["Zustand Stores<br/>auth / rag / architect / learning"]
+                            FE_API["API Layer<br/>Axios + JWT Interceptor"]
+                        end
+
+                        subgraph "Backend (FastAPI)"
+                            API_Router["API Router /api/v1"]
+                            Auth["JWT Auth + Usage Limiter"]
+                            Endpoints["Endpoints<br/>rag / architect / learning-path / templates / auth"]
+                        end
+
+                        subgraph "Core Logic (Python)"
+                            RAG["RAG System<br/>Crawler → VectorStore → Chain"]
+                            Architect["Architect System<br/>StateGraph (6 nodes)"]
+                            Data["Static Data<br/>LearningPath / Templates"]
+                        end
+
+                        subgraph "External Services"
+                            OpenAI["OpenAI API<br/>GPT-4 + Embeddings"]
+                            Chroma["ChromaDB<br/>Vector Storage"]
+                            WebSources["Web Sources<br/>Docs / Blog / GitHub"]
+                        end
+
+                        FE_Pages --> FE_Store
+                        FE_Store --> FE_API
+                        FE_API -->|"HTTPS + JWT"| API_Router
+                        API_Router --> Auth
+                        Auth --> Endpoints
+                        Endpoints --> RAG
+                        Endpoints --> Architect
+                        Endpoints --> Data
+                        RAG --> OpenAI
+                        RAG --> Chroma
+                        RAG --> WebSources
+                        Architect --> OpenAI
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 2. アーキテクチャ -->
+            <!-- ============================== -->
+            <section id="architecture">
+                <h2>2. アーキテクチャ</h2>
+
+                <h3>モノレポ構成</h3>
+                <p>フロントエンドとバックエンドを単一リポジトリで管理するモノレポ構成を採用しています。共通のPythonビジネスロジック（<code>src/features/</code>）をバックエンドAPIから呼び出す形で再利用率95%を実現しています。</p>
+
+                <pre><code>langgraph-catalyst/
+├── <span class="keyword">backend/</span>                    # FastAPI バックエンド
+│   ├── main.py                 # FastAPIエントリーポイント（178行）
+│   ├── <span class="keyword">api/v1/</span>                 # APIエンドポイント
+│   │   ├── __init__.py         # ルーター統合
+│   │   ├── rag.py              # RAG API
+│   │   ├── architect.py        # 構成案生成 API
+│   │   ├── auth.py             # 認証 API
+│   │   ├── learning_path.py    # 学習パス API
+│   │   └── templates.py        # テンプレート API
+│   ├── <span class="keyword">core/</span>                   # 設定・セキュリティ
+│   │   ├── config.py           # Pydantic Settings（192行）
+│   │   ├── security.py         # JWT生成・検証（105行）
+│   │   ├── users.py            # ユーザー管理（122行）
+│   │   ├── usage_limiter.py    # 使用制限（143行）
+│   │   └── dependencies.py     # FastAPI依存性注入
+│   ├── <span class="keyword">schemas/</span>                # Pydanticスキーマ（6ファイル）
+│   └── <span class="keyword">tests/</span>                  # APIテスト
+│
+├── <span class="keyword">frontend/</span>                   # React フロントエンド
+│   ├── <span class="keyword">src/</span>
+│   │   ├── App.tsx             # ルーティング定義
+│   │   ├── <span class="keyword">pages/</span>              # 6ページコンポーネント
+│   │   ├── <span class="keyword">components/</span>         # 8共通UIコンポーネント
+│   │   ├── <span class="keyword">api/</span>                # API通信層（6ファイル）
+│   │   ├── <span class="keyword">store/</span>              # Zustand状態管理（4ストア）
+│   │   ├── <span class="keyword">types/</span>              # TypeScript型定義
+│   │   └── index.css           # Refined Brutalistデザイン
+│   └── <span class="keyword">e2e/</span>                    # Playwright E2Eテスト
+│
+├── <span class="keyword">src/</span>                        # 共有Pythonビジネスロジック
+│   ├── <span class="keyword">config/</span>settings.py      # Pydantic Settings
+│   ├── <span class="keyword">features/</span>
+│   │   ├── <span class="keyword">rag/</span>                # crawler.py / vectorstore.py / chain.py
+│   │   ├── <span class="keyword">architect/</span>          # graph.py / prompts.py / visualizer.py
+│   │   ├── <span class="keyword">learning_path/</span>      # 学習パスデータ定義
+│   │   └── <span class="keyword">templates/</span>          # テンプレートデータ定義
+│   └── <span class="keyword">utils/</span>                  # helpers.py / exceptions.py
+│
+├── <span class="keyword">tests/</span>                      # Python ユニットテスト（120+件）
+├── <span class="keyword">.github/workflows/</span>          # CI/CDパイプライン
+├── render.yaml                 # Renderデプロイ設定（IaC）
+└── requirements.txt            # Python依存パッケージ</code></pre>
+
+                <h3>設計原則</h3>
+                <table>
+                    <tr><th>原則</th><th>説明</th><th>実装例</th></tr>
+                    <tr>
+                        <td><strong>Feature-based構造</strong></td>
+                        <td>機能ごとにディレクトリを分離し、責務を明確化</td>
+                        <td><code>src/features/rag/</code>, <code>src/features/architect/</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>単一責任の原則</strong></td>
+                        <td>各モジュールは1つの責務のみを持つ</td>
+                        <td>crawler.py（収集）、vectorstore.py（保存・検索）、chain.py（回答生成）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>設定の外部化</strong></td>
+                        <td>環境変数で設定を管理し、コードと分離</td>
+                        <td>Pydantic Settings + <code>.env</code> ファイル</td>
+                    </tr>
+                    <tr>
+                        <td><strong>テスタビリティ</strong></td>
+                        <td>依存性注入でモック可能な設計</td>
+                        <td>全OpenAI API呼び出しをモック化（テスト時API料金$0）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>型安全性</strong></td>
+                        <td>Python型ヒント + TypeScript + Pydanticスキーマ</td>
+                        <td>APIリクエスト/レスポンスの自動バリデーション</td>
+                    </tr>
+                </table>
+
+                <h3>データフロー図</h3>
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant U as User (Browser)
+                        participant F as Frontend (React)
+                        participant B as Backend (FastAPI)
+                        participant L as Core Logic (Python)
+                        participant O as OpenAI API
+                        participant C as ChromaDB
+
+                        U->>F: 質問を入力
+                        F->>F: Zustand Store更新
+                        F->>B: POST /api/v1/rag/query (JWT付き)
+                        B->>B: JWT検証 + 使用制限チェック
+                        B->>L: RAGChain.query()
+                        L->>C: similarity_search(query, k=5)
+                        C-->>L: 関連ドキュメント5件
+                        L->>L: コンテキスト構築
+                        L->>O: GPT-4 (プロンプト + コンテキスト)
+                        O-->>L: 回答テキスト
+                        L->>L: ソース/コード例抽出
+                        L-->>B: RAGResponse
+                        B-->>F: JSON Response
+                        F->>F: Store更新 → 再レンダリング
+                        F-->>U: 回答 + ソース + コード例を表示
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 3. 技術スタック詳細 -->
+            <!-- ============================== -->
+            <section id="tech-stack">
+                <h2>3. 技術スタック詳細</h2>
+
+                <h3>バックエンド</h3>
+                <table>
+                    <tr><th>技術</th><th>バージョン</th><th>役割</th><th>選定理由</th></tr>
+                    <tr>
+                        <td><strong>Python</strong></td>
+                        <td>3.11+</td>
+                        <td>メイン言語</td>
+                        <td>LangChain/LangGraphエコシステムとの親和性</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FastAPI</strong></td>
+                        <td>0.115+</td>
+                        <td>REST API フレームワーク</td>
+                        <td>型安全、自動ドキュメント生成（Swagger UI）、非同期対応</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LangGraph</strong></td>
+                        <td>0.2+</td>
+                        <td>AIワークフロー管理</td>
+                        <td>StateGraphによる明示的な状態管理、ノードベースのフロー構築</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LangChain</strong></td>
+                        <td>0.3+</td>
+                        <td>LLMアプリケーション基盤</td>
+                        <td>RAGチェーン構築、ドキュメントローダー、プロンプト管理</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ChromaDB</strong></td>
+                        <td>0.5+</td>
+                        <td>ベクトルデータベース</td>
+                        <td>軽量、ローカル実行可能、永続化対応</td>
+                    </tr>
+                    <tr>
+                        <td><strong>OpenAI API</strong></td>
+                        <td>GPT-4 Turbo</td>
+                        <td>LLM / Embeddings</td>
+                        <td>GPT-4（回答生成）+ text-embedding-3-small（ベクトル化）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pydantic</strong></td>
+                        <td>v2</td>
+                        <td>データバリデーション</td>
+                        <td>型安全な設定管理（BaseSettings）、APIスキーマ定義</td>
+                    </tr>
+                    <tr>
+                        <td><strong>python-jose</strong></td>
+                        <td>-</td>
+                        <td>JWT処理</td>
+                        <td>トークン生成・検証（HS256アルゴリズム）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>passlib + bcrypt</strong></td>
+                        <td>-</td>
+                        <td>パスワードハッシュ</td>
+                        <td>bcryptによる安全なパスワードハッシュ化</td>
+                    </tr>
+                </table>
+
+                <h3>フロントエンド</h3>
+                <table>
+                    <tr><th>技術</th><th>バージョン</th><th>役割</th><th>選定理由</th></tr>
+                    <tr>
+                        <td><strong>React</strong></td>
+                        <td>18.x</td>
+                        <td>UIフレームワーク</td>
+                        <td>業界標準、エコシステムの豊富さ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TypeScript</strong></td>
+                        <td>5.x</td>
+                        <td>型安全なJavaScript</td>
+                        <td>コンパイル時の型チェック、IDE補完</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vite</strong></td>
+                        <td>5.x</td>
+                        <td>ビルドツール</td>
+                        <td>HMR（高速ホットリロード）、ESBuildベースの高速ビルド</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Tailwind CSS</strong></td>
+                        <td>3.x</td>
+                        <td>CSSフレームワーク</td>
+                        <td>ユーティリティファースト、Tree Shaking対応</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Zustand</strong></td>
+                        <td>4.x</td>
+                        <td>状態管理</td>
+                        <td>軽量（2KB）、Redux不要、persist middleware対応</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Axios</strong></td>
+                        <td>1.x</td>
+                        <td>HTTP通信</td>
+                        <td>インターセプター機能（JWT自動付与、401自動ログアウト）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>React Router</strong></td>
+                        <td>v6</td>
+                        <td>ルーティング</td>
+                        <td>SPA対応、ProtectedRoute実装</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mermaid.js</strong></td>
+                        <td>10.x</td>
+                        <td>ダイアグラム描画</td>
+                        <td>Architect機能のフロー図表示</td>
+                    </tr>
+                    <tr>
+                        <td><strong>react-syntax-highlighter</strong></td>
+                        <td>-</td>
+                        <td>コードハイライト</td>
+                        <td>RAG回答のコードブロック表示</td>
+                    </tr>
+                </table>
+
+                <h3>インフラ・CI/CD</h3>
+                <table>
+                    <tr><th>技術</th><th>役割</th><th>選定理由</th></tr>
+                    <tr>
+                        <td><strong>Render</strong></td>
+                        <td>ホスティング（FE + BE）</td>
+                        <td>無料枠、render.yamlによるIaC、統一管理</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GitHub Actions</strong></td>
+                        <td>CI/CDパイプライン</td>
+                        <td>5並列ジョブ、API料金$0のテスト自動化</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Ruff</strong></td>
+                        <td>Pythonリンター/フォーマッター</td>
+                        <td>高速（Rustベース）、Black + isort + flake8の統合</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Vitest</strong></td>
+                        <td>フロントエンドテスト</td>
+                        <td>Viteネイティブ対応、Jest互換API</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Playwright</strong></td>
+                        <td>E2Eテスト</td>
+                        <td>クロスブラウザ対応、Smokeテスト（API不使用）</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 4. RAGシステム -->
+            <!-- ============================== -->
+            <section id="rag-system">
+                <h2>4. RAG学習支援システム</h2>
+
+                <div class="info-box">
+                    <strong>RAG（Retrieval-Augmented Generation）とは</strong><br>
+                    外部のドキュメントをベクトル化して保存し、ユーザーの質問に関連する情報を検索（Retrieval）してから、LLMに渡して回答を生成（Generation）する手法。LLMの学習データに含まれない最新情報も扱えるのが最大の利点です。
+                </div>
+
+                <h3>RAGパイプライン処理フロー</h3>
+                <div class="mermaid">
+                    flowchart LR
+                        subgraph "データ収集（Crawler）"
+                            A1["LangGraph<br/>公式Docs"] --> C[crawler.py]
+                            A2["LangChain<br/>Blog"] --> C
+                            A3["GitHub<br/>Repository"] --> C
+                            A4["LangChain<br/>関連Docs"] --> C
+                        end
+
+                        subgraph "ベクトル化（VectorStore）"
+                            C -->|"Document objects"| D["テキスト分割<br/>(chunk_size=800)"]
+                            D --> E["OpenAI Embeddings<br/>(text-embedding-3-small)"]
+                            E --> F["ChromaDB<br/>永続化保存"]
+                        end
+
+                        subgraph "検索+回答（Chain）"
+                            G["ユーザーの質問"] --> H["類似度検索<br/>(top_k=5)"]
+                            F --> H
+                            H --> I["コンテキスト構築"]
+                            I --> J["プロンプト選択<br/>(学習支援 or コード付き)"]
+                            J --> K["GPT-4<br/>回答生成"]
+                            K --> L["ソース/コード例<br/>抽出"]
+                            L --> M["RAGResponse"]
+                        end
+                </div>
+
+                <h3>4.1 ドキュメントクローラー（crawler.py）</h3>
+                <p>4種類のソースからドキュメントを収集します。LangChainの<code>WebBaseLoader</code>を使用してWebページを取得し、メタデータ（source, title, doc_type, updated_at）を付与した<code>Document</code>オブジェクトを生成します。</p>
+
+                <table>
+                    <tr><th>関数</th><th>ソース</th><th>取得方法</th><th>デフォルトページ数</th></tr>
+                    <tr>
+                        <td><code>crawl_langgraph_docs()</code></td>
+                        <td>LangGraph公式ドキュメント</td>
+                        <td>25個の主要ページURL（LANGGRAPH_KEY_PAGES）を巡回</td>
+                        <td>最大100ページ</td>
+                    </tr>
+                    <tr>
+                        <td><code>crawl_langchain_docs()</code></td>
+                        <td>LangChain公式ドキュメント</td>
+                        <td>LangGraph関連10ページ（LANGCHAIN_RELATED_PAGES）を巡回</td>
+                        <td>最大10ページ</td>
+                    </tr>
+                    <tr>
+                        <td><code>crawl_langchain_blog()</code></td>
+                        <td>LangChain Blog</td>
+                        <td>langgraphタグのブログ記事</td>
+                        <td>最大50記事</td>
+                    </tr>
+                    <tr>
+                        <td><code>crawl_github_repo()</code></td>
+                        <td>GitHubリポジトリ</td>
+                        <td>README + 10個のJupyter Notebook例</td>
+                        <td>全例</td>
+                    </tr>
+                    <tr>
+                        <td><code>update_all_sources()</code></td>
+                        <td>全ソース統合</td>
+                        <td>上記4つを順次実行し統計情報を返す</td>
+                        <td>-</td>
+                    </tr>
+                </table>
+
+                <h4>内部処理 <code>_load_web_page()</code></h4>
+                <pre><code><span class="comment"># 全クロール関数の共通処理</span>
+<span class="keyword">def</span> <span class="function">_load_web_page</span>(url, doc_type, title) -> list[Document]:
+    loader = WebBaseLoader(web_paths=(url,))   <span class="comment"># LangChain標準ローダー</span>
+    documents = loader.load()                  <span class="comment"># HTML→テキスト変換</span>
+    <span class="keyword">for</span> doc <span class="keyword">in</span> documents:
+        doc.metadata.update({
+            <span class="string">"source"</span>: url,
+            <span class="string">"title"</span>: title,
+            <span class="string">"doc_type"</span>: doc_type,           <span class="comment"># "official_docs", "blog", "github" 等</span>
+            <span class="string">"updated_at"</span>: get_current_timestamp(),
+        })
+    <span class="keyword">return</span> documents</code></pre>
+
+                <h3>4.2 ベクトルストア（vectorstore.py）</h3>
+                <p><code>ChromaVectorStore</code>クラスがChromaDBの操作を管理します。OpenAIのEmbeddings APIでテキストをベクトル化し、類似度検索を提供します。</p>
+
+                <table>
+                    <tr><th>メソッド</th><th>処理内容</th><th>主要パラメータ</th></tr>
+                    <tr>
+                        <td><code>__init__()</code></td>
+                        <td>OpenAI Embeddings + Chromaクライアントを初期化</td>
+                        <td>collection_name, persist_directory, embedding_model</td>
+                    </tr>
+                    <tr>
+                        <td><code>add_documents()</code></td>
+                        <td>ドキュメントをバッチ処理でベクトル化・保存</td>
+                        <td>documents, batch_size=100</td>
+                    </tr>
+                    <tr>
+                        <td><code>similarity_search()</code></td>
+                        <td>クエリとの類似度検索（コサイン類似度）</td>
+                        <td>query, k=5, filter_metadata</td>
+                    </tr>
+                    <tr>
+                        <td><code>similarity_search_with_score()</code></td>
+                        <td>スコア付き類似度検索</td>
+                        <td>query, k=5, filter_metadata</td>
+                    </tr>
+                    <tr>
+                        <td><code>as_retriever()</code></td>
+                        <td>LangChain Retrieverインターフェースとして返す</td>
+                        <td>search_kwargs</td>
+                    </tr>
+                    <tr>
+                        <td><code>delete_collection()</code></td>
+                        <td>コレクション全削除</td>
+                        <td>-</td>
+                    </tr>
+                </table>
+
+                <div class="info-box">
+                    <strong>Embeddings モデル: text-embedding-3-small</strong><br>
+                    OpenAIの最新軽量Embeddingsモデル。1536次元のベクトルを生成し、text-embedding-ada-002の後継。コストが約5倍安く、精度も向上しています。ChromaDBはデフォルトでコサイン類似度を使用します。
+                </div>
+
+                <h3>4.3 RAGチェーン（chain.py）</h3>
+                <p><code>RAGChain</code>クラスがRAGパイプラインのオーケストレーションを担当します。質問内容に応じて2種類のプロンプトテンプレートを自動選択する機能を持ちます。</p>
+
+                <h4>プロンプト自動選択ロジック</h4>
+                <div class="mermaid">
+                    flowchart TD
+                        A["ユーザーの質問"] --> B{"コード関連<br/>キーワード検出?"}
+                        B -->|"コード/実装/例/sample/implement 等"| C["SYSTEM_PROMPT_WITH_CODE<br/>(概念説明 + 実装例)"]
+                        B -->|"キーワードなし"| D["SYSTEM_PROMPT_LEARNING<br/>(概念説明に集中)"]
+                        C --> E["GPT-4に送信"]
+                        D --> E
+                </div>
+
+                <h4>query()メソッドの処理フロー</h4>
+                <div class="flow-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>バリデーション + コード判定</h4>
+                        <p>空質問チェック → <code>_should_include_code()</code>でキーワードマッチング（日本語20語 + 英語10語のキーワードリスト）</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>類似度検索</h4>
+                        <p><code>vectorstore.similarity_search(query, k=5)</code>で関連ドキュメントを取得。結果が0件の場合は「関連情報なし」レスポンスを返す</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>コンテキスト構築</h4>
+                        <p><code>_build_context()</code>で検索結果を「ソース1: タイトル / URL / 内容」形式のテキストに整形</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>LLM呼び出し</h4>
+                        <p>選択したプロンプトテンプレートにコンテキストと質問を注入し、GPT-4を呼び出して回答を生成</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>後処理（ソース・コード例抽出）</h4>
+                        <p><code>format_sources()</code>でソース情報を構造化。<code>extract_code_blocks()</code>で回答+検索結果からコード例を抽出（最大5件、重複除去）</p>
+                    </div>
+                </div>
+                <div class="flow-step">
+                    <div class="step-number">6</div>
+                    <div class="step-content">
+                        <h4>レスポンス構築</h4>
+                        <p>answer, sources, code_examples, confidence（0-1、ドキュメント数ベース）, metadata（model, tokens_used, response_time）を返却</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 5. 構成案生成システム -->
+            <!-- ============================== -->
+            <section id="architect-system">
+                <h2>5. 構成案生成システム（Architect）</h2>
+
+                <div class="info-box">
+                    <strong>LangGraph StateGraph とは</strong><br>
+                    LangGraphの中核概念。TypedDictで定義した状態（State）をノード間で受け渡しながら、グラフ構造でワークフローを構築するフレームワーク。各ノードは状態の一部を更新し、エッジで次のノードを決定します。
+                </div>
+
+                <h3>6ノードワークフロー</h3>
+                <p><code>ArchitectGraph</code>クラスは、LangGraphの<code>StateGraph</code>を使って6段階の線形ワークフローを構築しています。各ノードはLLMを1回呼び出し、状態の一部を更新します。</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        START(["START"]) --> A["analyze_challenge<br/><small>課題分析ノード</small>"]
+                        A -->|"challenge_analysis"| B["generate_architecture<br/><small>構成案生成ノード</small>"]
+                        B -->|"architecture"| C["generate_mermaid<br/><small>Mermaid図生成ノード</small>"]
+                        C -->|"mermaid_diagram"| D["generate_code<br/><small>コード例生成ノード</small>"]
+                        D -->|"code_example"| E["generate_explanation<br/><small>ビジネス説明生成ノード</small>"]
+                        E -->|"business_explanation"| F["generate_notes<br/><small>実装ノート生成ノード</small>"]
+                        F -->|"implementation_notes"| END(["END"])
+
+                        style A fill:#e8f4f8
+                        style B fill:#d4edda
+                        style C fill:#fff3cd
+                        style D fill:#f8d7da
+                        style E fill:#e2d5f1
+                        style F fill:#fce4ec
+                </div>
+
+                <h3>ArchitectState（状態定義）</h3>
+                <pre><code><span class="keyword">class</span> <span class="class-name">ArchitectState</span>(TypedDict):
+    <span class="comment"># 入力</span>
+    business_challenge: str              <span class="comment"># ビジネス課題（必須）</span>
+    industry: str | None                 <span class="comment"># 業界（オプション）</span>
+    constraints: list[str] | None        <span class="comment"># 制約条件（オプション）</span>
+
+    <span class="comment"># 各ノードの出力</span>
+    challenge_analysis: dict | None      <span class="comment"># ノード1: 課題分析結果（JSON）</span>
+    architecture: dict | None            <span class="comment"># ノード2: ノード/エッジ/状態スキーマ（JSON）</span>
+    mermaid_diagram: str | None          <span class="comment"># ノード3: Mermaid記法テキスト</span>
+    code_example: dict | None            <span class="comment"># ノード4: {language, code, explanation}</span>
+    business_explanation: str | None     <span class="comment"># ノード5: 非技術者向け説明</span>
+    implementation_notes: list[str] | None <span class="comment"># ノード6: 実装ノートリスト</span>
+    error: str | None                    <span class="comment"># エラー情報（どのノードでも設定可能）</span></code></pre>
+
+                <h3>各ノードの詳細</h3>
+                <table>
+                    <tr><th>ノード</th><th>プロンプト</th><th>入力</th><th>出力</th><th>LLM出力形式</th></tr>
+                    <tr>
+                        <td><strong>analyze_challenge</strong></td>
+                        <td>CHALLENGE_ANALYSIS_PROMPT</td>
+                        <td>business_challenge, industry, constraints</td>
+                        <td>challenge_analysis</td>
+                        <td>JSON（summary, key_requirements, langgraph_fit_reason, suggested_approach）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>generate_architecture</strong></td>
+                        <td>ARCHITECTURE_GENERATION_PROMPT</td>
+                        <td>challenge_analysis, business_challenge, constraints</td>
+                        <td>architecture</td>
+                        <td>JSON（nodes[], edges[], state_schema{}）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>generate_mermaid</strong></td>
+                        <td>MERMAID_GENERATION_PROMPT</td>
+                        <td>architecture</td>
+                        <td>mermaid_diagram</td>
+                        <td>Mermaidコードブロック</td>
+                    </tr>
+                    <tr>
+                        <td><strong>generate_code</strong></td>
+                        <td>CODE_GENERATION_PROMPT</td>
+                        <td>challenge_analysis, architecture</td>
+                        <td>code_example</td>
+                        <td>Pythonコードブロック + 説明</td>
+                    </tr>
+                    <tr>
+                        <td><strong>generate_explanation</strong></td>
+                        <td>BUSINESS_EXPLANATION_PROMPT</td>
+                        <td>business_challenge, challenge_analysis, architecture</td>
+                        <td>business_explanation</td>
+                        <td>Markdown形式テキスト</td>
+                    </tr>
+                    <tr>
+                        <td><strong>generate_notes</strong></td>
+                        <td>IMPLEMENTATION_NOTES_PROMPT</td>
+                        <td>architecture, constraints</td>
+                        <td>implementation_notes</td>
+                        <td>箇条書きリスト</td>
+                    </tr>
+                </table>
+
+                <h3>LLM出力のパース処理</h3>
+                <p>各ノードではLLMの出力をパースするためのヘルパーメソッドを使用しています：</p>
+                <table>
+                    <tr><th>メソッド</th><th>処理</th><th>使用ノード</th></tr>
+                    <tr>
+                        <td><code>_extract_json_from_response()</code></td>
+                        <td><code>```json```</code> ブロックを検出してJSON.parse</td>
+                        <td>analyze_challenge, generate_architecture</td>
+                    </tr>
+                    <tr>
+                        <td><code>_extract_code_block(language)</code></td>
+                        <td><code>```python```</code> / <code>```mermaid```</code> ブロックを抽出</td>
+                        <td>generate_mermaid, generate_code</td>
+                    </tr>
+                    <tr>
+                        <td><code>_extract_bullet_points()</code></td>
+                        <td><code>- </code> / <code>* </code> / 番号付きリストを抽出</td>
+                        <td>generate_notes</td>
+                    </tr>
+                </table>
+
+                <h3>プロンプトテンプレート設計（prompts.py）</h3>
+                <p>6つのプロンプトテンプレートが定義されています。すべて<code>.format()</code>メソッドで変数を注入する形式です。</p>
+                <div class="info-box">
+                    <strong>設計ポイント</strong><br>
+                    各プロンプトには「出力形式」セクションを明記し、LLMの出力を構造化しやすくしています。JSON出力を要求する場合は<code>```json```</code>ブロックで囲むよう指示し、パースの安定性を確保しています。制約条件は<code>format_constraints_context()</code>で動的にプロンプトに注入されます。
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 6. バックエンドAPI -->
+            <!-- ============================== -->
+            <section id="backend-api">
+                <h2>6. バックエンドAPI（FastAPI）</h2>
+
+                <h3>FastAPIアプリケーション構造（main.py）</h3>
+                <div class="mermaid">
+                    flowchart TD
+                        A["FastAPI App初期化<br/>(title, version, lifespan)"] --> B["CORSMiddleware<br/>(allow_origins設定)"]
+                        B --> C["log_requests Middleware<br/>(処理時間計測)"]
+                        C --> D["global_exception_handler<br/>(500エラーハンドリング)"]
+                        D --> E["Router登録<br/>(/api/v1)"]
+
+                        subgraph "ヘルスチェック"
+                            F["GET /health"]
+                            G["GET /ready"]
+                        end
+
+                        subgraph "API v1 Endpoints"
+                            H["POST /api/v1/rag/query"]
+                            I["POST /api/v1/architect/generate"]
+                            J["POST /api/v1/auth/login"]
+                            K["GET /api/v1/learning-path/*"]
+                            L["GET /api/v1/templates/*"]
+                        end
+
+                        E --> F
+                        E --> G
+                        E --> H
+                        E --> I
+                        E --> J
+                        E --> K
+                        E --> L
+                </div>
+
+                <h3>エンドポイント一覧</h3>
+                <table>
+                    <tr><th>メソッド</th><th>パス</th><th>認証</th><th>使用制限</th><th>説明</th></tr>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/v1/rag/query</code></td>
+                        <td>JWT必須</td>
+                        <td>あり</td>
+                        <td>RAG質問 → 回答生成</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/v1/architect/generate</code></td>
+                        <td>JWT必須</td>
+                        <td>あり</td>
+                        <td>ビジネス課題 → 構成案生成</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/v1/auth/login</code></td>
+                        <td>不要</td>
+                        <td>なし</td>
+                        <td>ログイン（JWT取得）</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/v1/auth/me</code></td>
+                        <td>JWT必須</td>
+                        <td>なし</td>
+                        <td>現在のユーザー情報</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/v1/auth/logout</code></td>
+                        <td>JWT必須</td>
+                        <td>なし</td>
+                        <td>ログアウト</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/v1/learning-path</code></td>
+                        <td>不要</td>
+                        <td>なし</td>
+                        <td>学習パス全体取得</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/v1/learning-path/level/{level}</code></td>
+                        <td>不要</td>
+                        <td>なし</td>
+                        <td>レベル別トピック取得</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/v1/learning-path/topic/{topic_id}</code></td>
+                        <td>不要</td>
+                        <td>なし</td>
+                        <td>個別トピック取得</td>
+                    </tr>
+                    <tr>
+                        <td>POST</td>
+                        <td><code>/api/v1/learning-path/progress</code></td>
+                        <td>不要</td>
+                        <td>なし</td>
+                        <td>学習進捗計算</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/v1/templates</code></td>
+                        <td>不要</td>
+                        <td>なし</td>
+                        <td>テンプレート一覧（フィルタ対応）</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/v1/templates/categories</code></td>
+                        <td>不要</td>
+                        <td>なし</td>
+                        <td>カテゴリ一覧</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/v1/templates/{template_id}</code></td>
+                        <td>不要</td>
+                        <td>なし</td>
+                        <td>個別テンプレート取得</td>
+                    </tr>
+                    <tr>
+                        <td>GET</td>
+                        <td><code>/api/v1/usage/remaining</code></td>
+                        <td>JWT必須</td>
+                        <td>なし</td>
+                        <td>残り使用回数取得</td>
+                    </tr>
+                </table>
+
+                <h3>ミドルウェアチェーン</h3>
+                <p>各リクエストは以下の順序で処理されます：</p>
+                <pre><code>リクエスト受信
+  → CORSMiddleware（オリジン検証、プリフライトレスポンス）
+    → log_requests（処理時間計測、ステータスコードログ出力）
+      → APIルーター（パスマッチング）
+        → 依存性注入（JWT検証、使用制限チェック）
+          → エンドポイント処理
+            → Pydanticスキーマによるレスポンスシリアライズ
+  ← X-Process-Timeヘッダー追加</code></pre>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 7. 認証・使用制限 -->
+            <!-- ============================== -->
+            <section id="auth-system">
+                <h2>7. 認証・使用制限システム</h2>
+
+                <h3>認証フロー</h3>
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant U as User
+                        participant F as Frontend
+                        participant B as Backend
+                        participant JWT as JWT Module
+
+                        U->>F: ログインフォーム入力
+                        F->>B: POST /auth/login (FormData)
+                        B->>B: authenticate_user()<br/>bcrypt.verify()
+                        B->>JWT: create_access_token()
+                        JWT-->>B: JWT (HS256, 24h有効)
+                        B-->>F: { access_token, user }
+                        F->>F: localStorage + Zustand Store保存
+
+                        Note over U,F: 以降のリクエスト
+
+                        U->>F: RAGに質問
+                        F->>B: POST /rag/query<br/>Authorization: Bearer &lt;JWT&gt;
+                        B->>JWT: verify_token()
+                        JWT-->>B: { username, role }
+                        B->>B: check_usage_limit()
+                        B->>B: RAGChain.query()
+                        B->>B: increment_usage()
+                        B-->>F: RAGResponse
+
+                        Note over B: 401時の自動ログアウト
+
+                        F->>B: リクエスト (期限切れJWT)
+                        B-->>F: 401 Unauthorized
+                        F->>F: Axios Interceptor検出
+                        F->>F: authStore.logout()
+                        F-->>U: ログインページにリダイレクト
+                </div>
+
+                <h3>ユーザー管理（users.py）</h3>
+                <p>データベースを使用せず、環境変数ベースで4ユーザーを管理する軽量な設計です。</p>
+
+                <table>
+                    <tr><th>ユーザー名</th><th>ロール</th><th>1日の使用制限</th><th>パスワード設定</th></tr>
+                    <tr>
+                        <td><code>admin</code></td>
+                        <td>admin</td>
+                        <td>無制限（None）</td>
+                        <td>環境変数 <code>ADMIN_PASSWORD</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>testuser1</code></td>
+                        <td>user</td>
+                        <td>5回/日</td>
+                        <td>環境変数 <code>TESTUSER1_PASSWORD</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>testuser2</code></td>
+                        <td>user</td>
+                        <td>5回/日</td>
+                        <td>環境変数 <code>TESTUSER2_PASSWORD</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>testuser3</code></td>
+                        <td>user</td>
+                        <td>5回/日</td>
+                        <td>環境変数 <code>TESTUSER3_PASSWORD</code></td>
+                    </tr>
+                </table>
+
+                <h3>使用制限の仕組み（usage_limiter.py）</h3>
+                <p>ファイルベース（<code>data/usage_limits.json</code>）で使用回数を管理します。日付変更時に自動リセットされます。</p>
+                <pre><code><span class="comment">// data/usage_limits.json の構造</span>
+{
+  <span class="string">"testuser1"</span>: { <span class="string">"date"</span>: <span class="string">"2026-02-07"</span>, <span class="string">"count"</span>: 3 },
+  <span class="string">"testuser2"</span>: { <span class="string">"date"</span>: <span class="string">"2026-02-07"</span>, <span class="string">"count"</span>: 1 }
+}</code></pre>
+                <div class="warning-box">
+                    <strong>注意: Render無料プランの制約</strong><br>
+                    Render無料プランではサーバーが15分間アクセスなしでスリープし、再起動時にファイルシステムがリセットされます。そのため、使用制限カウンターも再起動でリセットされます。永続化が必要な場合はRender Disksの追加が必要です。
+                </div>
+
+                <h3>JWT設定</h3>
+                <table>
+                    <tr><th>パラメータ</th><th>値</th><th>設定場所</th></tr>
+                    <tr><td>アルゴリズム</td><td>HS256（HMAC-SHA256）</td><td><code>JWT_ALGORITHM</code></td></tr>
+                    <tr><td>有効期限</td><td>1440分（24時間）</td><td><code>JWT_ACCESS_TOKEN_EXPIRE_MINUTES</code></td></tr>
+                    <tr><td>秘密鍵</td><td>環境変数で管理</td><td><code>JWT_SECRET_KEY</code></td></tr>
+                    <tr><td>ペイロード</td><td><code>{ sub: username, role: admin|user, exp: ... }</code></td><td>security.py</td></tr>
+                </table>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 8. フロントエンド -->
+            <!-- ============================== -->
+            <section id="frontend">
+                <h2>8. フロントエンド（React + TypeScript）</h2>
+
+                <h3>ページ構成</h3>
+                <table>
+                    <tr><th>ページ</th><th>パス</th><th>認証</th><th>主要機能</th></tr>
+                    <tr>
+                        <td><strong>HomePage</strong></td>
+                        <td><code>/</code></td>
+                        <td>不要</td>
+                        <td>機能紹介、各ページへのナビゲーション</td>
+                    </tr>
+                    <tr>
+                        <td><strong>RAGPage</strong></td>
+                        <td><code>/rag</code></td>
+                        <td>必要</td>
+                        <td>チャットUI、質問入力、回答表示（ソース+コード例）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>ArchitectPage</strong></td>
+                        <td><code>/architect</code></td>
+                        <td>必要</td>
+                        <td>ビジネス課題入力、Mermaid図/コード例/説明の表示</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LearningPathPage</strong></td>
+                        <td><code>/learning-path</code></td>
+                        <td>不要</td>
+                        <td>レベル別トピック表示、進捗管理（完了チェック）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>TemplatesPage</strong></td>
+                        <td><code>/templates</code></td>
+                        <td>不要</td>
+                        <td>テンプレート一覧、カテゴリ/難易度フィルタリング</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LoginPage</strong></td>
+                        <td><code>/login</code></td>
+                        <td>不要</td>
+                        <td>ログインフォーム、エラー表示、リダイレクト元復帰</td>
+                    </tr>
+                </table>
+
+                <h3>Zustand状態管理</h3>
+                <p>4つのストアで状態を管理しています。<code>authStore</code>と<code>learningStore</code>はlocalStorageに永続化されます。</p>
+
+                <table>
+                    <tr><th>ストア</th><th>管理する状態</th><th>永続化</th><th>主要アクション</th></tr>
+                    <tr>
+                        <td><code>authStore</code></td>
+                        <td>user, token, isAuthenticated</td>
+                        <td>localStorage（persist middleware）</td>
+                        <td>login(), logout(), checkAuth()</td>
+                    </tr>
+                    <tr>
+                        <td><code>ragStore</code></td>
+                        <td>messages[], isLoading, error</td>
+                        <td>なし（メモリのみ）</td>
+                        <td>sendMessage(), clearHistory()</td>
+                    </tr>
+                    <tr>
+                        <td><code>architectStore</code></td>
+                        <td>result, isLoading, error</td>
+                        <td>なし（メモリのみ）</td>
+                        <td>generate(), clearResult()</td>
+                    </tr>
+                    <tr>
+                        <td><code>learningStore</code></td>
+                        <td>completedTopics[]</td>
+                        <td>localStorage（persist middleware）</td>
+                        <td>toggleTopic(), getProgress()</td>
+                    </tr>
+                </table>
+
+                <h3>API通信層（client.ts）</h3>
+                <pre><code><span class="comment">// Axiosインスタンス + インターセプター</span>
+<span class="keyword">const</span> apiClient = axios.create({
+  baseURL: <span class="string">'http://localhost:8000/api/v1'</span>,  <span class="comment">// VITE_API_BASE_URL</span>
+  timeout: 60000,
+});
+
+<span class="comment">// リクエストインターセプター: JWTを自動付与</span>
+apiClient.interceptors.request.use((config) => {
+  <span class="keyword">const</span> token = localStorage.getItem(<span class="string">'auth-storage'</span>);
+  <span class="keyword">if</span> (token) config.headers.Authorization = <span class="string">`Bearer ${token}`</span>;
+  <span class="keyword">return</span> config;
+});
+
+<span class="comment">// レスポンスインターセプター: 401で自動ログアウト</span>
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    <span class="keyword">if</span> (error.response?.status === 401) {
+      useAuthStore.getState().logout();  <span class="comment">// Zustand Store直接呼び出し</span>
+    }
+    <span class="keyword">return</span> Promise.reject(error);
+  }
+);</code></pre>
+
+                <h3>デザインシステム</h3>
+                <p><strong>Refined Brutalist</strong>と呼ばれるカスタムデザインシステムを採用しています。</p>
+                <table>
+                    <tr><th>要素</th><th>設定</th></tr>
+                    <tr><td>フォント（本文）</td><td>IBM Plex Mono（Google Fonts）</td></tr>
+                    <tr><td>フォント（見出し）</td><td>Crimson Pro（Google Fonts）</td></tr>
+                    <tr><td>プライマリカラー</td><td><code>#667eea</code>（パープルブルー）</td></tr>
+                    <tr><td>背景</td><td><code>linear-gradient(135deg, #667eea, #764ba2, #f093fb)</code></td></tr>
+                    <tr><td>カードスタイル</td><td>ボーダー付き、ホバーでシャドウ拡大</td></tr>
+                    <tr><td>アニメーション</td><td>フェードイン、スライドアップ、パルスアニメーション</td></tr>
+                    <tr><td>レスポンシブ</td><td>Tailwind CSS のブレークポイント（sm/md/lg/xl）</td></tr>
+                </table>
+
+                <h3>ProtectedRoute（認証ガード）</h3>
+                <pre><code><span class="comment">// 未認証時はログインページにリダイレクト</span>
+<span class="comment">// リダイレクト元のパスをstateに保存し、ログイン後に復帰</span>
+<span class="keyword">const</span> <span class="function">ProtectedRoute</span> = ({ children }) => {
+  <span class="keyword">const</span> { isAuthenticated } = useAuthStore();
+  <span class="keyword">const</span> location = useLocation();
+
+  <span class="keyword">if</span> (!isAuthenticated) {
+    <span class="keyword">return</span> &lt;Navigate to=<span class="string">"/login"</span> state={{ from: location }} /&gt;;
+  }
+  <span class="keyword">return</span> children;
+};</code></pre>
+
+                <h3>コンポーネント階層</h3>
+                <p>React Routerによるルーティングを基盤に、レイアウトコンポーネントとページコンポーネントで構成されます。</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        APP["App.tsx<br/>(BrowserRouter)"] --> HEADER["Header<br/>ナビ + 認証表示"]
+                        APP --> ROUTES["Routes"]
+
+                        HEADER --> NAV["Navigation Links"]
+                        HEADER --> AUTH_UI["Auth Section"]
+                        AUTH_UI --> BADGE["UsageLimitBadge<br/>(残り使用回数)"]
+                        AUTH_UI --> LOGOUT["Logout / Login"]
+
+                        ROUTES --> HOME["/ → HomePage"]
+                        ROUTES --> LOGIN["/login → LoginPage"]
+                        ROUTES --> RAG_R["/rag → ProtectedRoute"]
+                        ROUTES --> ARCH_R["/architect → ProtectedRoute"]
+                        ROUTES --> LP["/learning-path → LearningPathPage"]
+                        ROUTES --> TP["/templates → TemplatesPage"]
+
+                        RAG_R --> RAG["RAGPage"]
+                        ARCH_R --> ARCH["ArchitectPage"]
+
+                        RAG --> MD["MarkdownRenderer"]
+                        RAG --> CB["CodeBlock"]
+                        ARCH --> MERM["MermaidDiagram"]
+                        ARCH --> CB2["CodeBlock"]
+
+                        style RAG_R fill:#fff3cd
+                        style ARCH_R fill:#fff3cd
+                        style BADGE fill:#e8f4f8
+                </div>
+
+                <h3>共有UIコンポーネント</h3>
+                <table>
+                    <tr><th>コンポーネント</th><th>ファイル</th><th>Props</th><th>機能</th></tr>
+                    <tr>
+                        <td><strong>Button</strong></td>
+                        <td><code>components/UI/Button.tsx</code></td>
+                        <td>variant (primary/secondary/outline), size (sm/md/lg), isLoading</td>
+                        <td>グラデーションボタン、ローディングスピナー、disabled状態</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Card</strong></td>
+                        <td><code>components/UI/Card.tsx</code></td>
+                        <td>hover, onClick, className</td>
+                        <td>Brutalistスタイルのカード、ホバーエフェクト（対角アクセント）</td>
+                    </tr>
+                    <tr>
+                        <td><strong>CodeBlock</strong></td>
+                        <td><code>components/CodeBlock/CodeBlock.tsx</code></td>
+                        <td>code, language, showLineNumbers</td>
+                        <td>react-syntax-highlighter（vscDarkPlus）、コピーボタン、言語ラベル</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MarkdownRenderer</strong></td>
+                        <td><code>components/Markdown/MarkdownRenderer.tsx</code></td>
+                        <td>content</td>
+                        <td>react-markdownでMD描画、コードブロックをCodeBlockに委譲</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MermaidDiagram</strong></td>
+                        <td><code>components/Mermaid/MermaidDiagram.tsx</code></td>
+                        <td>chart</td>
+                        <td>mermaidライブラリでSVG描画、ダークテーマ、chart変更時に再描画</td>
+                    </tr>
+                    <tr>
+                        <td><strong>UsageLimitBadge</strong></td>
+                        <td><code>components/UsageLimitBadge.tsx</code></td>
+                        <td>-</td>
+                        <td>テストユーザーの残り使用回数表示（管理者は非表示）、色変化（緑→橙→赤）</td>
+                    </tr>
+                </table>
+
+                <h3>ページコンポーネント データフロー</h3>
+                <h4>RAGPage：チャットインターフェース</h4>
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant U as ユーザー
+                        participant R as RAGPage
+                        participant S as ragStore (Zustand)
+                        participant A as ragApi (Axios)
+                        participant BE as FastAPI Backend
+
+                        U->>R: 質問を入力＆送信
+                        R->>S: addMessage({role:'user', content})
+                        R->>S: setLoading(true)
+                        R->>A: ragApi.query({question, k, ...})
+                        A->>BE: POST /api/v1/rag/query (JWT付き)
+                        BE-->>A: {answer, sources, code_examples, confidence, metadata}
+                        A-->>R: RAGQueryResponse
+                        R->>S: addMessage({role:'assistant', content, data: response})
+                        R->>S: setLoading(false)
+                        R->>R: 自動スクロール (messagesEndRef)
+                </div>
+
+                <h4>ArchitectPage：構成案生成</h4>
+                <div class="mermaid">
+                    sequenceDiagram
+                        participant U as ユーザー
+                        participant P as ArchitectPage
+                        participant S as architectStore (Zustand)
+                        participant A as architectApi (Axios)
+                        participant BE as FastAPI Backend
+
+                        U->>P: ビジネス課題入力＋生成ボタン
+                        P->>S: setLoading(true)
+                        P->>A: architectApi.generate({business_challenge, industry, constraints})
+                        A->>BE: POST /api/v1/architect/generate (JWT付き)
+                        BE-->>A: ArchitectResponse (7ノード処理結果)
+                        A-->>P: ArchitectResponse
+                        P->>S: setResult(response)
+                        P->>S: setLoading(false)
+                        P->>P: 結果表示(分析/Mermaid図/コード/説明)
+                        U->>P: ダウンロードボタン
+                        P->>P: Markdownファイル生成＋Blob DL
+                </div>
+
+                <h3>TypeScript型定義（主要インターフェース）</h3>
+                <p>すべての型は<code>src/types/index.ts</code>に統合定義されています。バックエンドのPydanticスキーマと1対1で対応します。</p>
+                <pre><code><span class="comment">// RAG関連型</span>
+<span class="keyword">interface</span> <span class="class-name">RAGQueryRequest</span> {
+  question: <span class="keyword">string</span>;
+  k?: <span class="keyword">number</span>;                    <span class="comment">// Top-k類似ドキュメント数（デフォルト5）</span>
+  include_sources?: <span class="keyword">boolean</span>;
+  include_code_examples?: <span class="keyword">boolean</span>;
+}
+
+<span class="keyword">interface</span> <span class="class-name">RAGQueryResponse</span> {
+  answer: <span class="keyword">string</span>;
+  sources: Source[];               <span class="comment">// {title, url, excerpt, relevance, doc_type}</span>
+  code_examples: CodeExample[];    <span class="comment">// {language, code, description, source_url}</span>
+  confidence: <span class="keyword">number</span>;              <span class="comment">// 0-1</span>
+  metadata: { model: <span class="keyword">string</span>; tokens_used: <span class="keyword">number</span>; response_time: <span class="keyword">number</span> };
+}
+
+<span class="comment">// Architect関連型</span>
+<span class="keyword">interface</span> <span class="class-name">ArchitectResponse</span> {
+  challenge_analysis: {
+    summary: <span class="keyword">string</span>;
+    key_requirements: <span class="keyword">string</span>[];
+    suggested_approach: <span class="keyword">string</span>;
+    langgraph_fit_reason: <span class="keyword">string</span>;
+  };
+  architecture: {
+    mermaid_diagram: <span class="keyword">string</span>;
+    node_descriptions: NodeDescription[];  <span class="comment">// {node_id, name, purpose, inputs, outputs}</span>
+    edge_descriptions: EdgeDescription[];  <span class="comment">// {from_node, to_node, condition, description}</span>
+  };
+  code_example: { language: <span class="keyword">string</span>; code: <span class="keyword">string</span>; explanation: <span class="keyword">string</span> };
+  business_explanation: <span class="keyword">string</span>;
+  implementation_notes: <span class="keyword">string</span>[];
+}
+
+<span class="comment">// 学習パス関連型</span>
+<span class="keyword">interface</span> <span class="class-name">Topic</span> {
+  id: <span class="keyword">string</span>;
+  level: <span class="string">'初級'</span> | <span class="string">'中級'</span> | <span class="string">'上級'</span>;
+  title: <span class="keyword">string</span>;
+  learning_objectives: <span class="keyword">string</span>[];
+  sample_questions: <span class="keyword">string</span>[];
+  resources: { type: <span class="keyword">string</span>; url: <span class="keyword">string</span> }[];
+}
+
+<span class="comment">// テンプレート関連型</span>
+<span class="keyword">interface</span> <span class="class-name">Template</span> {
+  id: <span class="keyword">string</span>;
+  title: <span class="keyword">string</span>;
+  category: <span class="keyword">string</span>;              <span class="comment">// 'conversational' | 'automation' 等</span>
+  difficulty: <span class="keyword">string</span>;             <span class="comment">// '初級' | '中級' | '上級'</span>
+  code: <span class="keyword">string</span>;                  <span class="comment">// Pythonコード例</span>
+  mermaid: <span class="keyword">string</span>;               <span class="comment">// Mermaid図</span>
+  tags: <span class="keyword">string</span>[];
+}</code></pre>
+
+                <h3>ビルド設定（vite.config.ts）</h3>
+                <table>
+                    <tr><th>設定項目</th><th>値</th><th>説明</th></tr>
+                    <tr><td>base</td><td><code>'/'</code></td><td>フロントエンドルートパス</td></tr>
+                    <tr><td>outDir</td><td><code>'dist'</code></td><td>ビルド出力先</td></tr>
+                    <tr><td>Code Splitting</td><td>手動チャンク設定</td><td><code>vendor</code>（React系）, <code>ui</code>（Zustand, Axios）, <code>markdown</code>（react-markdown, mermaid等）の3チャンクに分割</td></tr>
+                    <tr><td>テスト環境</td><td>happy-dom</td><td>jsdomより軽量なDOM実装（Vitestで使用）</td></tr>
+                    <tr><td>環境変数</td><td><code>VITE_</code>プレフィックス</td><td><code>import.meta.env.VITE_API_BASE_URL</code>で参照</td></tr>
+                </table>
+
+                <h3>CSSデザイントークン（index.css）</h3>
+                <pre><code><span class="comment">/* Refined Brutalist デザインシステム */</span>
+:root {
+  --color-bg-primary: <span class="string">#0a0e14</span>;      <span class="comment">/* 最も暗い背景 */</span>
+  --color-bg-secondary: <span class="string">#151922</span>;    <span class="comment">/* カード背景 */</span>
+  --color-bg-tertiary: <span class="string">#1e2530</span>;     <span class="comment">/* 入力フィールド背景 */</span>
+
+  --color-accent-primary: <span class="string">#0ea5e9</span>;   <span class="comment">/* Cyan - メインCTA */</span>
+  --color-accent-secondary: <span class="string">#a855f7</span>; <span class="comment">/* Purple - セカンダリ */</span>
+  --color-accent-warm: <span class="string">#f59e0b</span>;     <span class="comment">/* Amber - ターシャリ */</span>
+
+  --color-text-primary: <span class="string">#e4e7eb</span>;     <span class="comment">/* メインテキスト */</span>
+  --color-text-secondary: <span class="string">#9ca3af</span>;   <span class="comment">/* サブテキスト */</span>
+  --color-border: <span class="string">#2d3748</span>;           <span class="comment">/* ボーダー */</span>
+}
+
+<span class="comment">/* カードスタイル：ホバーで対角アクセント表示 */</span>
+.card-brutalist::after {
+  background: linear-gradient(135deg, transparent 50%, var(--color-accent-primary) 50%);
+  opacity: 0;  <span class="comment">/* ホバー時にopacity: 0.2 */</span>
+}
+
+<span class="comment">/* ヘッダー：ガラスエフェクト */</span>
+.glass-effect {
+  background: rgba(21, 25, 34, 0.7);
+  backdrop-filter: blur(12px);
+}</code></pre>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 9. 設定管理 -->
+            <!-- ============================== -->
+            <section id="config">
+                <h2>9. 設定管理</h2>
+
+                <h3>Pydantic Settings（2つの設定クラス）</h3>
+                <p>バックエンドとコアロジックで2つの設定クラスが存在します。共通のフィールドを持ちつつ、それぞれ固有の設定を追加しています。</p>
+
+                <table>
+                    <tr><th>設定クラス</th><th>ファイル</th><th>用途</th><th>固有設定</th></tr>
+                    <tr>
+                        <td><code>src.config.Settings</code></td>
+                        <td><code>src/config/settings.py</code></td>
+                        <td>コアロジック用</td>
+                        <td>streamlit_server_port</td>
+                    </tr>
+                    <tr>
+                        <td><code>backend.core.Settings</code></td>
+                        <td><code>backend/core/config.py</code></td>
+                        <td>FastAPI用</td>
+                        <td>api_title, api_version, cors_origins, jwt_*, rag_*</td>
+                    </tr>
+                </table>
+
+                <h3>環境変数一覧</h3>
+                <table>
+                    <tr><th>変数名</th><th>必須</th><th>デフォルト</th><th>説明</th></tr>
+                    <tr><td><code>OPENAI_API_KEY</code></td><td>必須</td><td>-</td><td>OpenAI APIキー</td></tr>
+                    <tr><td><code>CHROMA_PERSIST_DIR</code></td><td></td><td><code>./data/chroma</code></td><td>ChromaDB永続化ディレクトリ</td></tr>
+                    <tr><td><code>LOG_LEVEL</code></td><td></td><td><code>INFO</code></td><td>ログレベル（DEBUG/INFO/WARNING/ERROR/CRITICAL）</td></tr>
+                    <tr><td><code>ENVIRONMENT</code></td><td></td><td><code>development</code></td><td>実行環境（development/test/production）</td></tr>
+                    <tr><td><code>DEFAULT_LLM_MODEL</code></td><td></td><td><code>gpt-4-turbo-preview</code></td><td>使用するLLMモデル</td></tr>
+                    <tr><td><code>DEFAULT_EMBEDDING_MODEL</code></td><td></td><td><code>text-embedding-3-small</code></td><td>Embeddingsモデル</td></tr>
+                    <tr><td><code>TEMPERATURE</code></td><td></td><td><code>0.3</code></td><td>LLM温度パラメータ（0.0-2.0）</td></tr>
+                    <tr><td><code>MAX_TOKENS</code></td><td></td><td><code>4096</code></td><td>最大トークン数</td></tr>
+                    <tr><td><code>CORS_ORIGINS</code></td><td></td><td><code>http://localhost:5173</code></td><td>CORS許可オリジン（カンマ区切り）</td></tr>
+                    <tr><td><code>JWT_SECRET_KEY</code></td><td>本番必須</td><td><code>your-secret-key-...</code></td><td>JWT署名用秘密鍵</td></tr>
+                    <tr><td><code>JWT_ALGORITHM</code></td><td></td><td><code>HS256</code></td><td>JWTアルゴリズム</td></tr>
+                    <tr><td><code>JWT_ACCESS_TOKEN_EXPIRE_MINUTES</code></td><td></td><td><code>1440</code></td><td>JWTトークン有効期限（分）</td></tr>
+                    <tr><td><code>ADMIN_PASSWORD</code></td><td>本番必須</td><td><code>admin123</code></td><td>管理者パスワード</td></tr>
+                    <tr><td><code>TESTUSER1_PASSWORD</code></td><td>本番必須</td><td><code>test123</code></td><td>テストユーザー1パスワード</td></tr>
+                    <tr><td><code>TESTUSER2_PASSWORD</code></td><td>本番必須</td><td><code>test123</code></td><td>テストユーザー2パスワード</td></tr>
+                    <tr><td><code>TESTUSER3_PASSWORD</code></td><td>本番必須</td><td><code>test123</code></td><td>テストユーザー3パスワード</td></tr>
+                    <tr><td><code>VITE_API_BASE_URL</code></td><td>FE必須</td><td><code>http://localhost:8000/api/v1</code></td><td>バックエンドAPIのベースURL</td></tr>
+                </table>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 10. テスト -->
+            <!-- ============================== -->
+            <section id="testing">
+                <h2>10. テスト</h2>
+
+                <div class="success-box">
+                    <strong>テスト実行時のAPI料金: $0</strong><br>
+                    すべてのOpenAI API呼び出しはモック化されています。テスト用の環境変数<code>OPENAI_API_KEY=sk-test-mock-key</code>は実際のAPIには接続されません。
+                </div>
+
+                <h3>テスト構成</h3>
+                <table>
+                    <tr><th>カテゴリ</th><th>フレームワーク</th><th>テスト数</th><th>対象</th></tr>
+                    <tr>
+                        <td><strong>バックエンドユニットテスト</strong></td>
+                        <td>pytest</td>
+                        <td>120+</td>
+                        <td>RAG, Architect, ヘルパー, 設定, API</td>
+                    </tr>
+                    <tr>
+                        <td><strong>フロントエンドユニットテスト</strong></td>
+                        <td>Vitest + React Testing Library</td>
+                        <td>35</td>
+                        <td>コンポーネント, ページ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>E2E Smokeテスト</strong></td>
+                        <td>Playwright</td>
+                        <td>13</td>
+                        <td>ナビゲーション, 認証フロー, レスポンシブ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>合計</strong></td>
+                        <td>-</td>
+                        <td><strong>155+</strong></td>
+                        <td>-</td>
+                    </tr>
+                </table>
+
+                <h3>バックエンドテスト詳細</h3>
+                <table>
+                    <tr><th>ファイル</th><th>テスト数</th><th>カバレッジ</th><th>主な検証内容</th></tr>
+                    <tr><td><code>test_crawler.py</code></td><td>20</td><td>-</td><td>4種クロール、ネットワークエラー、HTMLパース</td></tr>
+                    <tr><td><code>test_vectorstore.py</code></td><td>18</td><td>92%</td><td>初期化、追加、検索、フィルタ、Retriever</td></tr>
+                    <tr><td><code>test_rag_chain.py</code></td><td>15</td><td>99%</td><td>クエリ実行、ソース/コード抽出、バリデーション</td></tr>
+                    <tr><td><code>test_architect_graph.py</code></td><td>19</td><td>87%</td><td>ワークフロー実行、個別ノード、JSON/コード抽出</td></tr>
+                    <tr><td><code>test_visualizer.py</code></td><td>25</td><td>-</td><td>Mermaid生成、構文検証、エスケープ処理</td></tr>
+                    <tr><td><code>test_helpers.py</code></td><td>25</td><td>67%</td><td>テキスト分割、コード抽出、ファイル名サニタイズ</td></tr>
+                    <tr><td><code>test_config.py</code></td><td>15</td><td>100%</td><td>設定初期化、バリデーション、デフォルト値</td></tr>
+                    <tr><td><code>test_integration.py</code></td><td>3</td><td>-</td><td>E2E RAGフロー、ドキュメント更新フロー</td></tr>
+                </table>
+
+                <h3>モック戦略（バックエンド）</h3>
+                <p><code>tests/conftest.py</code>で<strong>2つのautouseフィクスチャ</strong>により、全テストで外部API呼び出しを自動的にブロックしています。</p>
+
+                <table>
+                    <tr><th>フィクスチャ</th><th>autouse</th><th>scope</th><th>目的</th></tr>
+                    <tr>
+                        <td><code>block_openai_api_calls</code></td>
+                        <td>Yes</td>
+                        <td>function</td>
+                        <td>OpenAI APIの直接呼び出しをブロック（RuntimeError発生）</td>
+                    </tr>
+                    <tr>
+                        <td><code>auto_mock_langchain_openai</code></td>
+                        <td>Yes</td>
+                        <td>function</td>
+                        <td>LangChainのChatOpenAI, OpenAIEmbeddings, Chromaを自動モック化</td>
+                    </tr>
+                    <tr>
+                        <td><code>cleanup_test_data</code></td>
+                        <td>Yes</td>
+                        <td>function</td>
+                        <td>テスト後の一時ファイル・ディレクトリのクリーンアップ</td>
+                    </tr>
+                    <tr>
+                        <td><code>mock_openai_chat</code></td>
+                        <td>No</td>
+                        <td>function</td>
+                        <td>LLMレスポンス内容を指定可能なモック（3つのimportパスに対応）</td>
+                    </tr>
+                    <tr>
+                        <td><code>mock_chroma</code></td>
+                        <td>No</td>
+                        <td>function</td>
+                        <td>Chroma全機能シミュレーション（similarity_search, add_documents, as_retriever等）</td>
+                    </tr>
+                    <tr>
+                        <td><code>sample_documents</code></td>
+                        <td>No</td>
+                        <td>function</td>
+                        <td>3つのサンプルDocument（official_docs, blog, github）</td>
+                    </tr>
+                </table>
+
+                <pre><code><span class="comment"># conftest.py - autouseフィクスチャの仕組み</span>
+
+<span class="decorator">@pytest.fixture(autouse=True)</span>
+<span class="keyword">def</span> <span class="function">block_openai_api_calls</span>(mocker):
+    <span class="string">"""全テストで実際のOpenAI API呼び出しを防止"""</span>
+    mock_openai = mocker.patch(<span class="string">"openai.OpenAI"</span>)
+    mock_openai.return_value.chat.completions.create.side_effect = RuntimeError(
+        <span class="string">"Attempted to call real OpenAI API in tests!"</span>
+    )
+
+<span class="decorator">@pytest.fixture(autouse=True)</span>
+<span class="keyword">def</span> <span class="function">auto_mock_langchain_openai</span>(mocker):
+    <span class="string">"""LangChain統合を自動モック化（3つのimportパスに対応）"""</span>
+    <span class="keyword">for</span> path <span class="keyword">in</span> [
+        <span class="string">"langchain_openai.ChatOpenAI"</span>,
+        <span class="string">"langchain_openai.chat_models.ChatOpenAI"</span>,
+        <span class="string">"langchain_openai.chat_models.base.ChatOpenAI"</span>,
+    ]:
+        mock_chat = mocker.patch(path)
+        mock_chat.return_value.invoke.return_value = Mock(
+            content=<span class="string">"Mocked response"</span>,
+            response_metadata={<span class="string">"token_usage"</span>: {<span class="string">"total_tokens"</span>: 100}}
+        )
+    <span class="comment"># OpenAI Embeddings: 1536次元ベクトルを返す</span>
+    mock_emb = mocker.patch(<span class="string">"langchain_openai.OpenAIEmbeddings"</span>)
+    mock_emb.return_value.embed_documents.return_value = [[0.1] * 1536] * 3
+    mock_emb.return_value.embed_query.return_value = [0.1] * 1536</code></pre>
+
+                <h3>フロントエンドテスト構成</h3>
+                <table>
+                    <tr><th>設定項目</th><th>値</th><th>説明</th></tr>
+                    <tr><td>テストランナー</td><td>Vitest</td><td>Viteネイティブ、Jest互換API</td></tr>
+                    <tr><td>DOM環境</td><td>happy-dom</td><td>jsdomより軽量・高速</td></tr>
+                    <tr><td>UIテスト</td><td>@testing-library/react</td><td>ユーザー視点のクエリ（getByText, getByRole等）</td></tr>
+                    <tr><td>モック</td><td>vi.mock() / vi.fn()</td><td>Zustandストア、API呼び出しをモック化</td></tr>
+                    <tr><td>セットアップ</td><td><code>src/test/setup.ts</code></td><td>@testing-library/jest-domマッチャー追加</td></tr>
+                </table>
+
+                <pre><code><span class="comment">// フロントエンドテストのパターン例（RAGPage.test.tsx）</span>
+<span class="keyword">import</span> { render, screen, fireEvent, waitFor } <span class="keyword">from</span> <span class="string">'@testing-library/react'</span>;
+<span class="keyword">import</span> { BrowserRouter } <span class="keyword">from</span> <span class="string">'react-router-dom'</span>;
+
+<span class="comment">// Zustandストアをモック化</span>
+vi.mock(<span class="string">'../store/ragStore'</span>, () => ({
+  useRAGStore: vi.fn(),
+}));
+
+it(<span class="string">'should submit question'</span>, <span class="keyword">async</span> () => {
+  <span class="keyword">const</span> mockAddMessage = vi.fn();
+  (useRAGStore <span class="keyword">as</span> <span class="keyword">any</span>).mockReturnValue({
+    messages: [], isLoading: <span class="keyword">false</span>, error: <span class="keyword">null</span>,
+    addMessage: mockAddMessage, setLoading: vi.fn(),
+  });
+
+  render(&lt;BrowserRouter&gt;&lt;RAGPage /&gt;&lt;/BrowserRouter&gt;);
+  fireEvent.change(screen.getByPlaceholderText(<span class="string">/質問/</span>), { target: { value: <span class="string">'テスト'</span> } });
+  fireEvent.click(screen.getByRole(<span class="string">'button'</span>, { name: <span class="string">/質問する/</span> }));
+
+  <span class="keyword">await</span> waitFor(() => {
+    expect(mockAddMessage).toHaveBeenCalledWith({ role: <span class="string">'user'</span>, content: <span class="string">'テスト'</span> });
+  });
+});</code></pre>
+
+                <h3>E2E Smokeテスト（Playwright）</h3>
+                <table>
+                    <tr><th>テストグループ</th><th>テスト数</th><th>検証内容</th><th>API呼び出し</th></tr>
+                    <tr>
+                        <td><strong>ページ表示・ナビゲーション</strong></td>
+                        <td>4</td>
+                        <td>ホームページ表示、全ページ遷移、無効ルート→/リダイレクト</td>
+                        <td>なし</td>
+                    </tr>
+                    <tr>
+                        <td><strong>認証フロー</strong></td>
+                        <td>4</td>
+                        <td>保護ページ→ログインリダイレクト、フォーム表示、バリデーション、不正認証エラー</td>
+                        <td>ログインAPIのみ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>公開ページ</strong></td>
+                        <td>2</td>
+                        <td>学習パストピック表示、テンプレートフィルタリング</td>
+                        <td>GET APIのみ</td>
+                    </tr>
+                    <tr>
+                        <td><strong>レスポンシブ</strong></td>
+                        <td>1</td>
+                        <td>モバイル（375px）→デスクトップ（1920px）でヘッダー表示確認</td>
+                        <td>なし</td>
+                    </tr>
+                    <tr>
+                        <td><strong>アクセシビリティ</strong></td>
+                        <td>2</td>
+                        <td>タブキーナビゲーション、img要素のalt属性チェック</td>
+                        <td>なし</td>
+                    </tr>
+                </table>
+
+                <div class="info-box">
+                    <strong>Playwright設定のポイント</strong>
+                    <ul style="margin-top:8px; padding-left:20px;">
+                        <li>CI: Chromiumのみ、リトライ2回、ワーカー1（シリアル実行）</li>
+                        <li>ローカル: 5ブラウザ（Chrome, Firefox, Safari, Mobile Chrome, Mobile Safari）</li>
+                        <li>失敗時のみスクリーンショット・ビデオ・トレースを保存</li>
+                        <li>全テストに<code>@smoke</code>タグ付き（<code>--grep "@smoke"</code>で選択実行）</li>
+                    </ul>
+                </div>
+
+                <h3>テスト実行コマンド</h3>
+                <pre><code><span class="comment"># バックエンド全テスト</span>
+pytest tests/ -v
+
+<span class="comment"># カバレッジ付き</span>
+pytest tests/ --cov=src --cov=backend --cov-report=html
+
+<span class="comment"># 特定ファイル・クラス・メソッドのみ</span>
+pytest tests/test_rag_chain.py::TestRAGChain::test_query_success -v
+
+<span class="comment"># フロントエンドテスト</span>
+cd frontend && npm run test
+
+<span class="comment"># フロントエンドカバレッジ</span>
+cd frontend && npm run test -- --coverage
+
+<span class="comment"># E2E Smokeテスト（バックエンド+フロントエンドの起動が必要）</span>
+cd frontend && npx playwright test --grep <span class="string">"@smoke"</span>
+
+<span class="comment"># PlaywrightデバッグUI（ステップ実行）</span>
+cd frontend && npx playwright test --debug --headed</code></pre>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 11. CI/CD -->
+            <!-- ============================== -->
+            <section id="cicd">
+                <h2>11. CI/CDパイプライン</h2>
+
+                <h3>GitHub Actions ワークフロー</h3>
+                <p><code>.github/workflows/ci.yml</code>で定義された5つの並列ジョブと1つの統合レポートジョブで構成されます。</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        T["Push to main / Pull Request"] --> A["backend-tests<br/><small>120+ pytest (mocked)</small>"]
+                        T --> B["frontend-tests<br/><small>35 Vitest (mocked)</small>"]
+                        T --> C["linting<br/><small>Ruff + ESLint</small>"]
+                        T --> D["build-test<br/><small>Vite build確認</small>"]
+
+                        A --> E["e2e-smoke-tests<br/><small>13 Playwright (NO API)</small>"]
+                        B --> E
+
+                        A --> F["report<br/><small>Test Summary</small>"]
+                        B --> F
+                        C --> F
+                        D --> F
+                        E --> F
+
+                        style A fill:#d4edda
+                        style B fill:#d4edda
+                        style C fill:#fff3cd
+                        style D fill:#e8f4f8
+                        style E fill:#e2d5f1
+                        style F fill:#f8f9fa
+                </div>
+
+                <h3>各ジョブの詳細</h3>
+                <table>
+                    <tr><th>ジョブ</th><th>実行環境</th><th>依存関係</th><th>主要ステップ</th><th>アーティファクト</th></tr>
+                    <tr>
+                        <td><strong>backend-tests</strong></td>
+                        <td>Python 3.11</td>
+                        <td>なし（並列）</td>
+                        <td>pip install → pytest + coverage → Codecov</td>
+                        <td>HTML coverage report</td>
+                    </tr>
+                    <tr>
+                        <td><strong>frontend-tests</strong></td>
+                        <td>Node.js 20</td>
+                        <td>なし（並列）</td>
+                        <td>npm ci → vitest + coverage → Codecov</td>
+                        <td>Coverage report</td>
+                    </tr>
+                    <tr>
+                        <td><strong>linting</strong></td>
+                        <td>Python 3.11 + Node.js 20</td>
+                        <td>なし（並列）</td>
+                        <td>ruff format --check → ruff check → npm run lint</td>
+                        <td>なし</td>
+                    </tr>
+                    <tr>
+                        <td><strong>build-test</strong></td>
+                        <td>Node.js 20</td>
+                        <td>なし（並列）</td>
+                        <td>npm ci → npm run build → dist/サイズ確認</td>
+                        <td>Build artifacts</td>
+                    </tr>
+                    <tr>
+                        <td><strong>e2e-smoke-tests</strong></td>
+                        <td>Python + Node.js</td>
+                        <td>backend-tests, frontend-tests</td>
+                        <td>BE起動 → FEビルド+serve → Playwright実行</td>
+                        <td>Playwright report</td>
+                    </tr>
+                    <tr>
+                        <td><strong>report</strong></td>
+                        <td>ubuntu-latest</td>
+                        <td>全ジョブ</td>
+                        <td>GITHUB_STEP_SUMMARYにレポート出力</td>
+                        <td>なし</td>
+                    </tr>
+                </table>
+
+                <div class="info-box">
+                    <strong>E2E Smokeテストの実行方法</strong><br>
+                    CIではバックエンドをモックキー(<code>sk-mock-key-for-smoke-tests-no-real-calls</code>)で起動し、フロントエンドを<code>npx serve</code>で静的配信してPlaywrightを実行します。テスト対象はナビゲーション・認証フロー・レスポンシブデザインのみで、実際のRAG/Architect API呼び出しは含まれません。
+                </div>
+
+                <h3>デプロイワークフロー（deploy.yml）</h3>
+                <p><code>main</code>ブランチへのpush時に自動実行されるデプロイパイプラインです。</p>
+
+                <div class="mermaid">
+                    flowchart TD
+                        T["Push to main / Manual trigger"] --> D["deploy ジョブ"]
+                        D --> W["30秒待機<br/>(Renderビルド開始)"]
+                        W --> HC1["バックエンドヘルスチェック<br/>GET /health<br/>(最大30回リトライ, 10秒間隔)"]
+                        HC1 --> HC2["フロントエンドヘルスチェック<br/>GET / (200 OK確認)"]
+                        HC2 --> SM["Smokeテスト<br/>Swagger UI確認<br/>認証エンドポイント確認"]
+                        SM --> PS["production-smoke-tests ジョブ"]
+                        PS --> PW["Playwright @smoke テスト<br/>(本番URLに対して実行)"]
+
+                        style D fill:#d4edda
+                        style PS fill:#e2d5f1
+                </div>
+
+                <h3>CI環境変数</h3>
+                <table>
+                    <tr><th>ジョブ</th><th>環境変数</th><th>値</th><th>用途</th></tr>
+                    <tr>
+                        <td rowspan="3"><strong>backend-tests</strong></td>
+                        <td><code>OPENAI_API_KEY</code></td>
+                        <td><code>sk-test-mock-key-no-real-api-calls</code></td>
+                        <td>実APIに接続しないモックキー</td>
+                    </tr>
+                    <tr>
+                        <td><code>CHROMA_PERSIST_DIR</code></td>
+                        <td><code>./tests/data/chroma_test</code></td>
+                        <td>テスト用Chromaディレクトリ</td>
+                    </tr>
+                    <tr>
+                        <td><code>ENVIRONMENT</code></td>
+                        <td><code>test</code></td>
+                        <td>テスト環境識別</td>
+                    </tr>
+                    <tr>
+                        <td rowspan="4"><strong>e2e-smoke-tests</strong></td>
+                        <td><code>JWT_SECRET_KEY</code></td>
+                        <td><code>test-secret-key-for-ci-smoke-tests</code></td>
+                        <td>CI用JWT秘密鍵</td>
+                    </tr>
+                    <tr>
+                        <td><code>ADMIN_PASSWORD</code></td>
+                        <td><code>test-admin-password</code></td>
+                        <td>テスト用管理者パスワード</td>
+                    </tr>
+                    <tr>
+                        <td><code>CORS_ORIGINS</code></td>
+                        <td><code>http://localhost:5173</code></td>
+                        <td>ローカルフロントエンド許可</td>
+                    </tr>
+                    <tr>
+                        <td><code>TESTUSER*_PASSWORD</code></td>
+                        <td><code>test-password-*</code></td>
+                        <td>テスト用ユーザーパスワード</td>
+                    </tr>
+                </table>
+
+                <h3>コスト分析</h3>
+                <div class="success-box">
+                    <strong>月間運用コスト: $0.00</strong>
+                    <table style="margin-top:10px;">
+                        <tr><th>項目</th><th>コスト</th><th>理由</th></tr>
+                        <tr><td>GitHub Actions</td><td>$0</td><td>無料枠2000分/月、実使用 ~40分/月</td></tr>
+                        <tr><td>OpenAI API（テスト）</td><td>$0</td><td>100%モック化、実APIに接続しない</td></tr>
+                        <tr><td>Render Backend</td><td>$0</td><td>無料枠750時間/月</td></tr>
+                        <tr><td>Render Frontend</td><td>$0</td><td>Static Site無料枠</td></tr>
+                        <tr><td>Codecov</td><td>$0</td><td>OSS無料</td></tr>
+                    </table>
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 12. デプロイ -->
+            <!-- ============================== -->
+            <section id="deployment">
+                <h2>12. デプロイ（Render統一）</h2>
+
+                <h3>render.yaml によるIaC</h3>
+                <p>1つの<code>render.yaml</code>ファイルでバックエンド（Web Service）とフロントエンド（Static Site）の両方を定義しています。</p>
+
+                <div class="mermaid">
+                    flowchart LR
+                        subgraph "Render Platform"
+                            subgraph "Web Service (Python)"
+                                BE["langgraph-catalyst-api<br/><small>uvicorn backend.main:app</small><br/><small>Free Plan / Oregon</small>"]
+                            end
+                            subgraph "Static Site (React)"
+                                FE["langgraph-catalyst-frontend<br/><small>Vite build → dist/</small><br/><small>Free Plan</small>"]
+                            end
+                        end
+
+                        GH["GitHub<br/>main branch"] -->|"Auto Deploy"| BE
+                        GH -->|"Auto Deploy"| FE
+                        USER["User"] -->|"HTTPS"| FE
+                        FE -->|"CORS"| BE
+                        BE -->|"API call"| OAI["OpenAI API"]
+                </div>
+
+                <h3>デプロイ設定</h3>
+                <table>
+                    <tr><th>設定項目</th><th>バックエンド</th><th>フロントエンド</th></tr>
+                    <tr><td>サービスタイプ</td><td>Web Service</td><td>Static Site</td></tr>
+                    <tr><td>ランタイム</td><td>Python</td><td>Static</td></tr>
+                    <tr><td>プラン</td><td>Free</td><td>Free</td></tr>
+                    <tr><td>リージョン</td><td>Oregon (US West)</td><td>-</td></tr>
+                    <tr><td>ビルドコマンド</td><td><code>pip install -r requirements.txt</code></td><td><code>cd frontend && npm ci && npm run build</code></td></tr>
+                    <tr><td>起動コマンド</td><td><code>uvicorn backend.main:app --host 0.0.0.0 --port $PORT</code></td><td>-（静的配信）</td></tr>
+                    <tr><td>ヘルスチェック</td><td><code>/health</code></td><td>-</td></tr>
+                    <tr><td>SPAルーティング</td><td>-</td><td><code>/* → /index.html</code>（rewrite）</td></tr>
+                    <tr><td>キャッシュ</td><td>-</td><td>HTML: no-cache / Assets: 1年immutable</td></tr>
+                    <tr><td>公開URL</td><td><code>langgraph-catalyst-api.onrender.com</code></td><td><code>langgraph-catalyst-frontend.onrender.com</code></td></tr>
+                </table>
+
+                <div class="warning-box">
+                    <strong>Render無料プランの制約</strong>
+                    <ul style="margin-top:8px; padding-left:20px;">
+                        <li>Web Serviceは15分間アクセスなしでスリープ（初回アクセス時に約30秒のコールドスタート）</li>
+                        <li>ファイルシステムは再起動でリセット（ChromaDBデータ、使用制限カウンターが消える）</li>
+                        <li>Static Siteにはスリープなし（CDNから配信）</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 13. エラーハンドリング -->
+            <!-- ============================== -->
+            <section id="error-handling">
+                <h2>13. エラーハンドリング</h2>
+
+                <h3>カスタム例外階層</h3>
+                <pre><code>CatalystException          <span class="comment"># 基底例外クラス</span>
+├── VectorStoreError       <span class="comment"># ChromaDB関連エラー（初期化失敗、検索エラー）</span>
+├── LLMError               <span class="comment"># OpenAI API呼び出しエラー（レート制限、タイムアウト）</span>
+├── CrawlerError           <span class="comment"># Webクロールエラー（接続失敗、パース失敗）</span>
+├── ValidationError        <span class="comment"># 入力バリデーションエラー（空質問、不正パラメータ）</span>
+└── ConfigurationError     <span class="comment"># 設定エラー（環境変数未設定）</span></code></pre>
+
+                <h3>エラーレスポンス形式（FastAPI）</h3>
+                <table>
+                    <tr><th>HTTPステータス</th><th>コード</th><th>発生条件</th></tr>
+                    <tr><td>400</td><td>INVALID_REQUEST</td><td>Pydanticバリデーション失敗</td></tr>
+                    <tr><td>401</td><td>UNAUTHORIZED</td><td>JWT未提供、期限切れ、不正</td></tr>
+                    <tr><td>404</td><td>NOT_FOUND</td><td>トピック/テンプレートが存在しない</td></tr>
+                    <tr><td>429</td><td>RATE_LIMIT_EXCEEDED</td><td>使用制限超過（テストユーザー5回/日）</td></tr>
+                    <tr><td>500</td><td>INTERNAL_ERROR</td><td>LLMError, VectorStoreError等</td></tr>
+                </table>
+
+                <h3>エラーハンドリングの層</h3>
+                <div class="mermaid">
+                    flowchart TD
+                        A["リクエスト"] --> B["FastAPI Middleware<br/>(global_exception_handler)"]
+                        B --> C["APIエンドポイント<br/>(try/except)"]
+                        C --> D["コアロジック<br/>(CatalystException系)"]
+                        D -->|"エラー"| E["CatalystException"]
+                        E --> C
+                        C -->|"HTTPException変換"| F["JSONResponse<br/>{error, message, details}"]
+                        D -->|"予期しないエラー"| G["Exception"]
+                        G --> B
+                        B --> H["500 INTERNAL_ERROR<br/>(開発環境のみdetails付き)"]
+                </div>
+            </section>
+
+            <!-- ============================== -->
+            <!-- 14. 前提知識 -->
+            <!-- ============================== -->
+            <section id="prerequisites">
+                <h2>14. 前提知識</h2>
+
+                <p>本システムの実装を理解するために必要な前提知識をまとめます。</p>
+
+                <h3>必須知識</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>Python 3.11+</h4>
+                        <p>型ヒント（<code>str | None</code>、<code>TypedDict</code>）、デコレータ、コンテキストマネージャ、非同期処理（<code>async/await</code>）、パッケージ管理（pip, requirements.txt）</p>
+                    </div>
+                    <div class="card">
+                        <h4>React + TypeScript</h4>
+                        <p>関数コンポーネント、Hooks（useState, useEffect, useCallback）、React Router v6、Context/State管理パターン、TypeScriptのインターフェース定義</p>
+                    </div>
+                    <div class="card">
+                        <h4>REST API設計</h4>
+                        <p>HTTPメソッド（GET/POST）、ステータスコード、JSON Request/Response、認証（JWT Bearer Token）、CORS</p>
+                    </div>
+                    <div class="card">
+                        <h4>Git / GitHub</h4>
+                        <p>ブランチ管理、コミット規約（feat/fix/docs等）、GitHub Actions（ワークフロー定義YAML）</p>
+                    </div>
+                </div>
+
+                <h3>ドメイン知識</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>LangChain / LangGraph</h4>
+                        <p><strong>LangChain</strong>: LLMアプリケーション構築フレームワーク。Document, Retriever, ChatPromptTemplate等の抽象化を提供。<br>
+                        <strong>LangGraph</strong>: LangChain上のグラフベースワークフロー。StateGraph, add_node, add_edge, compile, invokeの概念が中心。</p>
+                    </div>
+                    <div class="card">
+                        <h4>RAG (Retrieval-Augmented Generation)</h4>
+                        <p>外部知識ベースからの検索（Retrieval）とLLMによる生成（Generation）を組み合わせたパターン。Embedding（テキスト→ベクトル変換）、類似度検索（コサイン類似度）、コンテキスト注入の概念が重要。</p>
+                    </div>
+                    <div class="card">
+                        <h4>ベクトルデータベース</h4>
+                        <p>テキストを数値ベクトル（1536次元等）に変換し、ベクトル空間上の距離（コサイン類似度）で類似ドキュメントを高速検索するデータベース。ChromaDBはPython軽量実装で、ローカルファイルに永続化可能。</p>
+                    </div>
+                    <div class="card">
+                        <h4>OpenAI API</h4>
+                        <p><strong>Chat Completions API</strong>: GPT-4等のLLMにプロンプトを送信して回答を生成。<br>
+                        <strong>Embeddings API</strong>: テキストをベクトルに変換。text-embedding-3-smallモデルで1536次元のベクトルを生成。</p>
+                    </div>
+                </div>
+
+                <h3>フレームワーク・ライブラリ知識</h3>
+                <div class="card-grid">
+                    <div class="card">
+                        <h4>FastAPI</h4>
+                        <p>PythonのASGI Webフレームワーク。Pydanticモデルによる自動バリデーション、依存性注入（<code>Depends()</code>）、自動APIドキュメント生成（<code>/docs</code>）が特徴。</p>
+                    </div>
+                    <div class="card">
+                        <h4>Pydantic v2</h4>
+                        <p>データバリデーションライブラリ。<code>BaseModel</code>（APIスキーマ）、<code>BaseSettings</code>（環境変数管理）、<code>Field</code>（バリデーションルール）の使い分けが重要。</p>
+                    </div>
+                    <div class="card">
+                        <h4>Zustand</h4>
+                        <p>React用軽量状態管理ライブラリ（2KB）。<code>create()</code>でストアを定義し、コンポーネントからHookとして呼び出す。<code>persist</code>ミドルウェアでlocalStorage永続化が可能。</p>
+                    </div>
+                    <div class="card">
+                        <h4>Vite</h4>
+                        <p>次世代フロントエンドビルドツール。ESBuildベースの高速バンドル、HMR（Hot Module Replacement）、環境変数（<code>VITE_</code>プレフィックス）、Tree Shakingに対応。</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+
+        <footer>
+            <p><strong>LangGraph Catalyst</strong> - 開発者ガイド v1.0.0</p>
+            <p>最終更新: 2026-02-07 | フロントエンド: <a href="https://langgraph-catalyst-frontend.onrender.com">langgraph-catalyst-frontend.onrender.com</a> | API Docs: <a href="https://langgraph-catalyst-api.onrender.com/docs">langgraph-catalyst-api.onrender.com/docs</a></p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            flowchart: {
+                useMaxWidth: true,
+                htmlLabels: true,
+                curve: 'basis'
+            },
+            sequence: {
+                useMaxWidth: true
+            }
+        });
+    </script>
+</body>
+</html>

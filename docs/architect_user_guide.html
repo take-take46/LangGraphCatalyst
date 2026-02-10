@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>構成案生成機能 ユーザーガイド - LangGraph Catalyst</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.8;
+            color: #333;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 60px 40px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        header .subtitle {
+            font-size: 1.4em;
+            opacity: 0.95;
+            font-weight: 300;
+        }
+
+        header .tagline {
+            font-size: 1.1em;
+            margin-top: 20px;
+            opacity: 0.9;
+            font-style: italic;
+        }
+
+        nav {
+            background: #f8f9fa;
+            padding: 25px 40px;
+            border-bottom: 3px solid #f093fb;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            justify-content: center;
+        }
+
+        nav a {
+            color: #f093fb;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1em;
+            transition: all 0.3s;
+            padding: 5px 10px;
+            border-radius: 5px;
+        }
+
+        nav a:hover {
+            background: #f093fb;
+            color: white;
+        }
+
+        main {
+            padding: 50px 40px;
+        }
+
+        section {
+            margin-bottom: 80px;
+        }
+
+        h2 {
+            color: #f093fb;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 4px solid #f093fb;
+            text-align: center;
+        }
+
+        h3 {
+            color: #f5576c;
+            font-size: 1.8em;
+            margin: 40px 0 20px 0;
+        }
+
+        h4 {
+            color: #555;
+            font-size: 1.3em;
+            margin: 25px 0 15px 0;
+        }
+
+        p {
+            margin-bottom: 20px;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .hero-section {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, rgba(240, 147, 251, 0.1) 0%, rgba(245, 87, 108, 0.1) 100%);
+            border-radius: 10px;
+            margin-bottom: 40px;
+        }
+
+        .hero-section h3 {
+            font-size: 2em;
+            color: #f093fb;
+            margin-bottom: 20px;
+        }
+
+        .hero-section p {
+            font-size: 1.3em;
+            color: #555;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(240, 147, 251, 0.2);
+            border-color: #f093fb;
+        }
+
+        .feature-card .icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h4 {
+            color: #f093fb;
+            font-size: 1.4em;
+            margin-bottom: 15px;
+        }
+
+        .feature-card p {
+            color: #666;
+            font-size: 1em;
+        }
+
+        .benefit-list {
+            background: linear-gradient(135deg, rgba(40, 167, 69, 0.1) 0%, rgba(40, 167, 69, 0.05) 100%);
+            border-left: 5px solid #28a745;
+            padding: 30px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .benefit-list h4 {
+            color: #28a745;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .benefit-list ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .benefit-list li {
+            padding: 12px 0 12px 35px;
+            position: relative;
+            color: #555;
+            font-size: 1.1em;
+        }
+
+        .benefit-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #28a745;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        .comparison-table {
+            margin: 40px 0;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 18px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        th {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .mermaid {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .info-box {
+            background: #e7f6f8;
+            border-left: 5px solid #17a2b8;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .info-box h4 {
+            color: #17a2b8;
+            margin-bottom: 15px;
+        }
+
+        .warning-box {
+            background: #fff8e1;
+            border-left: 5px solid #ffc107;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .warning-box h4 {
+            color: #f57c00;
+            margin-bottom: 15px;
+        }
+
+        .success-box {
+            background: #e8f5e9;
+            border-left: 5px solid #28a745;
+            padding: 25px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+
+        .success-box h4 {
+            color: #28a745;
+            margin-bottom: 15px;
+        }
+
+        .step-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .step {
+            display: flex;
+            align-items: flex-start;
+            background: white;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            border-color: #f093fb;
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.15);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            flex-shrink: 0;
+            margin-right: 20px;
+        }
+
+        .step-content h4 {
+            color: #f093fb;
+            margin-bottom: 10px;
+        }
+
+        .step-content p {
+            color: #666;
+            margin: 0;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px dashed #f093fb;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .example-box h4 {
+            color: #f093fb;
+            margin-bottom: 15px;
+        }
+
+        .example-box .input {
+            background: white;
+            border-left: 4px solid #f093fb;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        .example-box .output {
+            background: white;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+
+        footer {
+            background: #2d2d2d;
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        footer p {
+            color: rgba(255, 255, 255, 0.8);
+            margin: 10px 0;
+        }
+
+        .highlight {
+            background: linear-gradient(transparent 60%, rgba(240, 147, 251, 0.3) 60%);
+            font-weight: 600;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            nav ul {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏗️ 構成案生成機能ユーザーガイド</h1>
+            <p class="subtitle">ビジネス課題を自動的にLangGraphシステム設計へ</p>
+            <p class="tagline">「アイデアから実装設計まで、わずか30秒」</p>
+        </header>
+
+        <nav>
+            <ul>
+                <li><a href="#what">構成案生成とは</a></li>
+                <li><a href="#how-it-works">仕組み</a></li>
+                <li><a href="#benefits">メリット</a></li>
+                <li><a href="#use-cases">活用例</a></li>
+                <li><a href="#comparison">従来との比較</a></li>
+            </ul>
+        </nav>
+
+        <main>
+            <!-- 構成案生成とは -->
+            <section id="what">
+                <h2>📖 構成案生成機能とは何か</h2>
+
+                <div class="hero-section">
+                    <h3>ビジネス課題を、AIがシステム設計に自動変換</h3>
+                    <p>構成案生成機能は、あなたのビジネス課題を入力すると、<span class="highlight">AIが自動的にLangGraphベースのシステム設計を提案</span>する機能です。まるで<span class="highlight">優秀なシステムアーキテクト</span>が、要件を聞いて設計書を作成するように、わずか30秒で実装可能な構成案を提示します。</p>
+                </div>
+
+                <h3>従来の設計プロセスとの違い</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">👨‍💼</div>
+                        <h4>従来の設計プロセス</h4>
+                        <p>専門家に依頼して数日〜数週間かけて設計。技術知識が必要で、コストも高い。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">✨</div>
+                        <h4>AI構成案生成</h4>
+                        <p>ビジネス課題を入力するだけで30秒以内に提案。技術者でなくても理解できる説明付き。</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 わかりやすい例え</h4>
+                    <p><strong>従来の方法</strong>は「建築家に依頼して設計図を作成」。時間とコストがかかります。</p>
+                    <p><strong>AI構成案生成</strong>は「AIアーキテクトに相談」。即座に設計図（フロー図+コード+説明）が完成します。</p>
+                </div>
+
+                <h3>出力される構成案の内容</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">📊</div>
+                        <h4>Mermaid図</h4>
+                        <p>視覚的なフロー図で、システムの動作フローを一目で理解できます。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">💻</div>
+                        <h4>実装コード例</h4>
+                        <p>すぐに動かせるPythonコード。コピー＆ペーストで実装開始できます。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📝</div>
+                        <h4>ビジネス説明</h4>
+                        <p>非技術者にも伝わる平易な言葉で、システムの価値を説明します。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📌</div>
+                        <h4>実装ノート</h4>
+                        <p>実装時の注意点、推奨技術、コスト見積もりなどの実践的なアドバイス。</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 仕組み -->
+            <section id="how-it-works">
+                <h2>⚙️ 構成案生成の仕組み</h2>
+
+                <h3>全体の流れ（6段階ワークフロー）</h3>
+
+                <div class="mermaid">
+graph LR
+    A[ビジネス課題<br/>入力] --> B[📋 課題分析]
+    B --> C[🏗️ 構成案<br/>生成]
+    C --> D[📊 Mermaid図<br/>作成]
+    D --> E[💻 コード<br/>生成]
+    E --> F[📝 ビジネス<br/>説明作成]
+    F --> G[📌 実装ノート<br/>作成]
+    G --> H[✅ 完成！]
+
+    style A fill:#f093fb,color:#fff
+    style H fill:#28a745,color:#fff
+    style B fill:#ffc107,color:#333
+    style C fill:#17a2b8,color:#fff
+    style D fill:#6f42c1,color:#fff
+    style E fill:#fd7e14,color:#fff
+    style F fill:#20c997,color:#fff
+    style G fill:#e83e8c,color:#fff
+                </div>
+
+                <h3>各段階の詳細説明</h3>
+
+                <div class="step-container">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>課題分析（Challenge Analysis）</h4>
+                            <p>AIがビジネス課題を深く分析し、「何を解決したいのか」「どんな機能が必要か」「LangGraphが適しているか」を判断します。</p>
+                            <p style="margin-top: 10px; padding: 10px; background: rgba(240, 147, 251, 0.1); border-radius: 5px;">
+                                <strong>🎯 分析内容:</strong><br>
+                                • 課題の要約<br>
+                                • 必要な機能の洗い出し<br>
+                                • LangGraphが最適な理由<br>
+                                • 推奨される実装アプローチ
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>構成案生成（Architecture Generation）</h4>
+                            <p>分析結果を基に、LangGraphの<strong>StateGraph</strong>を使った具体的なシステム構成を設計します。各ノード（処理単位）とエッジ（処理の流れ）を定義します。</p>
+                            <p style="margin-top: 10px; padding: 10px; background: rgba(23, 162, 184, 0.1); border-radius: 5px;">
+                                <strong>🏗️ 設計要素:</strong><br>
+                                • <strong>ノード</strong>: 各処理ステップ（例: ユーザー入力受付、意図分析、回答生成）<br>
+                                • <strong>エッジ</strong>: 処理の流れ（例: 分析→判定→回答）<br>
+                                • <strong>条件分岐</strong>: 状況に応じた処理の振り分け（例: 簡単な質問→自動回答、複雑な質問→人間へ）<br>
+                                • <strong>状態スキーマ</strong>: 処理中に保持するデータ構造
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Mermaid図作成（Visualization）</h4>
+                            <p>構成案を<strong>Mermaid記法</strong>のフロー図に変換し、視覚的にわかりやすく表現します。非技術者でも一目で全体像を把握できます。</p>
+                            <p style="margin-top: 10px; padding: 10px; background: rgba(111, 66, 193, 0.1); border-radius: 5px;">
+                                <strong>📊 Mermaid図の利点:</strong><br>
+                                • マークダウン形式で軽量<br>
+                                • GitHubやNotionなど多くのツールで表示可能<br>
+                                • 修正が容易（テキストベース）<br>
+                                • プレゼン資料にそのまま使える
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>コード生成（Code Generation）</h4>
+                            <p>設計したアーキテクチャを<strong>実行可能なPythonコード</strong>として生成します。コピー＆ペーストで、すぐに開発を開始できます。</p>
+                            <p style="margin-top: 10px; padding: 10px; background: rgba(253, 126, 20, 0.1); border-radius: 5px;">
+                                <strong>💻 コードの特徴:</strong><br>
+                                • <strong>完全性</strong>: そのまま実行可能な完全なコード<br>
+                                • <strong>型安全</strong>: TypedDictによる型ヒント付き<br>
+                                • <strong>ベストプラクティス</strong>: 業界標準のコーディング規約に準拠<br>
+                                • <strong>エラーハンドリング</strong>: 例外処理も含まれる<br>
+                                • <strong>コメント充実</strong>: 各部分の説明付き
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>ビジネス説明作成（Business Explanation）</h4>
+                            <p>技術的な内容を<strong>非技術者にも伝わる言葉</strong>で説明します。経営層やクライアントへの提案に使えます。</p>
+                            <p style="margin-top: 10px; padding: 10px; background: rgba(32, 201, 151, 0.1); border-radius: 5px;">
+                                <strong>📝 説明の内容:</strong><br>
+                                • システムが「何をするか」を平易に説明<br>
+                                • ビジネス価値（効率化、コスト削減、品質向上等）を強調<br>
+                                • 具体的な利用シーンの提示<br>
+                                • 導入によるメリットを数値で表現（可能な場合）
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h4>実装ノート作成（Implementation Notes）</h4>
+                            <p>実際に開発を進める際の<strong>実践的なアドバイス</strong>を提供します。開発者が迷わないよう、具体的な推奨事項をリストアップします。</p>
+                            <p style="margin-top: 10px; padding: 10px; background: rgba(232, 62, 140, 0.1); border-radius: 5px;">
+                                <strong>📌 ノートの内容:</strong><br>
+                                • 推奨ライブラリ・フレームワーク<br>
+                                • データベース選択のアドバイス<br>
+                                • API統合の注意点<br>
+                                • セキュリティ考慮事項<br>
+                                • 想定コストの概算<br>
+                                • スケーラビリティ対策
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h4>🎯 ポイント</h4>
+                    <p>構成案生成機能の最大の特徴は、<span class="highlight">「ビジネス課題」から「実装可能な設計」まで、一気通貫でAIが自動生成する</span>という点です。さらに、<span class="highlight">技術者向けのコード</span>と<span class="highlight">非技術者向けの説明</span>を両方提供するため、チーム全員が同じ理解を持てます。</p>
+                </div>
+
+                <h3>🧠 AIの賢い工夫</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">🎯</div>
+                        <h4>業界・制約を考慮</h4>
+                        <p>「EC業界」「製造業」など業界情報を指定すると、業界特有の要件を考慮した設計を生成。制約条件（例: 既存システム連携必須）も反映します。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📚</div>
+                        <h4>LangGraphベストプラクティス</h4>
+                        <p>公式ドキュメントやコミュニティのベストプラクティスに基づいた設計。実績のあるパターンを活用します。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🔍</div>
+                        <h4>段階的な設計</h4>
+                        <p>いきなり完璧な設計を目指すのではなく、6段階に分けて徐々に詳細化。各段階で前の結果を活用し、精度を高めます。</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">⚡</div>
+                        <h4>高速生成（20-30秒）</h4>
+                        <p>複雑な設計でも20〜30秒で完成。アイデア出しのスピードを劇的に向上させます。</p>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 具体例</h4>
+                    <p><strong>あなたの入力:</strong> 「カスタマーサポートの自動化を実現したい。FAQへの自動回答と、複雑な問い合わせは人間にエスカレーションする仕組みが必要。業界はEC、既存のZendeskと連携したい。」</p>
+                    <p><strong>AIの出力:</strong></p>
+                    <ul style="margin-top: 10px; list-style: none; padding-left: 0;">
+                        <li style="padding: 5px 0;">✅ 課題分析: EC業界のカスタマーサポート効率化</li>
+                        <li style="padding: 5px 0;">✅ フロー図: 問い合わせ受付 → FAQ検索 → 意図分析 → 複雑度判定 → (自動回答 or 人間へ) → Zendesk記録</li>
+                        <li style="padding: 5px 0;">✅ コード: 120行の実行可能なPythonコード</li>
+                        <li style="padding: 5px 0;">✅ ビジネス説明: 「このシステムは、まずFAQデータベースで即座に回答できる質問かを判定します...」</li>
+                        <li style="padding: 5px 0;">✅ 実装ノート: Zendesk API認証、RAG用ベクトルDB推奨、プロンプトチューニング方法</li>
+                    </ul>
+                </div>
+
+                <h3>⚙️ なぜ温度パラメータ0.7？</h3>
+
+                <div class="info-box">
+                    <h4>🔥 Temperature = 0.7 の理由</h4>
+                    <p>構成案生成では、AIに<strong>創造性</strong>を持たせるため、温度パラメータを<strong>0.7</strong>に設定しています（RAG機能の0.1と対照的）。</p>
+                    <p style="margin-top: 10px;"><strong>理由:</strong></p>
+                    <ul style="margin-top: 10px;">
+                        <li>✅ 多様なアイデア生成: 同じ課題でも複数回生成すると、異なるアプローチが得られる</li>
+                        <li>✅ 柔軟な設計: 固定的な回答ではなく、状況に応じた最適解を探索</li>
+                        <li>✅ 新しい視点: 予想外の良い設計パターンを発見できる</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><span class="highlight">※ 一方、RAGは「正確な情報」が重要なため、温度0.1で決定論的な回答を生成</span></p>
+                </div>
+            </section>
+
+            <!-- メリット -->
+            <section id="benefits">
+                <h2>✨ 構成案生成のメリット</h2>
+
+                <div class="benefit-list">
+                    <h4>ビジネス担当者にとってのメリット</h4>
+                    <ul>
+                        <li><strong>技術知識不要</strong>: AIシステムの専門知識がなくても、ビジネス課題を入力するだけで構成案が得られる</li>
+                        <li><strong>スピーディな意思決定</strong>: 30秒で設計案が出るため、会議中にその場でシステムイメージを共有できる</li>
+                        <li><strong>わかりやすい説明</strong>: 技術者向けコードと、非技術者向け説明の両方が提供されるため、社内の合意形成がスムーズ</li>
+                        <li><strong>コスト削減</strong>: 初期の設計検討フェーズを、外部コンサルタントに依頼せず社内で完結できる</li>
+                        <li><strong>複数案の比較</strong>: 制約条件を変えて複数パターンを生成し、最適なアプローチを選択できる</li>
+                        <li><strong>提案力向上</strong>: クライアントへの提案時に、具体的なシステムイメージを即座に提示できる</li>
+                    </ul>
+                </div>
+
+                <div class="benefit-list">
+                    <h4>開発者にとってのメリット</h4>
+                    <ul>
+                        <li><strong>設計の出発点</strong>: ゼロから設計するのではなく、AIが生成した構成案をベースに改良できる</li>
+                        <li><strong>ベストプラクティスの学習</strong>: LangGraphの標準的な設計パターンをコード付きで学べる</li>
+                        <li><strong>実装時間の短縮</strong>: コピー＆ペースト可能なコードが提供されるため、すぐに開発開始できる</li>
+                        <li><strong>見落としの防止</strong>: エラーハンドリング、型ヒント、実装ノートなど、考慮すべき点が網羅されている</li>
+                        <li><strong>ドキュメント作成の負担軽減</strong>: Mermaid図やビジネス説明がすでに生成されており、ドキュメント作成が楽</li>
+                    </ul>
+                </div>
+
+                <div class="benefit-list">
+                    <h4>組織にとってのメリット</h4>
+                    <ul>
+                        <li><strong>技術者とビジネス担当の橋渡し</strong>: 同じ構成案を、技術者はコードで、ビジネス担当は平易な説明で理解できる</li>
+                        <li><strong>新規事業の迅速な検証</strong>: アイデア段階で、技術的な実現可能性を即座に確認できる</li>
+                        <li><strong>標準化された設計</strong>: ベストプラクティスに基づいた設計が自動生成されるため、品質が安定</li>
+                        <li><strong>知識の民主化</strong>: 特定の専門家に依存せず、誰でもAIシステムの設計検討ができる</li>
+                        <li><strong>イノベーション促進</strong>: 設計のアイデア出しが高速化し、試行錯誤のサイクルが加速</li>
+                    </ul>
+                </div>
+
+                <div class="warning-box">
+                    <h4>⚠️ 注意点</h4>
+                    <p>AIが生成した構成案は<span class="highlight">「出発点」</span>であり、そのまま本番環境に導入できるわけではありません。以下の点に注意が必要です:</p>
+                    <ul style="margin-top: 10px;">
+                        <li>セキュリティ要件の追加検討</li>
+                        <li>スケーラビリティの詳細設計</li>
+                        <li>既存システムとの統合詳細</li>
+                        <li>コストの精密な見積もり</li>
+                        <li>法規制への適合確認</li>
+                    </ul>
+                    <p style="margin-top: 10px;"><strong>推奨:</strong> 生成された構成案を、経験豊富な技術者がレビューし、必要に応じて修正・拡張してください。</p>
+                </div>
+            </section>
+
+            <!-- 活用例 -->
+            <section id="use-cases">
+                <h2>🎯 活用例</h2>
+
+                <h3>プロジェクト初期検討</h3>
+
+                <div class="example-box">
+                    <h4>例1: カスタマーサポート自動化</h4>
+
+                    <div class="input">
+                        <strong>ビジネス課題:</strong>
+                        <p>カスタマーサポートの問い合わせ対応を自動化したい。FAQで回答できる質問は自動応答し、複雑な問い合わせは人間のオペレーターにエスカレーションする仕組みが必要。業界はEC、既存のZendeskと連携。</p>
+                    </div>
+
+                    <div class="output">
+                        <strong>生成された構成案:</strong>
+                        <p><strong>1. Mermaid図:</strong></p>
+                        <pre style="background: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; overflow-x: auto; font-size: 0.9em;">
+graph TD
+    A[問い合わせ受付] --> B{FAQ検索}
+    B -->|一致| C[自動回答]
+    B -->|不一致| D[意図分析]
+    D --> E{複雑度判定}
+    E -->|簡単| F[AI回答生成]
+    E -->|複雑| G[人間にエスカレーション]
+    F --> H[Zendesk記録]
+    G --> H
+                        </pre>
+
+                        <p><strong>2. ビジネス説明（抜粋）:</strong></p>
+                        <p style="background: rgba(240, 147, 251, 0.1); padding: 15px; border-radius: 5px; margin-top: 10px;">
+                            「このシステムでは、まずFAQデータベースで即座に回答できる質問かを判定します。該当しない場合は、AIが質問の複雑度を分析し、簡単な質問にはAIが回答、複雑な質問は人間のオペレーターにエスカレーションします。全てのやり取りはZendeskに記録され、後からの分析や改善に活用できます。<span class="highlight">期待効果: 問い合わせ対応時間を50%削減、顧客満足度10%向上</span>」
+                        </p>
+
+                        <p><strong>3. 実装ノート（抜粋）:</strong></p>
+                        <ul style="margin-top: 10px;">
+                            <li>✅ FAQ検索にはChromaベクトルDBを使用推奨</li>
+                            <li>✅ Zendesk API v2を使用、OAuth認証設定が必要</li>
+                            <li>✅ 複雑度判定のしきい値は、初期は0.7、運用後に調整</li>
+                            <li>✅ 日本語精度向上のため、プロンプトに「日本語で回答」を明示</li>
+                            <li>✅ 想定コスト: 月間1,000件の問い合わせで約$50-100（OpenAI API）</li>
+                        </ul>
+
+                        <p style="margin-top: 15px; font-style: italic; color: #28a745;">✅ 生成時間: 28秒</p>
+                    </div>
+                </div>
+
+                <div class="example-box">
+                    <h4>例2: データ分析ワークフロー</h4>
+
+                    <div class="input">
+                        <strong>ビジネス課題:</strong>
+                        <p>社内のデータ分析業務を自動化したい。データ取得 → 前処理 → 分析 → レポート生成 の一連の流れをLangGraphで管理し、エラー時は自動リトライ、最終的に結果をSlackに通知。</p>
+                    </div>
+
+                    <div class="output">
+                        <strong>生成された構成案:</strong>
+                        <p><strong>ビジネス説明（抜粋）:</strong></p>
+                        <p style="background: rgba(240, 147, 251, 0.1); padding: 15px; border-radius: 5px;">
+                            「このシステムは、毎日自動的にデータベースから最新データを取得し、データクレンジングを実行、統計分析を行い、視覚的なレポートを生成します。途中でエラーが発生した場合は、最大3回まで自動リトライし、最終的に成功・失敗の結果をSlackで通知します。<span class="highlight">期待効果: 分析業務の工数を週10時間から30分に削減、人的ミスの99%削減</span>」
+                        </p>
+
+                        <p style="margin-top: 15px; font-style: italic; color: #28a745;">✅ 生成時間: 25秒</p>
+                    </div>
+                </div>
+
+                <h3>ビジネスでの活用シーン</h3>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>シーン</th>
+                            <th>活用方法</th>
+                            <th>期待される効果</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>プロジェクト企画</strong></td>
+                            <td>新規プロジェクトの技術的実現可能性を即座に確認</td>
+                            <td>企画段階での手戻りを80%削減、意思決定スピード3倍</td>
+                        </tr>
+                        <tr>
+                            <td><strong>クライアント提案</strong></td>
+                            <td>ヒアリング後、その場でシステム構成案を提示</td>
+                            <td>提案のクオリティ向上、受注率20%アップ</td>
+                        </tr>
+                        <tr>
+                            <td><strong>社内勉強会</strong></td>
+                            <td>LangGraphの学習教材として、具体的な構成案を生成</td>
+                            <td>学習時間を30%短縮、理解度向上</td>
+                        </tr>
+                        <tr>
+                            <td><strong>技術検証（PoC）</strong></td>
+                            <td>複数の設計パターンを生成し、最適なアプローチを選定</td>
+                            <td>PoC期間を2週間から3日に短縮</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RFP対応</strong></td>
+                            <td>要件定義書から、技術的なアプローチを自動生成</td>
+                            <td>RFP対応工数を50%削減</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="info-box">
+                    <h4>💼 実際の導入事例イメージ</h4>
+                    <p><strong>AIコンサルティング企業:</strong></p>
+                    <p>クライアントからの相談時に、構成案生成機能を活用。ヒアリング中にその場でシステム設計を提示し、<span class="highlight">「こんなに早く具体的な提案が出るとは思わなかった」</span>とクライアントから高評価。提案書作成時間が従来の1/5に短縮され、より多くのクライアントに対応可能に。さらに、生成された構成案を開発チームにそのまま渡せるため、要件の誤解が激減。</p>
+                </div>
+            </section>
+
+            <!-- 従来との比較 -->
+            <section id="comparison">
+                <h2>📊 従来の方法との比較</h2>
+
+                <h3>システム設計アプローチの進化</h3>
+
+                <div class="comparison-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>項目</th>
+                                <th>従来の設計<br>(人による設計)</th>
+                                <th>テンプレート利用</th>
+                                <th>AI構成案生成<br>(本システム)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>所要時間</strong></td>
+                                <td>✗ 数日〜数週間</td>
+                                <td>△ 数時間〜1日</td>
+                                <td>✓✓ 20〜30秒</td>
+                            </tr>
+                            <tr>
+                                <td><strong>カスタマイズ性</strong></td>
+                                <td>✓✓ 完全にカスタマイズ</td>
+                                <td>△ テンプレートの範囲内</td>
+                                <td>✓✓ 課題に応じて<br>フル自動生成</td>
+                            </tr>
+                            <tr>
+                                <td><strong>技術知識要件</strong></td>
+                                <td>✗ 専門家必須</td>
+                                <td>△ 基本知識必要</td>
+                                <td>✓✓ 不要</td>
+                            </tr>
+                            <tr>
+                                <td><strong>コスト</strong></td>
+                                <td>✗ 高（人件費）</td>
+                                <td>✓ 低〜中</td>
+                                <td>✓✓ 極めて低<br>(API料金のみ)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>品質</strong></td>
+                                <td>✓✓ 経験により<br>非常に高い</td>
+                                <td>✓ 一定の品質</td>
+                                <td>✓ ベストプラクティス<br>に基づき高品質</td>
+                            </tr>
+                            <tr>
+                                <td><strong>非技術者への説明</strong></td>
+                                <td>△ 別途資料作成必要</td>
+                                <td>✗ 技術寄り</td>
+                                <td>✓✓ 自動生成</td>
+                            </tr>
+                            <tr>
+                                <td><strong>実装コード</strong></td>
+                                <td>△ 別途作成</td>
+                                <td>✓ サンプル付き</td>
+                                <td>✓✓ 完全なコード<br>自動生成</td>
+                            </tr>
+                            <tr>
+                                <td><strong>複数案の比較</strong></td>
+                                <td>✗ 時間がかかる</td>
+                                <td>△ テンプレートの<br>種類による</td>
+                                <td>✓✓ 瞬時に複数案<br>生成可能</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>コスト・効率の比較</h3>
+
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <div class="icon">👨‍💼</div>
+                        <h4>人による設計</h4>
+                        <p><strong>コスト:</strong> 高（数十万円〜）<br>
+                        <strong>スピード:</strong> 遅（数日〜数週間）<br>
+                        <strong>品質:</strong> 経験により高い<br>
+                        <strong>カスタマイズ:</strong> 完全対応</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">📋</div>
+                        <h4>テンプレート利用</h4>
+                        <p><strong>コスト:</strong> 中（数万円〜）<br>
+                        <strong>スピード:</strong> 中（数時間〜1日）<br>
+                        <strong>品質:</strong> 一定<br>
+                        <strong>カスタマイズ:</strong> 限定的</p>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="icon">🤖</div>
+                        <h4>AI構成案生成</h4>
+                        <p><strong>コスト:</strong> 極めて低（数円〜数十円）<br>
+                        <strong>スピード:</strong> 非常に速い（20-30秒）<br>
+                        <strong>品質:</strong> ベストプラクティス準拠<br>
+                        <strong>カスタマイズ:</strong> 完全自動対応</p>
+                    </div>
+                </div>
+
+                <div class="success-box">
+                    <h4>🎯 AI構成案生成が最適なケース</h4>
+                    <ul>
+                        <li>プロジェクト初期の技術検討フェーズ</li>
+                        <li>クライアントへの提案時に、即座にシステムイメージを提示したい</li>
+                        <li>複数の設計案を比較検討したい</li>
+                        <li>技術者とビジネス担当が共通理解を持ちたい</li>
+                        <li>LangGraphのベストプラクティスを学びたい</li>
+                        <li>設計のアイデア出しを高速化したい</li>
+                    </ul>
+                </div>
+
+                <div class="info-box">
+                    <h4>💡 まとめ</h4>
+                    <p>AI構成案生成は、<span class="highlight">人による設計の「品質」とテンプレートの「スピード」を両立</span>した、次世代のシステム設計アプローチです。特に<span class="highlight">プロジェクト初期のアイデア検討</span>や<span class="highlight">提案段階での技術的裏付け</span>を求める場合に、大きな効果を発揮します。ただし、最終的な本番実装では、<span class="highlight">経験豊富な技術者によるレビューと調整</span>が不可欠です。</p>
+                </div>
+            </section>
+
+            <!-- よくある質問 -->
+            <section id="faq" style="background: #f8f9fa; padding: 40px; border-radius: 10px; margin-top: 60px;">
+                <h2 style="color: #f093fb; border-bottom: none; text-align: left;">❓ よくある質問</h2>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #f093fb;">Q1. 生成された構成案は、そのまま本番環境で使えますか？</h4>
+                    <p>A. いいえ。生成された構成案は<span class="highlight">「出発点」</span>として活用してください。セキュリティ、スケーラビリティ、法規制対応など、本番環境で必要な詳細設計は、経験豊富な技術者がレビュー・拡張する必要があります。ただし、PoC（概念実証）やプロトタイプ段階では、そのまま使えるケースも多いです。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #f093fb;">Q2. 同じ課題で何度も生成すると、同じ構成案が出ますか？</h4>
+                    <p>A. いいえ。温度パラメータを0.7に設定しているため、同じ課題でも<span class="highlight">微妙に異なる構成案</span>が生成されます。これにより、複数のアプローチを比較検討できます。ただし、大きく外れた提案にはならず、ベストプラクティスの範囲内でバリエーションが生まれます。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #f093fb;">Q3. 業界や制約条件を指定しないとどうなりますか？</h4>
+                    <p>A. 汎用的な構成案が生成されます。業界や制約条件を指定すると、より<span class="highlight">実践的で具体的な提案</span>が得られます。例えば、「EC業界」と指定すると、在庫管理や決済処理など、EC特有の要素が考慮されます。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #f093fb;">Q4. 生成されたコードは、どのくらい完成度が高いですか？</h4>
+                    <p>A. <span class="highlight">そのまま実行可能</span>なレベルです。型ヒント、エラーハンドリング、コメントも含まれています。ただし、外部API連携の認証キーや、データベース接続情報など、環境固有の設定は自分で追加する必要があります。開発の80-90%は完成している状態です。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #f093fb;">Q5. LangGraph以外のフレームワーク（LangChain、AutoGen等）でも使えますか？</h4>
+                    <p>A. 現在の構成案生成は<span class="highlight">LangGraphに特化</span>しています。ただし、生成された設計思想（ノード分割、条件分岐、状態管理）は、他のフレームワークにも応用可能です。将来的に、他のフレームワーク対応も検討中です。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #f093fb;">Q6. 生成にかかるコストはどのくらいですか？</h4>
+                    <p>A. OpenAI APIの利用料として、<span class="highlight">1回あたり数円〜数十円</span>程度です（GPT-4使用時）。複雑な課題ほど若干コストが上がりますが、人による設計（数十万円）と比べると、極めて低コストです。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #f093fb;">Q7. 非技術者でも理解できますか？</h4>
+                    <p>A. はい。<span class="highlight">ビジネス説明</span>が自動生成され、技術用語を極力排除した平易な言葉で説明されます。さらに、Mermaid図で視覚的にもわかりやすく表現されます。技術の詳細を知らなくても、「何をするシステムか」「どんな価値があるか」は理解できます。</p>
+                </div>
+
+                <div style="margin-top: 30px;">
+                    <h4 style="color: #f093fb;">Q8. 生成された構成案を修正したい場合は？</h4>
+                    <p>A. 以下の2つのアプローチがあります:</p>
+                    <ul style="margin-top: 10px;">
+                        <li><strong>再生成:</strong> 課題の説明を調整して、再度生成する（温度0.7なので別の案が出る）</li>
+                        <li><strong>手動修正:</strong> 生成されたコードやMermaid図を、自分で編集する</li>
+                    </ul>
+                    <p style="margin-top: 10px;">多くの場合、生成された構成案を<span class="highlight">80%ベース</span>として、残り20%を手動で調整するのが効率的です。</p>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>&copy; 2026 LangGraph Catalyst</p>
+            <p>あなたのビジネス課題を、AIが即座にシステム設計に変換します</p>
+            <p style="margin-top: 20px; font-size: 0.9em;">Built with React, FastAPI, LangGraph, and GPT-4</p>
+        </footer>
+    </div>
+
+    <script>
+        mermaid.initialize({
+            startOnLoad: true,
+            theme: 'default',
+            themeVariables: {
+                primaryColor: '#f093fb',
+                primaryTextColor: '#fff',
+                primaryBorderColor: '#f5576c',
+                lineColor: '#f5576c',
+                secondaryColor: '#ffc107',
+                tertiaryColor: '#28a745'
+            },
+            flowchart: {
+                curve: 'basis',
+                padding: 20
+            }
+        });
+    </script>
+</body>
+</html>
